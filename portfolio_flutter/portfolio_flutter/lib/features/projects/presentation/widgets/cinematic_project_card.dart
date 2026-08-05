@@ -1,0 +1,390 @@
+import 'dart:ui';
+import 'dart:math' as math;
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/utils/motion_system.dart';
+import '../../../../core/widgets/cursor_light_painter.dart';
+import '../../models/project_model.dart';
+import 'engineering_document_view.dart';
+
+class CinematicProjectCard extends StatefulWidget {
+  final ProjectModel project;
+
+  const CinematicProjectCard({super.key, required this.project});
+
+  @override
+  State<CinematicProjectCard> createState() => _CinematicProjectCardState();
+}
+
+class _CinematicProjectCardState extends State<CinematicProjectCard> with SingleTickerProviderStateMixin {
+  bool _isHovered = false;
+  bool _isPressed = false;
+  bool _isExpanded = false;
+  Offset _mousePosition = Offset.zero;
+  late AnimationController _borderGlowController;
+
+  @override
+  void initState() {
+    super.initState();
+    _borderGlowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+  }
+
+  @override
+  void dispose() {
+    _borderGlowController.dispose();
+    super.dispose();
+  }
+
+  void _onHover(PointerEvent event) {
+    final RenderBox? box = context.findRenderObject() as RenderBox?;
+    if (box != null) {
+      final Offset center = box.size.center(Offset.zero);
+      final Offset local = event.localPosition;
+      setState(() {
+        _isHovered = true;
+        _mousePosition = Offset(
+          (local.dx - center.dx) / (box.size.width / 2),
+          (local.dy - center.dy) / (box.size.height / 2),
+        );
+      });
+    }
+  }
+
+  void _onExit(PointerEvent event) {
+    setState(() {
+      _isHovered = false;
+      _mousePosition = Offset.zero;
+    });
+    _borderGlowController.reverse();
+  }
+
+  void _onEnter(PointerEvent event) {
+    setState(() => _isHovered = true);
+    _borderGlowController.forward(from: 0.0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: _onEnter,
+      onHover: _onHover,
+      onExit: _onExit,
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() {
+          _isPressed = false;
+          _isExpanded = !_isExpanded;
+        }),
+        onTapCancel: () => setState(() => _isPressed = false),
+        child: AnimatedContainer(
+        clipBehavior: Clip.antiAlias,
+        duration: MotionSystem.standard,
+        curve: MotionSystem.deceleration,
+        transform: Matrix4.identity()
+          ..setEntry(3, 2, 0.001)
+          ..translate(0.0, _isHovered ? (_isPressed ? 2.0 : -8.0) : 0.0)
+          ..rotateX(_isHovered ? -_mousePosition.dy * 0.02 : 0.0)
+          ..rotateY(_isHovered ? _mousePosition.dx * 0.02 : 0.0)
+          ..scale(_isPressed ? 0.98 : 1.0),
+        transformAlignment: Alignment.center,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              _isHovered ? const Color(0x14FFFFFF) : const Color(0x08FFFFFF),
+              const Color(0x02FFFFFF),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: _isHovered ? const Color(0x664F8CFF) : const Color(0x1AFFFFFF),
+            width: 1.0,
+          ),
+          boxShadow: _isHovered 
+              ? [
+                  const BoxShadow(color: Color(0x1A4F8CFF), blurRadius: 60, offset: Offset(0, 30)),
+                  const BoxShadow(color: Color(0x0A4F8CFF), blurRadius: 20, offset: Offset(0, 10)),
+                ]
+              : [
+                  BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 30, offset: const Offset(0, 15)),
+                ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
+            child: Stack(
+              children: [
+                // Blueprint Overlay Background (Visible only on hover)
+                Positioned.fill(
+                  child: AnimatedOpacity(
+                    duration: MotionSystem.standard,
+                    curve: MotionSystem.deceleration,
+                    opacity: _isHovered ? 1.0 : 0.0,
+                    child: AnimatedBuilder(
+                      animation: _borderGlowController,
+                      builder: (context, _) {
+                        return CustomPaint(
+                          painter: _EnhancedBlueprintPainter(
+                            sweepProgress: _borderGlowController.value,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                // Cursor spotlight overlay
+                CursorLightOverlay(
+                  normalizedMousePosition: _mousePosition,
+                  isHovered: _isHovered,
+                  radius: 180.0,
+                  intensity: 0.10,
+                ),
+
+                // Animated corner brackets (targeting/scanning feel)
+                if (_isHovered)
+                  Positioned.fill(
+                    child: AnimatedBuilder(
+                      animation: _borderGlowController,
+                      builder: (context, _) {
+                        return CustomPaint(
+                          painter: _CornerBracketPainter(
+                            progress: _borderGlowController.value,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                
+                // Core Content Layout
+                Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Header Section (Always Visible)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.project.title,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    textStyle: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  widget.project.shortDescription,
+                                  style: GoogleFonts.geist(
+                                    textStyle: const TextStyle(
+                                      color: Color(0x99FFFFFF),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.6,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          AnimatedOpacity(
+                            duration: MotionSystem.swift,
+                            curve: MotionSystem.deceleration,
+                            opacity: _isHovered ? 1.0 : 0.5,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                              decoration: BoxDecoration(
+                                color: const Color(0x1A4F8CFF),
+                                borderRadius: BorderRadius.circular(100),
+                                border: Border.all(color: const Color(0x334F8CFF)),
+                              ),
+                              child: Text(
+                                widget.project.role.toUpperCase(),
+                                style: GoogleFonts.jetBrainsMono(
+                                  textStyle: const TextStyle(
+                                    color: Color(0xFF4F8CFF),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      // Expanding Classified Document Panel
+                      AnimatedSize(
+                        duration: MotionSystem.standard,
+                        curve: MotionSystem.deceleration,
+                        alignment: Alignment.topCenter,
+                        child: _isExpanded ? _buildExpandedDetails() : const SizedBox(width: double.infinity, height: 0),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      ),
+    );
+  }
+
+  Widget _buildExpandedDetails() {
+    return EngineeringDocumentView(project: widget.project);
+  }
+}
+
+class _ActionButton extends StatefulWidget {
+  final String label;
+  final String url;
+  final bool isPrimary;
+
+  const _ActionButton({required this.label, required this.url, this.isPrimary = false});
+
+  @override
+  State<_ActionButton> createState() => _ActionButtonState();
+}
+
+class _ActionButtonState extends State<_ActionButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: AnimatedContainer(
+        duration: MotionSystem.micro,
+        curve: MotionSystem.deceleration,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+        decoration: BoxDecoration(
+          color: widget.isPrimary 
+              ? (_isHovered ? const Color(0xFF5A94FF) : const Color(0xFF4F8CFF))
+              : (_isHovered ? const Color(0x1AFFFFFF) : const Color(0x0AFFFFFF)),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+            color: widget.isPrimary ? Colors.transparent : const Color(0x1AFFFFFF),
+          ),
+        ),
+        child: Text(
+          widget.label,
+          style: GoogleFonts.geist(
+            textStyle: TextStyle(
+              color: widget.isPrimary ? Colors.white : (_isHovered ? Colors.white : const Color(0x99FFFFFF)),
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.0,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// =========================================================================
+// Enhanced Blueprint Painter — with animated diagonal sweep
+// =========================================================================
+class _EnhancedBlueprintPainter extends CustomPainter {
+  final double sweepProgress;
+  _EnhancedBlueprintPainter({required this.sweepProgress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint gridPaint = Paint()
+      ..color = const Color(0x054F8CFF)
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+
+    const double gridSize = 40.0;
+    
+    for (double y = 0; y < size.height; y += gridSize) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+    }
+    for (double x = 0; x < size.width; x += gridSize) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+    }
+
+    // Animated diagonal scan line
+    if (sweepProgress > 0 && sweepProgress < 1.0) {
+      final double sweepX = size.width * sweepProgress;
+      final Paint scanPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            const Color(0x004F8CFF),
+            const Color(0x1A4F8CFF),
+            const Color(0x004F8CFF),
+          ],
+        ).createShader(Rect.fromLTWH(sweepX - 40, 0, 80, size.height));
+      canvas.drawRect(Rect.fromLTWH(sweepX - 40, 0, 80, size.height), scanPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _EnhancedBlueprintPainter old) => old.sweepProgress != sweepProgress;
+}
+
+// =========================================================================
+// Corner Bracket Painter — L-shaped targeting brackets that slide in
+// =========================================================================
+class _CornerBracketPainter extends CustomPainter {
+  final double progress;
+  _CornerBracketPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress <= 0) return;
+
+    final Paint paint = Paint()
+      ..color = const Color(0xFF4F8CFF).withOpacity(0.25 * progress)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.square;
+
+    final double bracketLen = 16.0;
+    final double inset = 12.0 + (8.0 * (1.0 - progress)); // Slides inward
+
+    // Top-left bracket
+    canvas.drawLine(Offset(inset, inset), Offset(inset + bracketLen, inset), paint);
+    canvas.drawLine(Offset(inset, inset), Offset(inset, inset + bracketLen), paint);
+
+    // Top-right bracket
+    canvas.drawLine(Offset(size.width - inset, inset), Offset(size.width - inset - bracketLen, inset), paint);
+    canvas.drawLine(Offset(size.width - inset, inset), Offset(size.width - inset, inset + bracketLen), paint);
+
+    // Bottom-left bracket
+    canvas.drawLine(Offset(inset, size.height - inset), Offset(inset + bracketLen, size.height - inset), paint);
+    canvas.drawLine(Offset(inset, size.height - inset), Offset(inset, size.height - inset - bracketLen), paint);
+
+    // Bottom-right bracket
+    canvas.drawLine(Offset(size.width - inset, size.height - inset), Offset(size.width - inset - bracketLen, size.height - inset), paint);
+    canvas.drawLine(Offset(size.width - inset, size.height - inset), Offset(size.width - inset, size.height - inset - bracketLen), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _CornerBracketPainter old) => old.progress != progress;
+}
