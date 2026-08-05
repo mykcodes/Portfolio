@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/controllers/experience_controller.dart';
+import '../../../../core/controllers/console_controller.dart';
+import '../../../../core/experience/sound_engine.dart';
 import '../../../../core/utils/motion_system.dart';
 
 class HomeNavigationBar extends StatefulWidget {
@@ -161,6 +163,10 @@ class _HomeNavigationBarState extends State<HomeNavigationBar> with TickerProvid
                                       _NavItem(id: 'connection', label: 'TERMINAL', index: 5, entryAnim: _entryController),
                                     ],
                                   ),
+                                  const SizedBox(width: 24),
+
+                                  // Console Toggle — subtle >_ icon
+                                  _ConsoleToggleButton(entryAnim: _entryController),
                                 ],
                               ),
                             ),
@@ -401,6 +407,89 @@ class _NavItemState extends State<_NavItem> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Subtle '>_' terminal icon that toggles the engineering console.
+/// Rewards visual explorers who notice the icon.
+class _ConsoleToggleButton extends StatefulWidget {
+  final AnimationController entryAnim;
+  const _ConsoleToggleButton({required this.entryAnim});
+
+  @override
+  State<_ConsoleToggleButton> createState() => _ConsoleToggleButtonState();
+}
+
+class _ConsoleToggleButtonState extends State<_ConsoleToggleButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final double fade = CurvedAnimation(
+      parent: widget.entryAnim,
+      curve: const Interval(0.6, 1.0, curve: MotionSystem.deceleration),
+    ).value;
+
+    return Opacity(
+      opacity: fade,
+      child: AnimatedBuilder(
+        animation: ConsoleController.instance,
+        builder: (context, _) {
+          final isOpen = ConsoleController.instance.isOpen;
+
+          return GestureDetector(
+            onTap: () {
+              SoundEngine.instance.playClick();
+              ConsoleController.instance.toggle();
+            },
+            child: MouseRegion(
+              onEnter: (_) {
+                SoundEngine.instance.playHover();
+                setState(() => _isHovered = true);
+              },
+              onExit: (_) => setState(() => _isHovered = false),
+              cursor: SystemMouseCursors.click,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutCubic,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isOpen
+                      ? const Color(0x1A4F8CFF)
+                      : _isHovered
+                          ? const Color(0x0DFFFFFF)
+                          : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isOpen
+                        ? const Color(0x334F8CFF)
+                        : _isHovered
+                            ? const Color(0x1AFFFFFF)
+                            : Colors.transparent,
+                    width: 1.0,
+                  ),
+                ),
+                child: Text(
+                  '>_',
+                  style: GoogleFonts.jetBrainsMono(
+                    textStyle: TextStyle(
+                      color: isOpen
+                          ? const Color(0xFF4F8CFF)
+                          : _isHovered
+                              ? const Color(0xBBFFFFFF)
+                              : const Color(0x66FFFFFF),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

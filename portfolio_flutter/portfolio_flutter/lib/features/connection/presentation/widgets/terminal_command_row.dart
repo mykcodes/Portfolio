@@ -16,7 +16,7 @@ class TerminalCommandRow extends StatefulWidget {
   State<TerminalCommandRow> createState() => _TerminalCommandRowState();
 }
 
-class _TerminalCommandRowState extends State<TerminalCommandRow> with SingleTickerProviderStateMixin {
+class _TerminalCommandRowState extends State<TerminalCommandRow> with TickerProviderStateMixin {
   bool _isHovered = false;
   bool _isVisible = false;
   late AnimationController _cursorController;

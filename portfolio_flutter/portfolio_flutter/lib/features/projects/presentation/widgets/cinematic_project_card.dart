@@ -16,12 +16,13 @@ class CinematicProjectCard extends StatefulWidget {
   State<CinematicProjectCard> createState() => _CinematicProjectCardState();
 }
 
-class _CinematicProjectCardState extends State<CinematicProjectCard> with SingleTickerProviderStateMixin {
+class _CinematicProjectCardState extends State<CinematicProjectCard> with TickerProviderStateMixin {
   bool _isHovered = false;
   bool _isPressed = false;
   bool _isExpanded = false;
   Offset _mousePosition = Offset.zero;
   late AnimationController _borderGlowController;
+  late AnimationController _breathingController;
 
   @override
   void initState() {
@@ -30,11 +31,16 @@ class _CinematicProjectCardState extends State<CinematicProjectCard> with Single
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
+    _breathingController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _borderGlowController.dispose();
+    _breathingController.dispose();
     super.dispose();
   }
 
@@ -80,41 +86,51 @@ class _CinematicProjectCardState extends State<CinematicProjectCard> with Single
           _isExpanded = !_isExpanded;
         }),
         onTapCancel: () => setState(() => _isPressed = false),
-        child: AnimatedContainer(
-        clipBehavior: Clip.antiAlias,
-        duration: MotionSystem.standard,
-        curve: MotionSystem.deceleration,
-        transform: Matrix4.identity()
-          ..setEntry(3, 2, 0.001)
-          ..translate(0.0, _isHovered ? (_isPressed ? 2.0 : -8.0) : 0.0)
-          ..rotateX(_isHovered ? -_mousePosition.dy * 0.02 : 0.0)
-          ..rotateY(_isHovered ? _mousePosition.dx * 0.02 : 0.0)
-          ..scale(_isPressed ? 0.98 : 1.0),
-        transformAlignment: Alignment.center,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              _isHovered ? const Color(0x14FFFFFF) : const Color(0x08FFFFFF),
-              const Color(0x02FFFFFF),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: _isHovered ? const Color(0x664F8CFF) : const Color(0x1AFFFFFF),
-            width: 1.0,
-          ),
-          boxShadow: _isHovered 
-              ? [
-                  const BoxShadow(color: Color(0x1A4F8CFF), blurRadius: 60, offset: Offset(0, 30)),
-                  const BoxShadow(color: Color(0x0A4F8CFF), blurRadius: 20, offset: Offset(0, 10)),
-                ]
-              : [
-                  BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 30, offset: const Offset(0, 15)),
-                ],
-        ),
-        child: ClipRRect(
+        child: AnimatedBuilder(
+          animation: _breathingController,
+          builder: (context, child) {
+            final double breathe = _breathingController.value;
+            return AnimatedContainer(
+              clipBehavior: Clip.antiAlias,
+              duration: MotionSystem.standard,
+              curve: MotionSystem.deceleration,
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.001)
+                ..translate(0.0, _isHovered ? (_isPressed ? 2.0 : -8.0) : 0.0)
+                ..rotateX(_isHovered ? -_mousePosition.dy * 0.02 : 0.0)
+                ..rotateY(_isHovered ? _mousePosition.dx * 0.02 : 0.0)
+                ..scale(_isPressed ? 0.98 : 1.0),
+              transformAlignment: Alignment.center,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    _isHovered ? const Color(0x14FFFFFF) : const Color(0x08FFFFFF),
+                    const Color(0x02FFFFFF),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: _isHovered 
+                      ? const Color(0x664F8CFF) 
+                      : const Color(0xFF4F8CFF).withOpacity(0.05 + breathe * 0.1),
+                  width: 1.0,
+                ),
+                boxShadow: _isHovered 
+                    ? [
+                        const BoxShadow(color: Color(0x1A4F8CFF), blurRadius: 60, offset: Offset(0, 30)),
+                        const BoxShadow(color: Color(0x0A4F8CFF), blurRadius: 20, offset: Offset(0, 10)),
+                      ]
+                    : [
+                        BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 30, offset: const Offset(0, 15)),
+                        BoxShadow(color: const Color(0xFF4F8CFF).withOpacity(breathe * 0.03), blurRadius: 20, spreadRadius: breathe * 5),
+                      ],
+              ),
+              child: child,
+            );
+          },
+          child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
@@ -245,7 +261,7 @@ class _CinematicProjectCardState extends State<CinematicProjectCard> with Single
             ),
           ),
         ),
-      ),
+        ),
       ),
     );
   }
@@ -268,6 +284,7 @@ class _ActionButton extends StatefulWidget {
 
 class _ActionButtonState extends State<_ActionButton> {
   bool _isHovered = false;
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -275,10 +292,16 @@ class _ActionButtonState extends State<_ActionButton> {
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       cursor: SystemMouseCursors.click,
-      child: AnimatedContainer(
-        duration: MotionSystem.micro,
-        curve: MotionSystem.deceleration,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
+        child: AnimatedContainer(
+          duration: MotionSystem.micro,
+          curve: MotionSystem.deceleration,
+          transform: Matrix4.identity()..scale(_isPressed ? 0.95 : 1.0),
+          transformAlignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
         decoration: BoxDecoration(
           color: widget.isPrimary 
               ? (_isHovered ? const Color(0xFF5A94FF) : const Color(0xFF4F8CFF))
@@ -298,6 +321,7 @@ class _ActionButtonState extends State<_ActionButton> {
               letterSpacing: 1.0,
             ),
           ),
+        ),
         ),
       ),
     );

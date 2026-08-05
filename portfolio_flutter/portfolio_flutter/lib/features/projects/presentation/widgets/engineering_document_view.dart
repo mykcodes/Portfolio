@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import '../../../../core/utils/motion_system.dart';
 import '../../models/project_model.dart';
+import 'interactive_sandbox.dart';
 
 class EngineeringDocumentView extends StatefulWidget {
   final ProjectModel project;
@@ -26,7 +27,13 @@ class _EngineeringDocumentViewState extends State<EngineeringDocumentView> with 
           Divider(color: Colors.white.withOpacity(0.1), height: 1),
           const SizedBox(height: 32),
           
-          // 1. Engineering Overview
+          // 1. Interactive Sandbox Demo
+          const _SectionHeader(title: 'INTERACTIVE SANDBOX DEMO'),
+          const SizedBox(height: 16),
+          const InteractiveSandbox(),
+          const SizedBox(height: 48),
+
+          // 2. Engineering Overview
           const _SectionHeader(title: 'ENGINEERING OVERVIEW'),
           _buildOverviewContent(),
           const SizedBox(height: 48),
@@ -409,7 +416,7 @@ class _AnimatedCounter extends StatefulWidget {
   State<_AnimatedCounter> createState() => _AnimatedCounterState();
 }
 
-class _AnimatedCounterState extends State<_AnimatedCounter> with SingleTickerProviderStateMixin {
+class _AnimatedCounterState extends State<_AnimatedCounter> with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   bool _isVisible = false;
@@ -469,7 +476,7 @@ class _VerticalTimeline extends StatefulWidget {
   State<_VerticalTimeline> createState() => _VerticalTimelineState();
 }
 
-class _VerticalTimelineState extends State<_VerticalTimeline> with SingleTickerProviderStateMixin {
+class _VerticalTimelineState extends State<_VerticalTimeline> with TickerProviderStateMixin {
   late AnimationController _controller;
   bool _isVisible = false;
 

@@ -10,7 +10,7 @@ class ConstellationBackground extends StatefulWidget {
   State<ConstellationBackground> createState() => _ConstellationBackgroundState();
 }
 
-class _ConstellationBackgroundState extends State<ConstellationBackground> with SingleTickerProviderStateMixin {
+class _ConstellationBackgroundState extends State<ConstellationBackground> with TickerProviderStateMixin {
   late AnimationController _ambientController;
   final Random _random = Random(42);
   
@@ -337,9 +337,12 @@ class _AtmosphereEnginePainter extends CustomPainter {
       // Scroll-based emergence — different planes appear at different depths
       final double scrollPhase = (scrollProgress * 3 + plane.driftPhase).abs() % 1.0;
       final double scrollOpacity = (sin(scrollPhase * pi) * 0.5 + 0.5) * 0.015;
+      
+      // Context-aware adjustment: blueprints are much more visible in 'builds' section
+      final double sectionMultiplier = activeSection == 'builds' ? 3.0 : 1.0;
 
       paint.color = const Color(0xFF4F8CFF).withOpacity(
-        ((0.025 + proximityBoost + scrollOpacity) * globalIntensity).clamp(0.0, 0.08),
+        ((0.025 + proximityBoost + scrollOpacity) * sectionMultiplier * globalIntensity).clamp(0.0, 0.15),
       );
 
       canvas.save();
@@ -432,9 +435,12 @@ class _AtmosphereEnginePainter extends CustomPainter {
           ? 1000.0
           : (Offset(midX, baseDy) - mousePosition).distance;
       final double proximityBoost = (1.0 - (distToMouse / 500.0).clamp(0.0, 1.0)) * 0.03;
+      
+      // Context-aware adjustment: curves are more visible in 'journey' section
+      final double sectionMultiplier = activeSection == 'journey' ? 2.5 : 1.0;
 
       paint.color = const Color(0xFF4F8CFF).withOpacity(
-        ((0.03 + proximityBoost) * globalIntensity).clamp(0.0, 0.08),
+        ((0.03 + proximityBoost) * sectionMultiplier * globalIntensity).clamp(0.0, 0.12),
       );
 
       canvas.drawPath(path, paint);
@@ -449,10 +455,8 @@ class _AtmosphereEnginePainter extends CustomPainter {
   }
 
   void _paintDeepSpace(Canvas canvas, Size size) {
-    // Depth of field blur for far background
-    final Paint paint = Paint()
-      ..style = PaintingStyle.fill
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.0);
+    // Depth of field handled via opacity mapping instead of expensive Gaussian blur
+    final Paint paint = Paint()..style = PaintingStyle.fill;
       
     final Offset layerOffset = ParallaxEngine.getOffset(
       layer: 0, 

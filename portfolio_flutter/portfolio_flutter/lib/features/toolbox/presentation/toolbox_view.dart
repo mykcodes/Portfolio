@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/skill_model.dart';
 import '../data/skills_data.dart';
-import 'widgets/skill_grid.dart';
+import 'widgets/knowledge_graph/knowledge_graph_widget.dart';
 import 'widgets/skill_details_panel.dart';
 import 'widgets/toolbox_background.dart';
 
@@ -15,7 +15,7 @@ class ToolboxView extends StatefulWidget {
 
 class _ToolboxViewState extends State<ToolboxView> {
   // Enforces a strict default selection framework mapped cleanly to Flutter module node data
-  SkillModel _selectedModule = SkillsData.engineeringModules.first;
+  SkillModel? _selectedModule = SkillsData.engineeringModules.first;
 
   @override
   Widget build(BuildContext context) {
@@ -75,31 +75,43 @@ class _ToolboxViewState extends State<ToolboxView> {
                             children: [
                               Expanded(
                                 flex: 6,
-                                child: SkillGrid(
-                                  currentSelection: _selectedModule,
-                                  onModuleSelected: (mod) {
-                                    setState(() => _selectedModule = mod);
-                                  },
+                                child: SizedBox(
+                                  height: 600,
+                                  child: KnowledgeGraphWidget(
+                                    onSkillSelected: (mod) {
+                                      setState(() => _selectedModule = mod);
+                                    },
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 48),
                               Expanded(
                                 flex: 5,
-                                child: SkillDetailsPanel(skill: _selectedModule),
+                                child: _selectedModule != null 
+                                    ? SkillDetailsPanel(skill: _selectedModule!)
+                                    : const Center(
+                                        child: Text(
+                                          'Select a node to view details',
+                                          style: TextStyle(color: Color(0x66FFFFFF)),
+                                        ),
+                                      ),
                               ),
                             ],
                           )
                         : Column(
                             key: const ValueKey<String>('mobile_toolbox'),
                             children: [
-                              SkillGrid(
-                                currentSelection: _selectedModule,
-                                onModuleSelected: (mod) {
-                                  setState(() => _selectedModule = mod);
-                                },
+                              SizedBox(
+                                height: 400,
+                                child: KnowledgeGraphWidget(
+                                  onSkillSelected: (mod) {
+                                    setState(() => _selectedModule = mod);
+                                  },
+                                ),
                               ),
                               const SizedBox(height: 32),
-                              SkillDetailsPanel(skill: _selectedModule),
+                              if (_selectedModule != null)
+                                SkillDetailsPanel(skill: _selectedModule!),
                             ],
                           ),
                   ),

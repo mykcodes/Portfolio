@@ -10,7 +10,7 @@ class ExperimentsView extends StatefulWidget {
   State<ExperimentsView> createState() => _ExperimentsViewState();
 }
 
-class _ExperimentsViewState extends State<ExperimentsView> with SingleTickerProviderStateMixin {
+class _ExperimentsViewState extends State<ExperimentsView> with TickerProviderStateMixin {
   late AnimationController _spotlightController;
 
   @override

@@ -196,7 +196,7 @@ class _LivingHeroBlueprint extends StatefulWidget {
   State<_LivingHeroBlueprint> createState() => _LivingHeroBlueprintState();
 }
 
-class _LivingHeroBlueprintState extends State<_LivingHeroBlueprint> with SingleTickerProviderStateMixin {
+class _LivingHeroBlueprintState extends State<_LivingHeroBlueprint> with TickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -303,7 +303,7 @@ class _BreathingTitle extends StatefulWidget {
   State<_BreathingTitle> createState() => _BreathingTitleState();
 }
 
-class _BreathingTitleState extends State<_BreathingTitle> with SingleTickerProviderStateMixin {
+class _BreathingTitleState extends State<_BreathingTitle> with TickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -374,7 +374,7 @@ class _BreathingLetterSpacing extends StatefulWidget {
   State<_BreathingLetterSpacing> createState() => _BreathingLetterSpacingState();
 }
 
-class _BreathingLetterSpacingState extends State<_BreathingLetterSpacing> with SingleTickerProviderStateMixin {
+class _BreathingLetterSpacingState extends State<_BreathingLetterSpacing> with TickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -422,7 +422,7 @@ class _PrimaryAction extends StatefulWidget {
   State<_PrimaryAction> createState() => _PrimaryActionState();
 }
 
-class _PrimaryActionState extends State<_PrimaryAction> with SingleTickerProviderStateMixin {
+class _PrimaryActionState extends State<_PrimaryAction> with TickerProviderStateMixin {
   bool _isHovered = false;
   late AnimationController _sweepController;
 
@@ -560,7 +560,7 @@ class _SecondaryAction extends StatefulWidget {
   State<_SecondaryAction> createState() => _SecondaryActionState();
 }
 
-class _SecondaryActionState extends State<_SecondaryAction> with SingleTickerProviderStateMixin {
+class _SecondaryActionState extends State<_SecondaryAction> with TickerProviderStateMixin {
   bool _isHovered = false;
   late AnimationController _reflectionController;
 

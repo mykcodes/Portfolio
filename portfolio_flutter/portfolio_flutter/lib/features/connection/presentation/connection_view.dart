@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../data/connection_data.dart';
 import 'widgets/typing_terminal.dart';
-import 'widgets/terminal_command_row.dart';
 import 'widgets/connection_footer.dart';
+import 'widgets/github_timeline/github_timeline_widget.dart';
 
 class ConnectionView extends StatelessWidget {
   const ConnectionView({super.key});
@@ -86,15 +86,10 @@ class ConnectionView extends StatelessWidget {
                   ),
                   const SizedBox(height: 48),
                   
-                  // Interactive Commands Sequence (Delayed heavily to wait for typing)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: List.generate(ConnectionData.connectionChannels.length, (index) {
-                      return TerminalCommandRow(
-                        command: ConnectionData.connectionChannels[index],
-                        delayMs: 3500 + (index * 150),
-                      );
-                    }),
+                  // Interactive Live GitHub Engineering Timeline
+                  const _ConnectionStaggerReveal(
+                    delayMs: 3500,
+                    child: GithubTimelineWidget(),
                   ),
                   const SizedBox(height: 120),
                   

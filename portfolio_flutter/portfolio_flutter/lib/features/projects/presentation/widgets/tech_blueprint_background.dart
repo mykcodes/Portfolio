@@ -9,7 +9,7 @@ class TechBlueprintBackground extends StatefulWidget {
   State<TechBlueprintBackground> createState() => _TechBlueprintBackgroundState();
 }
 
-class _TechBlueprintBackgroundState extends State<TechBlueprintBackground> with SingleTickerProviderStateMixin {
+class _TechBlueprintBackgroundState extends State<TechBlueprintBackground> with TickerProviderStateMixin {
   late AnimationController _rotationController;
   Offset _mousePos = Offset.zero;
 

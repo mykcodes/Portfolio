@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/utils/motion_system.dart';
 import '../../../../core/widgets/cursor_light_painter.dart';
 import '../../models/milestone_model.dart';
+import 'logbook_painter.dart';
 
 class MilestoneCard extends StatefulWidget {
   final MilestoneModel milestone;
@@ -62,21 +63,32 @@ class _MilestoneCardState extends State<MilestoneCard> {
           ..rotateX(_isHovered ? -_mousePosition.dy * 0.04 : 0.0)
           ..rotateY(_isHovered ? _mousePosition.dx * 0.04 : 0.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(16), // Logbook style is sharper
           boxShadow: _isHovered 
               ? [
-                  const BoxShadow(color: Color(0x1A4F8CFF), blurRadius: 50, offset: Offset(0, 20)),
-                  const BoxShadow(color: Color(0x0C4F8CFF), blurRadius: 15, offset: Offset(0, 8)),
+                  BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 40, offset: const Offset(0, 15)),
                 ]
               : [],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(16),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
             child: Stack(
               children: [
-                // Core card content
+                // Abstract blueprint sketch background
+                Positioned.fill(
+                  child: RepaintBoundary(
+                    child: CustomPaint(
+                      painter: LogbookPainter(
+                        isHovered: _isHovered,
+                        seed: widget.milestone.title.hashCode,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Core logbook content
                 AnimatedContainer(
                   duration: MotionSystem.standard,
                   curve: MotionSystem.deceleration,
@@ -86,13 +98,13 @@ class _MilestoneCardState extends State<MilestoneCard> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        _isHovered ? const Color(0x14FFFFFF) : const Color(0x0AFFFFFF),
-                        const Color(0x02FFFFFF),
+                        _isHovered ? const Color(0x1A0A0F1F) : const Color(0x0F0A0F1F),
+                        const Color(0x050A0F1F),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: _isHovered ? const Color(0x4DFFFFFF) : const Color(0x14FFFFFF),
+                      color: _isHovered ? const Color(0x4D4F8CFF) : const Color(0x1AFFFFFF),
                       width: 1.0,
                     ),
                   ),
@@ -100,23 +112,43 @@ class _MilestoneCardState extends State<MilestoneCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Year Header Identity Tag
-                      AnimatedDefaultTextStyle(
-                        duration: MotionSystem.swift,
-                        curve: MotionSystem.deceleration,
-                        style: GoogleFonts.geist(
-                          textStyle: TextStyle(
-                            color: _isHovered ? const Color(0xFF4F8CFF) : const Color(0x994F8CFF),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 2.0,
+                      // Logbook Header: Commit Hash & Date
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.commit, color: Color(0xFF4F8CFF), size: 14),
+                              const SizedBox(width: 8),
+                              Text(
+                                widget.milestone.commitHash,
+                                style: GoogleFonts.jetBrainsMono(
+                                  textStyle: const TextStyle(
+                                    color: Color(0xFF4F8CFF),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        child: Text(widget.milestone.year),
+                          Text(
+                            widget.milestone.logDate,
+                            style: GoogleFonts.jetBrainsMono(
+                              textStyle: const TextStyle(
+                                color: Color(0x66FFFFFF),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 20),
                       
-                      // Milestone Title text
+                      // Title
                       Text(
                         widget.milestone.title,
                         style: GoogleFonts.plusJakartaSans(
@@ -128,9 +160,9 @@ class _MilestoneCardState extends State<MilestoneCard> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       
-                      // Narrative Copy blocks
+                      // Story / Narrative
                       Text(
                         widget.milestone.story,
                         style: GoogleFonts.geist(
@@ -142,29 +174,70 @@ class _MilestoneCardState extends State<MilestoneCard> {
                           ),
                         ),
                       ),
+                      
+                      if (widget.milestone.architectureNotes.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0x0AFFFFFF),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0x0FFFFFFF)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '// ARCHITECTURE NOTES',
+                                style: GoogleFonts.jetBrainsMono(
+                                  textStyle: const TextStyle(
+                                    color: Color(0x66FFFFFF),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                widget.milestone.architectureNotes,
+                                style: GoogleFonts.geist(
+                                  textStyle: const TextStyle(
+                                    color: Color(0x8CFFFFFF),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w400,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      
                       const SizedBox(height: 24),
                       
-                      // Technical Context Sub-Chips
+                      // Technical Context
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
                         children: widget.milestone.technologies.map((tech) {
                           return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0x0DFFFFFF),
-                              borderRadius: BorderRadius.circular(8),
+                              color: const Color(0x08FFFFFF),
+                              borderRadius: BorderRadius.circular(4),
                               border: Border.all(
-                                color: const Color(0x0FFFFFFF),
+                                color: const Color(0x1AFFFFFF),
                                 width: 1.0,
                               ),
                             ),
                             child: Text(
                               tech,
-                              style: GoogleFonts.geist(
+                              style: GoogleFonts.jetBrainsMono(
                                 textStyle: const TextStyle(
-                                  color: Color(0x8CFFFFFF),
-                                  fontSize: 12,
+                                  color: Color(0x99FFFFFF),
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -180,8 +253,8 @@ class _MilestoneCardState extends State<MilestoneCard> {
                 CursorLightOverlay(
                   normalizedMousePosition: _mousePosition,
                   isHovered: _isHovered,
-                  radius: 150.0,
-                  intensity: 0.08,
+                  radius: 180.0,
+                  intensity: 0.1,
                 ),
               ],
             ),

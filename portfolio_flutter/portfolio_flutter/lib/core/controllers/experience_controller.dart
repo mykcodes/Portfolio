@@ -20,6 +20,13 @@ class ExperienceController extends ChangeNotifier {
   double ambientIntensity = 0.0;
   double globalScrollProgress = 0.0; // Tracks precise 0.0 -> 1.0 page depth
   String activeSection = 'hero';
+
+  // Velocity tracking for DevMode & context-aware environment
+  double scrollVelocity = 0.0; // px/s
+  double cursorVelocity = 0.0; // px/frame
+  double _lastScrollOffset = 0.0;
+  DateTime _lastScrollTime = DateTime.now();
+  Offset _lastCursorPosition = Offset.zero;
   
   // Prevents scroll listener from fighting the active indicator during manual navigation
   bool _isAutoScrolling = false; 
@@ -42,6 +49,9 @@ class ExperienceController extends ChangeNotifier {
 
   void updateCursorPosition(Offset position) {
     if (cursorNotifier.value != position) {
+      // Calculate cursor velocity
+      cursorVelocity = (position - _lastCursorPosition).distance;
+      _lastCursorPosition = position;
       cursorNotifier.value = position;
     }
   }
@@ -66,6 +76,15 @@ class ExperienceController extends ChangeNotifier {
     
     final double offset = scrollController.offset;
     final double maxScroll = scrollController.position.maxScrollExtent;
+
+    // Calculate scroll velocity
+    final now = DateTime.now();
+    final dt = now.difference(_lastScrollTime).inMilliseconds;
+    if (dt > 0) {
+      scrollVelocity = ((offset - _lastScrollOffset) / dt * 1000).abs();
+    }
+    _lastScrollOffset = offset;
+    _lastScrollTime = now;
     
     if (maxScroll > 0) {
       globalScrollProgress = (offset / maxScroll).clamp(0.0, 1.0);
@@ -123,7 +142,6 @@ class ExperienceController extends ChangeNotifier {
 
     if (visibleSection != null && visibleSection != activeSection) {
       activeSection = visibleSection!;
-      SoundEngine.instance.playWhoosh();
     }
   }
 

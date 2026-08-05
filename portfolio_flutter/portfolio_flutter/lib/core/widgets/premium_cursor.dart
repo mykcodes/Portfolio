@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import '../controllers/experience_controller.dart';
@@ -17,7 +17,7 @@ class PremiumCursorOverlay extends StatefulWidget {
 }
 
 class _PremiumCursorOverlayState extends State<PremiumCursorOverlay>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late Ticker _ticker;
 
   // Smoothed cursor position (lerped toward actual position)
@@ -81,6 +81,7 @@ class _PremiumCursorOverlayState extends State<PremiumCursorOverlay>
             position: _smoothPosition,
             velocity: _velocity,
             trail: List.unmodifiable(_trail),
+            activeSection: ExperienceController.instance.activeSection,
           ),
           size: Size.infinite,
         ),
@@ -93,19 +94,32 @@ class _PremiumCursorPainter extends CustomPainter {
   final Offset position;
   final double velocity;
   final List<Offset> trail;
+  final String activeSection;
 
   // Design constants
   static const double _ringRadius = 16.0;
   static const double _ringStroke = 1.2;
   static const double _dotRadius = 2.5;
   static const Color _cursorColor = Color(0xDDFFFFFF);
-  static const Color _glowColor = Color(0xFF4F8CFF);
 
   _PremiumCursorPainter({
     required this.position,
     required this.velocity,
     required this.trail,
+    required this.activeSection,
   });
+  
+  Color get _glowColor {
+    switch (activeSection) {
+      case 'hero': return const Color(0xFF4F8CFF);
+      case 'builds': return const Color(0xFF60A5FA);
+      case 'journey': return const Color(0xFFF87171);
+      case 'toolbox': return const Color(0xFF34D399);
+      case 'lab': return const Color(0xFFA78BFA);
+      case 'connection': return const Color(0xFF9CA3AF);
+      default: return const Color(0xFF4F8CFF);
+    }
+  }
 
   @override
   void paint(Canvas canvas, Size size) {

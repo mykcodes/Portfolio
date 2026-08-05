@@ -29,7 +29,7 @@ class JourneyView extends StatelessWidget {
             children: [
               // Section Branding Label Node
               Text(
-                'JOURNEY',
+                'ENGINEERING LOGBOOK',
                 style: GoogleFonts.geist(
                   textStyle: const TextStyle(
                     color: Color(0xFF4F8CFF),
@@ -43,7 +43,7 @@ class JourneyView extends StatelessWidget {
 
               // Macro Identity Title Headers
               Text(
-                "Every engineer starts somewhere.\nMine started with curiosity.",
+                "System architecture evolution.\nDocumenting the build process.",
                 style: GoogleFonts.plusJakartaSans(
                   textStyle: const TextStyle(
                     color: Colors.white,
@@ -173,7 +173,7 @@ class _TimelineWaypointNode extends StatefulWidget {
   State<_TimelineWaypointNode> createState() => _TimelineWaypointNodeState();
 }
 
-class _TimelineWaypointNodeState extends State<_TimelineWaypointNode> with SingleTickerProviderStateMixin {
+class _TimelineWaypointNodeState extends State<_TimelineWaypointNode> with TickerProviderStateMixin {
   late AnimationController _pulseController;
 
   @override

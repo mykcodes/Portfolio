@@ -97,8 +97,7 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
           borderRadius: BorderRadius.circular(16),
           boxShadow: activeHighlight 
               ? [
-                  const BoxShadow(color: Color(0x1F4F8CFF), blurRadius: 40, offset: Offset(0, 15)),
-                  const BoxShadow(color: Color(0x144F8CFF), blurRadius: 10, offset: Offset(0, 5)),
+                  BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 8)),
                 ]
               : [],
         ),

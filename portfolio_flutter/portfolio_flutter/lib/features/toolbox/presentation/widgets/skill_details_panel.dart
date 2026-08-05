@@ -12,7 +12,7 @@ class SkillDetailsPanel extends StatefulWidget {
   State<SkillDetailsPanel> createState() => _SkillDetailsPanelState();
 }
 
-class _SkillDetailsPanelState extends State<SkillDetailsPanel> with SingleTickerProviderStateMixin {
+class _SkillDetailsPanelState extends State<SkillDetailsPanel> with TickerProviderStateMixin {
   late AnimationController _scanController;
 
   @override

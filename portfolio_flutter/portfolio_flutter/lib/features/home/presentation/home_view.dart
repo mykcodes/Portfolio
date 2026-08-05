@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import '../../../core/controllers/experience_controller.dart';
+import '../../../core/controllers/dev_mode_controller.dart';
+import '../../../core/controllers/console_controller.dart';
 import '../../../core/experience/scroll_engine.dart';
 import '../../../core/experience/sound_engine.dart';
 import '../../boot/presentation/widgets/boot_sequence_overlay.dart';
+import '../../console/presentation/engineering_console.dart';
+import '../../dev_mode/presentation/dev_mode_overlay.dart';
 import 'widgets/constellation_background.dart';
 import 'widgets/home_navigation_bar.dart';
 import 'widgets/hero_content.dart';
@@ -21,12 +26,52 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
-  
+  final FocusNode _globalKeyFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
     ExperienceController.instance.initialize();
     SoundEngine.instance.initialize();
+    // Auto-focus for keyboard shortcuts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _globalKeyFocusNode.requestFocus();
+    });
+  }
+
+  void _handleKeyEvent(KeyEvent event) {
+    if (event is! KeyDownEvent) return;
+
+    // Ctrl+Shift+D → Toggle Developer Mode
+    if (event.logicalKey == LogicalKeyboardKey.keyD &&
+        HardwareKeyboard.instance.isControlPressed &&
+        HardwareKeyboard.instance.isShiftPressed) {
+      DevModeController.instance.toggle();
+      return;
+    }
+
+    // Backtick (`) → Toggle Console
+    if (event.logicalKey == LogicalKeyboardKey.backquote &&
+        !HardwareKeyboard.instance.isControlPressed &&
+        !HardwareKeyboard.instance.isShiftPressed) {
+      ConsoleController.instance.toggle();
+      return;
+    }
+
+    // Escape → Close console if open
+    if (event.logicalKey == LogicalKeyboardKey.escape) {
+      if (ConsoleController.instance.isOpen) {
+        ConsoleController.instance.close();
+        _globalKeyFocusNode.requestFocus();
+        return;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _globalKeyFocusNode.dispose();
+    super.dispose();
   }
 
   Color _getAmbientColor(String section) {
@@ -51,7 +96,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         
         return Scaffold(
           backgroundColor: Colors.black, // Base is black, animated container provides atmosphere
-          body: Stack(
+          body: KeyboardListener(
+            focusNode: _globalKeyFocusNode,
+            onKeyEvent: _handleKeyEvent,
+            child: Stack(
             clipBehavior: Clip.none,
             children: [
               // Ambient Atmosphere Layer
@@ -122,13 +170,24 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ),
           
           const Positioned(top: 0, left: 0, right: 0, child: HomeNavigationBar()),
+
+          // Developer Mode Overlay (above content, below boot sequence)
+          const Positioned.fill(
+            child: IgnorePointer(
+              child: DevModeOverlay(),
+            ),
+          ),
+
+          // Interactive Engineering Console
+          const EngineeringConsole(),
           
           // Re-insert Boot Sequence Overlay logic here if required
           const Positioned.fill(
-          child: BootSequenceOverlay(),
+            child: BootSequenceOverlay(),
           ),
         ],
       ),
+     ),
     );
   },
   );

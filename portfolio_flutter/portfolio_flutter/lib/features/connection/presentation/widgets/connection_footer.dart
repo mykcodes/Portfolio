@@ -9,7 +9,7 @@ class AvailabilityIndicator extends StatefulWidget {
   State<AvailabilityIndicator> createState() => _AvailabilityIndicatorState();
 }
 
-class _AvailabilityIndicatorState extends State<AvailabilityIndicator> with SingleTickerProviderStateMixin {
+class _AvailabilityIndicatorState extends State<AvailabilityIndicator> with TickerProviderStateMixin {
   late AnimationController _pulseController;
 
   @override
