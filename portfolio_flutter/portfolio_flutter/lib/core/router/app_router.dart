@@ -11,13 +11,13 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: AppRoutes.homePath,
     navigatorKey: _rootNavigatorKey,
-    debugLogDiagnostics: true, 
-    
+    debugLogDiagnostics: true,
+
     errorBuilder: (context, state) => const Scaffold(
       backgroundColor: Color(0xFF050505),
       body: Center(child: Text('404 - Initialization Failed')),
     ),
-    
+
     routes: <RouteBase>[
       GoRoute(
         name: AppRoutes.homeName,

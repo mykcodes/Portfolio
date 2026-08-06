@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import '../../models/project_model.dart';
-import 'interactive_sandbox.dart';
+import '../../../../content/portfolio_data.dart';
 
 class EngineeringDocumentView extends StatefulWidget {
-  final ProjectModel project;
+  final ProjectContent project;
 
   const EngineeringDocumentView({super.key, required this.project});
 
   @override
-  State<EngineeringDocumentView> createState() => _EngineeringDocumentViewState();
+  State<EngineeringDocumentView> createState() =>
+      _EngineeringDocumentViewState();
 }
 
-class _EngineeringDocumentViewState extends State<EngineeringDocumentView> with TickerProviderStateMixin {
+class _EngineeringDocumentViewState extends State<EngineeringDocumentView>
+    with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -23,37 +24,27 @@ class _EngineeringDocumentViewState extends State<EngineeringDocumentView> with 
         children: [
           Divider(color: Colors.white.withValues(alpha: 0.1), height: 1),
           const SizedBox(height: 32),
-          
-          // 1. Interactive Sandbox Demo
-          const _SectionHeader(title: 'INTERACTIVE SANDBOX DEMO'),
-          const SizedBox(height: 16),
-          const InteractiveSandbox(),
-          const SizedBox(height: 48),
 
-          // 2. Engineering Overview
+          
           const _SectionHeader(title: 'ENGINEERING OVERVIEW'),
           _buildOverviewContent(),
           const SizedBox(height: 48),
 
-          // 2 & 3. Architecture Diagram & Live Data Flow
-          const _SectionHeader(title: 'SYSTEM ARCHITECTURE & DATA FLOW'),
-          const SizedBox(height: 16),
-          _AnimatedArchitectureDiagram(),
-          const SizedBox(height: 48),
-
-          // 4. Engineering Decisions
+          
           const _SectionHeader(title: 'TECHNICAL DECISIONS'),
           const SizedBox(height: 16),
-          ...widget.project.technicalDecisions.entries.map((e) => _DecisionTile(question: e.key, answer: e.value)),
+          ...widget.project.technicalDecisions.entries.map(
+            (e) => _DecisionTile(question: e.key, answer: e.value),
+          ),
           const SizedBox(height: 48),
 
-          // 5. Performance Metrics
+          
           const _SectionHeader(title: 'PERFORMANCE METRICS'),
           const SizedBox(height: 16),
           _MetricsGrid(metrics: widget.project.metrics),
           const SizedBox(height: 48),
 
-          // 6. Implementation Timeline
+          
           const _SectionHeader(title: 'IMPLEMENTATION TIMELINE'),
           const SizedBox(height: 16),
           _VerticalTimeline(stages: widget.project.timelineStages),
@@ -67,11 +58,23 @@ class _EngineeringDocumentViewState extends State<EngineeringDocumentView> with 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildOverviewItem('PROBLEM', widget.project.problem, const Color(0xFFF87171)),
+        _buildOverviewItem(
+          'PROBLEM',
+          widget.project.problem,
+          const Color(0xFFF87171),
+        ),
         const SizedBox(height: 16),
-        _buildOverviewItem('SOLUTION', widget.project.solution, const Color(0xFF60A5FA)),
+        _buildOverviewItem(
+          'SOLUTION',
+          widget.project.solution,
+          const Color(0xFF60A5FA),
+        ),
         const SizedBox(height: 16),
-        _buildOverviewItem('IMPACT', widget.project.impact, const Color(0xFF34D399)),
+        _buildOverviewItem(
+          'IMPACT',
+          widget.project.impact,
+          const Color(0xFF34D399),
+        ),
       ],
     );
   }
@@ -126,7 +129,14 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         children: [
-          Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF4F8CFF), shape: BoxShape.rectangle)),
+          Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(
+              color: Color(0xFF4F8CFF),
+              shape: BoxShape.rectangle,
+            ),
+          ),
           const SizedBox(width: 12),
           Text(
             title,
@@ -145,159 +155,9 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// =========================================================================
-// Architecture Diagram
-// =========================================================================
-class _AnimatedArchitectureDiagram extends StatefulWidget {
-  @override
-  State<_AnimatedArchitectureDiagram> createState() => _AnimatedArchitectureDiagramState();
-}
 
-class _AnimatedArchitectureDiagramState extends State<_AnimatedArchitectureDiagram> with TickerProviderStateMixin {
-  late AnimationController _drawController;
-  late AnimationController _flowController;
-  bool _isVisible = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _drawController = AnimationController(vsync: this, duration: const Duration(seconds: 2));
-    _flowController = AnimationController(vsync: this, duration: const Duration(seconds: 3));
-  }
 
-  @override
-  void dispose() {
-    _drawController.dispose();
-    _flowController.dispose();
-    super.dispose();
-  }
-
-  void _onVisibilityChanged(VisibilityInfo info) {
-    if (info.visibleFraction > 0.3 && !_isVisible) {
-      _isVisible = true;
-      _drawController.forward().then((_) {
-        _flowController.repeat();
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return VisibilityDetector(
-      key: const Key('arch-diagram'),
-      onVisibilityChanged: _onVisibilityChanged,
-      child: Container(
-        height: 300,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: const Color(0x03FFFFFF),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0x0AFFFFFF)),
-        ),
-        child: AnimatedBuilder(
-          animation: Listenable.merge([_drawController, _flowController]),
-          builder: (context, child) {
-            return CustomPaint(
-              painter: _ArchitecturePainter(
-                drawProgress: _drawController.value,
-                flowProgress: _flowController.value,
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _ArchitecturePainter extends CustomPainter {
-  final double drawProgress;
-  final double flowProgress;
-
-  _ArchitecturePainter({required this.drawProgress, required this.flowProgress});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint linePaint = Paint()
-      ..color = const Color(0x334F8CFF)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
-    final Paint nodePaint = Paint()
-      ..color = const Color(0x0A4F8CFF)
-      ..style = PaintingStyle.fill;
-
-    final Paint nodeBorderPaint = Paint()
-      ..color = const Color(0xFF4F8CFF).withValues(alpha: 0.5 * drawProgress)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-
-    final Paint textPaint = Paint()
-      ..color = const Color(0xCCFFFFFF).withValues(alpha: drawProgress);
-
-    // Hardcoded nodes for visual effect
-    final List<Offset> nodes = [
-      Offset(size.width * 0.2, size.height * 0.2), // Frontend
-      Offset(size.width * 0.5, size.height * 0.2), // API Gateway
-      Offset(size.width * 0.5, size.height * 0.8), // Database
-      Offset(size.width * 0.8, size.height * 0.5), // AI / Compute
-      Offset(size.width * 0.2, size.height * 0.8), // Cache
-    ];
-
-    final List<String> labels = ['CLIENT', 'API GATEWAY', 'DATA STORE', 'COMPUTE', 'CACHE'];
-
-    // Draw lines (Connections)
-    if (drawProgress > 0) {
-      final connections = [
-        [0, 1], [1, 3], [1, 2], [1, 4], [3, 2]
-      ];
-
-      for (var conn in connections) {
-        final p1 = nodes[conn[0]];
-        final p2 = nodes[conn[1]];
-        final currentP2 = Offset.lerp(p1, p2, drawProgress)!;
-        canvas.drawLine(p1, currentP2, linePaint);
-        
-        // Flowing particles
-        if (drawProgress == 1.0) {
-          final Offset particlePos = Offset.lerp(p1, p2, flowProgress)!;
-          canvas.drawCircle(
-            particlePos, 
-            3.0, 
-            Paint()..color = const Color(0xFF4F8CFF)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0)
-          );
-          canvas.drawCircle(particlePos, 1.5, Paint()..color = Colors.white);
-        }
-      }
-    }
-
-    // Draw nodes
-    for (int i = 0; i < nodes.length; i++) {
-      if (drawProgress > (i * 0.15)) {
-        final double scale = ((drawProgress - (i * 0.15)) * 4).clamp(0.0, 1.0);
-        final rect = Rect.fromCenter(center: nodes[i], width: 100 * scale, height: 40 * scale);
-        
-        canvas.drawRRect(RRect.fromRectAndRadius(rect, const Radius.circular(8)), nodePaint);
-        canvas.drawRRect(RRect.fromRectAndRadius(rect, const Radius.circular(8)), nodeBorderPaint);
-        
-        if (scale > 0.8) {
-          final textPainter = TextPainter(
-            text: TextSpan(text: labels[i], style: GoogleFonts.jetBrainsMono(textStyle: TextStyle(color: textPaint.color, fontSize: 10, fontWeight: FontWeight.bold))),
-            textDirection: TextDirection.ltr,
-          )..layout();
-          textPainter.paint(canvas, nodes[i] - Offset(textPainter.width / 2, textPainter.height / 2));
-        }
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _ArchitecturePainter old) => true;
-}
-
-// =========================================================================
-// Engineering Decisions Tile
-// =========================================================================
 class _DecisionTile extends StatefulWidget {
   final String question;
   final String answer;
@@ -329,13 +189,19 @@ class _DecisionTileState extends State<_DecisionTile> {
             widget.question,
             style: GoogleFonts.geist(
               textStyle: TextStyle(
-                color: _expanded ? const Color(0xFF4F8CFF) : const Color(0xCCFFFFFF),
+                color: _expanded
+                    ? const Color(0xFF4F8CFF)
+                    : const Color(0xCCFFFFFF),
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          childrenPadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          childrenPadding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: 16,
+          ),
           children: [
             Text(
               widget.answer,
@@ -354,9 +220,9 @@ class _DecisionTileState extends State<_DecisionTile> {
   }
 }
 
-// =========================================================================
-// Metrics Grid with Animated Counters
-// =========================================================================
+
+
+
 class _MetricsGrid extends StatelessWidget {
   final List<String> metrics;
   const _MetricsGrid({required this.metrics});
@@ -369,7 +235,7 @@ class _MetricsGrid extends StatelessWidget {
       children: metrics.map((m) {
         final RegExp regExp = RegExp(r'(\d+[\.,]?\d*)');
         final match = regExp.firstMatch(m);
-        
+
         return Container(
           width: 140,
           padding: const EdgeInsets.all(16),
@@ -381,7 +247,7 @@ class _MetricsGrid extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (match != null) 
+              if (match != null)
                 _AnimatedCounter(
                   value: double.parse(match.group(0)!.replaceAll(',', '')),
                   suffix: m.substring(match.end),
@@ -390,7 +256,13 @@ class _MetricsGrid extends StatelessWidget {
               else
                 Text(
                   m,
-                  style: GoogleFonts.plusJakartaSans(textStyle: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                  style: GoogleFonts.plusJakartaSans(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               const SizedBox(height: 8),
               Container(width: 24, height: 2, color: const Color(0xFF4F8CFF)),
@@ -406,14 +278,19 @@ class _AnimatedCounter extends StatefulWidget {
   final double value;
   final String suffix;
   final String prefix;
-  
-  const _AnimatedCounter({required this.value, required this.suffix, required this.prefix});
+
+  const _AnimatedCounter({
+    required this.value,
+    required this.suffix,
+    required this.prefix,
+  });
 
   @override
   State<_AnimatedCounter> createState() => _AnimatedCounterState();
 }
 
-class _AnimatedCounterState extends State<_AnimatedCounter> with TickerProviderStateMixin {
+class _AnimatedCounterState extends State<_AnimatedCounter>
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   bool _isVisible = false;
@@ -421,8 +298,14 @@ class _AnimatedCounterState extends State<_AnimatedCounter> with TickerProviderS
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2));
-    _animation = Tween<double>(begin: 0, end: widget.value).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutExpo));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: widget.value,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutExpo));
   }
 
   @override
@@ -444,7 +327,9 @@ class _AnimatedCounterState extends State<_AnimatedCounter> with TickerProviderS
       child: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {
-          String displayVal = widget.value % 1 == 0 ? _animation.value.toInt().toString() : _animation.value.toStringAsFixed(1);
+          String displayVal = widget.value % 1 == 0
+              ? _animation.value.toInt().toString()
+              : _animation.value.toStringAsFixed(1);
           return Text(
             '${widget.prefix}$displayVal${widget.suffix}',
             style: GoogleFonts.plusJakartaSans(
@@ -462,9 +347,9 @@ class _AnimatedCounterState extends State<_AnimatedCounter> with TickerProviderS
   }
 }
 
-// =========================================================================
-// Vertical Timeline
-// =========================================================================
+
+
+
 class _VerticalTimeline extends StatefulWidget {
   final List<String> stages;
   const _VerticalTimeline({required this.stages});
@@ -473,14 +358,18 @@ class _VerticalTimeline extends StatefulWidget {
   State<_VerticalTimeline> createState() => _VerticalTimelineState();
 }
 
-class _VerticalTimelineState extends State<_VerticalTimeline> with TickerProviderStateMixin {
+class _VerticalTimelineState extends State<_VerticalTimeline>
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   bool _isVisible = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
   }
 
   @override
@@ -504,9 +393,13 @@ class _VerticalTimelineState extends State<_VerticalTimeline> with TickerProvide
         children: List.generate(widget.stages.length, (index) {
           final double delay = index / widget.stages.length;
           final double end = (index + 1) / widget.stages.length;
-          final Animation<double> lineAnim = Tween<double>(begin: 0, end: 1).animate(
-            CurvedAnimation(parent: _controller, curve: Interval(delay, end, curve: Curves.easeOut)),
-          );
+          final Animation<double> lineAnim = Tween<double>(begin: 0, end: 1)
+              .animate(
+                CurvedAnimation(
+                  parent: _controller,
+                  curve: Interval(delay, end, curve: Curves.easeOut),
+                ),
+              );
 
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -520,8 +413,13 @@ class _VerticalTimelineState extends State<_VerticalTimeline> with TickerProvide
                       height: 12,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFF4F8CFF), width: 2),
-                        color: lineAnim.value > 0.5 ? const Color(0xFF4F8CFF) : Colors.transparent,
+                        border: Border.all(
+                          color: const Color(0xFF4F8CFF),
+                          width: 2,
+                        ),
+                        color: lineAnim.value > 0.5
+                            ? const Color(0xFF4F8CFF)
+                            : Colors.transparent,
                       ),
                     ),
                   ),
@@ -548,7 +446,11 @@ class _VerticalTimelineState extends State<_VerticalTimeline> with TickerProvide
                       child: Text(
                         widget.stages[index],
                         style: GoogleFonts.geist(
-                          textStyle: const TextStyle(color: Color(0xCCFFFFFF), fontSize: 14, fontWeight: FontWeight.w600),
+                          textStyle: const TextStyle(
+                            color: Color(0xCCFFFFFF),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
@@ -562,4 +464,3 @@ class _VerticalTimelineState extends State<_VerticalTimeline> with TickerProvide
     );
   }
 }
-

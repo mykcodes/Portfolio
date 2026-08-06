@@ -12,19 +12,20 @@ class BootSequenceView extends StatefulWidget {
   State<BootSequenceView> createState() => _BootSequenceViewState();
 }
 
-class _BootSequenceViewState extends State<BootSequenceView> with TickerProviderStateMixin {
+class _BootSequenceViewState extends State<BootSequenceView>
+    with TickerProviderStateMixin {
   late AnimationController _masterController;
   late Animation<double> _constellationFade;
   late Animation<double> _logoFade;
   late Animation<double> _subtitleFade;
-  
+
   String _terminalOutput = "";
   final List<String> _bootLogs = [
     "Loading Motion Engine...",
     "Loading Research Lab...",
     "Loading Experience Engine...",
     "Optimizing Interface...",
-    "Ready."
+    "Ready.",
   ];
 
   @override
@@ -39,12 +40,12 @@ class _BootSequenceViewState extends State<BootSequenceView> with TickerProvider
       parent: _masterController,
       curve: const Interval(0.0, 0.3, curve: MotionSystem.cinematic),
     );
-    
+
     _logoFade = CurvedAnimation(
       parent: _masterController,
       curve: const Interval(0.2, 0.5, curve: MotionSystem.deceleration),
     );
-    
+
     _subtitleFade = CurvedAnimation(
       parent: _masterController,
       curve: const Interval(0.4, 0.7, curve: MotionSystem.deceleration),
@@ -55,8 +56,8 @@ class _BootSequenceViewState extends State<BootSequenceView> with TickerProvider
 
   Future<void> _runCinematicBoot() async {
     _masterController.forward();
+
     
-    // Staggered Terminal Typing
     await Future.delayed(const Duration(milliseconds: 800));
     for (String log in _bootLogs) {
       if (!mounted) return;
@@ -64,11 +65,11 @@ class _BootSequenceViewState extends State<BootSequenceView> with TickerProvider
       await Future.delayed(const Duration(milliseconds: 400));
     }
 
-    // Final hold before dissolve
-    await Future.delayed(const Duration(milliseconds: 300));
     
+    await Future.delayed(const Duration(milliseconds: 300));
+
     if (mounted) {
-      // Navigate to Home with a custom fade transition handled by GoRouter
+      
       context.go(AppRoutes.homePath);
     }
   }
@@ -85,22 +86,20 @@ class _BootSequenceViewState extends State<BootSequenceView> with TickerProvider
       backgroundColor: const Color(0xFF050505),
       body: Stack(
         children: [
-          // Ambient Initial Constellation
+          
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _constellationFade,
               builder: (context, child) {
                 return Opacity(
                   opacity: _constellationFade.value * 0.3,
-                  child: CustomPaint(
-                    painter: _BootConstellationPainter(),
-                  ),
+                  child: CustomPaint(painter: _BootConstellationPainter()),
                 );
               },
             ),
           ),
+
           
-          // Core Branding & Terminal
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -151,8 +150,8 @@ class _BootSequenceViewState extends State<BootSequenceView> with TickerProvider
                   },
                 ),
                 const SizedBox(height: 64),
+
                 
-                // Active Initialization Terminal
                 SizedBox(
                   height: 20,
                   child: AnimatedSwitcher(
@@ -180,14 +179,14 @@ class _BootSequenceViewState extends State<BootSequenceView> with TickerProvider
 }
 
 class _BootConstellationPainter extends CustomPainter {
-  final Random _random = Random(42); // Fixed seed for consistent boot visual
+  final Random _random = Random(42); 
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.fill;
-    
+
     final linePaint = Paint()
       ..color = Colors.white.withValues(alpha: 0.1)
       ..strokeWidth = 0.5
@@ -195,10 +194,12 @@ class _BootConstellationPainter extends CustomPainter {
 
     final List<Offset> points = [];
     for (int i = 0; i < 40; i++) {
-      points.add(Offset(
-        _random.nextDouble() * size.width,
-        _random.nextDouble() * size.height,
-      ));
+      points.add(
+        Offset(
+          _random.nextDouble() * size.width,
+          _random.nextDouble() * size.height,
+        ),
+      );
     }
 
     for (int i = 0; i < points.length; i++) {
@@ -214,4 +215,3 @@ class _BootConstellationPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

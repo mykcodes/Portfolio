@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../data/milestone_data.dart';
+import '../../../../content/portfolio_data.dart';
 import 'widgets/journey_path_painter.dart';
 import 'widgets/milestone_card.dart';
 
 class JourneyView extends StatelessWidget {
   final double scrollProgress;
 
-  const JourneyView({
-    super.key,
-    required this.scrollProgress,
-  });
+  const JourneyView({super.key, required this.scrollProgress});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +23,9 @@ class JourneyView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Section Branding Label Node
+              
               Text(
-                'ENGINEERING LOGBOOK',
+                JourneyData.sectionTitle,
                 style: GoogleFonts.geist(
                   textStyle: const TextStyle(
                     color: Color(0xFF4F8CFF),
@@ -40,9 +37,9 @@ class JourneyView extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Macro Identity Title Headers
+              
               Text(
-                "System architecture evolution.\nDocumenting the build process.",
+                JourneyData.sectionSubtitle,
                 style: GoogleFonts.plusJakartaSans(
                   textStyle: TextStyle(
                     color: Colors.white,
@@ -55,9 +52,9 @@ class JourneyView extends StatelessWidget {
               ),
               const SizedBox(height: 120),
 
-              // Architectural Timeline Node Stack Canvas
-              isDesktop 
-                  ? _buildDesktopTimeline(context) 
+              
+              isDesktop
+                  ? _buildDesktopTimeline(context)
                   : _buildMobileTimeline(context),
             ],
           ),
@@ -69,7 +66,7 @@ class JourneyView extends StatelessWidget {
   Widget _buildDesktopTimeline(BuildContext context) {
     return Stack(
       children: [
-        // Layer 1: Background Path Line Painter
+        
         Positioned.fill(
           child: RepaintBoundary(
             child: CustomPaint(
@@ -81,43 +78,45 @@ class JourneyView extends StatelessWidget {
           ),
         ),
 
-        // Layer 2: Alternate Structural Node Contents
+        
         Column(
-          children: List.generate(MilestoneData.milestones.length, (index) {
+          children: List.generate(JourneyData.milestones.length, (index) {
             final isLeft = index % 2 == 0;
             return Padding(
               padding: const EdgeInsets.only(bottom: 100.0),
               child: Row(
                 children: [
-                  // Left Grid Segment Column
+                  
                   Expanded(
                     child: isLeft
                         ? _DiscoveryScrollWrapper(
                             index: index,
                             child: MilestoneCard(
-                              milestone: MilestoneData.milestones[index],
+                              milestone: JourneyData.milestones[index],
                               isLeft: true,
                             ),
                           )
                         : const SizedBox.shrink(),
                   ),
+
                   
-                  // Central Waypoint Spatial Core Anchor Gap
                   Container(
                     width: 80,
                     alignment: Alignment.center,
                     child: _TimelineWaypointNode(
-                      isActive: scrollProgress >= ((index + 1) / MilestoneData.milestones.length),
+                      isActive:
+                          scrollProgress >=
+                          ((index + 1) / JourneyData.milestones.length),
                     ),
                   ),
 
-                  // Right Grid Segment Column
+                  
                   Expanded(
                     child: !isLeft
                         ? _DiscoveryScrollWrapper(
                             index: index,
                             child: MilestoneCard(
-                              milestone: MilestoneData.milestones[index],
+                              milestone: JourneyData.milestones[index],
                               isLeft: false,
                             ),
                           )
@@ -134,21 +133,23 @@ class JourneyView extends StatelessWidget {
 
   Widget _buildMobileTimeline(BuildContext context) {
     return Column(
-      children: List.generate(MilestoneData.milestones.length, (index) {
+      children: List.generate(JourneyData.milestones.length, (index) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 64.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _TimelineWaypointNode(
-                isActive: scrollProgress >= ((index + 1) / MilestoneData.milestones.length),
+                isActive:
+                    scrollProgress >=
+                    ((index + 1) / JourneyData.milestones.length),
               ),
               const SizedBox(width: 24),
               Expanded(
                 child: _DiscoveryScrollWrapper(
                   index: index,
                   child: MilestoneCard(
-                    milestone: MilestoneData.milestones[index],
+                    milestone: JourneyData.milestones[index],
                     isLeft: false,
                   ),
                 ),
@@ -161,9 +162,9 @@ class JourneyView extends StatelessWidget {
   }
 }
 
-// =========================================================================
-// Enhanced Timeline Waypoint Node — with breathing glow pulse
-// =========================================================================
+
+
+
 class _TimelineWaypointNode extends StatefulWidget {
   final bool isActive;
   const _TimelineWaypointNode({required this.isActive});
@@ -172,7 +173,8 @@ class _TimelineWaypointNode extends StatefulWidget {
   State<_TimelineWaypointNode> createState() => _TimelineWaypointNodeState();
 }
 
-class _TimelineWaypointNodeState extends State<_TimelineWaypointNode> with TickerProviderStateMixin {
+class _TimelineWaypointNodeState extends State<_TimelineWaypointNode>
+    with TickerProviderStateMixin {
   late AnimationController _pulseController;
 
   @override
@@ -196,7 +198,7 @@ class _TimelineWaypointNodeState extends State<_TimelineWaypointNode> with Ticke
       animation: _pulseController,
       builder: (context, child) {
         final double pulse = widget.isActive ? _pulseController.value : 0.0;
-        
+
         return AnimatedContainer(
           duration: const Duration(milliseconds: 400),
           curve: Curves.easeOutCubic,
@@ -204,17 +206,23 @@ class _TimelineWaypointNodeState extends State<_TimelineWaypointNode> with Ticke
           height: 20,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: widget.isActive ? const Color(0xFF050505) : const Color(0xFF141416),
+            color: widget.isActive
+                ? const Color(0xFF050505)
+                : const Color(0xFF141416),
             border: Border.all(
-              color: widget.isActive ? const Color(0xFF4F8CFF) : const Color(0x33FFFFFF),
+              color: widget.isActive
+                  ? const Color(0xFF4F8CFF)
+                  : const Color(0x33FFFFFF),
               width: 2.0,
             ),
             boxShadow: widget.isActive
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF4F8CFF).withValues(alpha: (0.3 + pulse * 0.3).clamp(0.0, 1.0)),
+                      color: const Color(
+                        0xFF4F8CFF,
+                      ).withValues(alpha: (0.3 + pulse * 0.3).clamp(0.0, 1.0)),
                       blurRadius: 12 + pulse * 8,
-                    )
+                    ),
                   ]
                 : [],
           ),
@@ -225,7 +233,9 @@ class _TimelineWaypointNodeState extends State<_TimelineWaypointNode> with Ticke
               height: 6 + (widget.isActive ? pulse * 2 : 0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: widget.isActive ? const Color(0xFF4F8CFF) : const Color(0x4DFFFFFF),
+                color: widget.isActive
+                    ? const Color(0xFF4F8CFF)
+                    : const Color(0x4DFFFFFF),
               ),
             ),
           ),
@@ -241,7 +251,8 @@ class _DiscoveryScrollWrapper extends StatefulWidget {
   const _DiscoveryScrollWrapper({required this.child, required this.index});
 
   @override
-  State<_DiscoveryScrollWrapper> createState() => _DiscoveryScrollWrapperState();
+  State<_DiscoveryScrollWrapper> createState() =>
+      _DiscoveryScrollWrapperState();
 }
 
 class _DiscoveryScrollWrapperState extends State<_DiscoveryScrollWrapper> {
@@ -279,4 +290,3 @@ class _DiscoveryScrollWrapperState extends State<_DiscoveryScrollWrapper> {
     );
   }
 }
-

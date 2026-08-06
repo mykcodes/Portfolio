@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'widgets/typing_terminal.dart';
 import 'widgets/connection_footer.dart';
 import 'widgets/github_timeline/github_timeline_widget.dart';
+import 'widgets/contact_area.dart';
 
 class ConnectionView extends StatelessWidget {
   const ConnectionView({super.key});
@@ -13,7 +14,7 @@ class ConnectionView extends StatelessWidget {
 
     return Stack(
       children: [
-        // Cinematic Vignette Overlay: Calms the background constellation
+        
         Positioned.fill(
           child: IgnorePointer(
             child: Container(
@@ -32,18 +33,23 @@ class ConnectionView extends StatelessWidget {
             ),
           ),
         ),
+
         
-        // Master Content Alignment
         Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720), // Narrower constraints for focus
+            constraints: const BoxConstraints(
+              maxWidth: 720,
+            ), 
             child: Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 40.0 : 20.0, vertical: isDesktop ? 160.0 : 100.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: isDesktop ? 40.0 : 20.0,
+                vertical: isDesktop ? 160.0 : 100.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Headline Sequence
+                  
                   _ConnectionStaggerReveal(
                     delayMs: 0,
                     child: Text(
@@ -61,8 +67,8 @@ class ConnectionView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
+
                   
-                  // Description Sequence
                   _ConnectionStaggerReveal(
                     delayMs: 400,
                     child: Text(
@@ -79,29 +85,33 @@ class ConnectionView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 80),
+
                   
-                  // Terminal Interface Sequence
                   const _ConnectionStaggerReveal(
                     delayMs: 800,
                     child: TypingTerminal(),
                   ),
                   const SizedBox(height: 48),
+
                   
-                  // Interactive Live GitHub Engineering Timeline
                   const _ConnectionStaggerReveal(
                     delayMs: 3500,
                     child: GithubTimelineWidget(),
                   ),
                   const SizedBox(height: 120),
+
                   
-                  // Availability Indicator Sequence
                   const _ConnectionStaggerReveal(
                     delayMs: 4500,
                     child: AvailabilityIndicator(),
                   ),
-                  const SizedBox(height: 120),
+                  const SizedBox(height: 80),
+
                   
-                  // Signature Footer Sequence
+                  const ContactArea(),
+                  const SizedBox(height: 120),
+
+                  
                   const _ConnectionStaggerReveal(
                     delayMs: 5000,
                     child: SignatureFooter(),
@@ -119,14 +129,12 @@ class ConnectionView extends StatelessWidget {
 class _ConnectionStaggerReveal extends StatefulWidget {
   final Widget child;
   final int delayMs;
-  
-  const _ConnectionStaggerReveal({
-    required this.child,
-    required this.delayMs,
-  });
+
+  const _ConnectionStaggerReveal({required this.child, required this.delayMs});
 
   @override
-  State<_ConnectionStaggerReveal> createState() => _ConnectionStaggerRevealState();
+  State<_ConnectionStaggerReveal> createState() =>
+      _ConnectionStaggerRevealState();
 }
 
 class _ConnectionStaggerRevealState extends State<_ConnectionStaggerReveal> {

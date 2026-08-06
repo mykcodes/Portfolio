@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../data/experiments_data.dart';
-import '../../models/experiment_model.dart';
+import '../../../../content/sections/experiments_data.dart';
+import '../../../../content/models/experiment_model.dart';
 import 'experiment_capsule.dart';
 
 class ExperimentsLayout extends StatelessWidget {
@@ -25,15 +25,21 @@ class ExperimentsLayout extends StatelessWidget {
       );
     }
 
-    // Asymmetric Engineering Layout Construction
-    final largeCapsules = ExperimentsData.labCapsules.where((e) => e.size == CapsuleSize.large).toList();
-    final mediumCapsules = ExperimentsData.labCapsules.where((e) => e.size == CapsuleSize.medium).toList();
-    final smallCapsules = ExperimentsData.labCapsules.where((e) => e.size == CapsuleSize.small).toList();
+    
+    final largeCapsules = ExperimentsData.labCapsules
+        .where((e) => e.size == CapsuleSize.large)
+        .toList();
+    final mediumCapsules = ExperimentsData.labCapsules
+        .where((e) => e.size == CapsuleSize.medium)
+        .toList();
+    final smallCapsules = ExperimentsData.labCapsules
+        .where((e) => e.size == CapsuleSize.small)
+        .toList();
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Left Column (Heavy Visual Weight)
+        
         Expanded(
           flex: 5,
           child: Column(
@@ -47,7 +53,7 @@ class ExperimentsLayout extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 32),
-        // Right Column (Stacked Standard Weight)
+        
         Expanded(
           flex: 4,
           child: Column(

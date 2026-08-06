@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 
-/// Implements physical momentum, damped deceleration, and velocity smoothing.
-/// Tuned for a premium, weighted feel — like scrolling inside Apple Vision Pro.
+
+
 class CinematicScrollPhysics extends BouncingScrollPhysics {
   const CinematicScrollPhysics({super.parent});
 
@@ -18,17 +18,21 @@ class CinematicScrollPhysics extends BouncingScrollPhysics {
   double get minFlingVelocity => 50.0;
 
   @override
-  Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
+  Simulation? createBallisticSimulation(
+    ScrollMetrics position,
+    double velocity,
+  ) {
     final tolerance = toleranceFor(position);
     if (velocity.abs() >= tolerance.velocity || position.outOfRange) {
       return BouncingScrollSimulation(
         spring: const SpringDescription(
-          mass: 1.2,        // Heavier mass for weighted feel
-          stiffness: 90.0,  // Slightly softer spring
-          damping: 26.0,    // Higher damping for luxurious deceleration
+          mass: 1.2, 
+          stiffness: 90.0, 
+          damping: 26.0, 
         ),
         position: position.pixels,
-        velocity: velocity * 0.78, // Damped velocity for heavy, cinematic momentum
+        velocity:
+            velocity * 0.78, 
         leadingExtent: position.minScrollExtent,
         trailingExtent: position.maxScrollExtent,
         tolerance: tolerance,
@@ -38,8 +42,8 @@ class CinematicScrollPhysics extends BouncingScrollPhysics {
   }
 }
 
-/// Scroll behavior that enables premium physics across all platforms
-/// and enables mouse-drag scrolling for web/desktop testing.
+
+
 class CinematicScrollBehavior extends ScrollBehavior {
   const CinematicScrollBehavior();
 

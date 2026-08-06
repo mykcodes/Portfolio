@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// The input line of the engineering console.
-/// Features a blinking block cursor, prompt prefix, and monospace styling.
+
+
 class ConsoleInput extends StatefulWidget {
   final String currentInput;
   final ValueChanged<String> onChanged;
@@ -59,13 +59,11 @@ class _ConsoleInputState extends State<ConsoleInput> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: const BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Color(0x0DFFFFFF), width: 1),
-        ),
+        border: Border(top: BorderSide(color: Color(0x0DFFFFFF), width: 1)),
       ),
       child: Row(
         children: [
-          // Prompt
+          
           Text(
             '❯ ',
             style: GoogleFonts.jetBrainsMono(
@@ -76,10 +74,11 @@ class _ConsoleInputState extends State<ConsoleInput> {
               ),
             ),
           ),
-          // Input field
+          
           Expanded(
             child: KeyboardListener(
-              focusNode: FocusNode(), // Placeholder — actual key handling in parent
+              focusNode:
+                  FocusNode(), 
               onKeyEvent: (event) {},
               child: TextField(
                 controller: widget.textController,

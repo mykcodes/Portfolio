@@ -16,7 +16,8 @@ class TerminalCommandRow extends StatefulWidget {
   State<TerminalCommandRow> createState() => _TerminalCommandRowState();
 }
 
-class _TerminalCommandRowState extends State<TerminalCommandRow> with TickerProviderStateMixin {
+class _TerminalCommandRowState extends State<TerminalCommandRow>
+    with TickerProviderStateMixin {
   bool _isHovered = false;
   bool _isVisible = false;
   late AnimationController _cursorController;
@@ -68,7 +69,9 @@ class _TerminalCommandRowState extends State<TerminalCommandRow> with TickerProv
               '> ',
               style: GoogleFonts.jetBrainsMono(
                 textStyle: TextStyle(
-                  color: _isHovered ? const Color(0xFF4F8CFF) : const Color(0x73FFFFFF),
+                  color: _isHovered
+                      ? const Color(0xFF4F8CFF)
+                      : const Color(0x73FFFFFF),
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),

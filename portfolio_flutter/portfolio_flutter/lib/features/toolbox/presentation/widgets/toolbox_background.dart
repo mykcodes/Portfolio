@@ -7,10 +7,9 @@ class ToolboxBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: Opacity(
-        opacity: 0.025, // Drastically low opacity to trigger the slow recognition effect
-        child: CustomPaint(
-          painter: _GridPainter(),
-        ),
+        opacity:
+            0.025, 
+        child: CustomPaint(painter: _GridPainter()),
       ),
     );
   }
@@ -26,12 +25,12 @@ class _GridPainter extends CustomPainter {
 
     const double gridSize = 40.0;
 
-    // Horizontal blueprint vector markings
+    
     for (double y = 0; y < size.height; y += gridSize) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
 
-    // Vertical blueprint vector markings
+    
     for (double x = 0; x < size.width; x += gridSize) {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }

@@ -7,9 +7,9 @@ import 'widgets/console_input.dart';
 import 'widgets/console_output.dart';
 import 'widgets/terminal_fab.dart';
 
-/// The main interactive engineering console overlay.
-/// Features a floating quick-access button that morphs into the full terminal window.
-/// Handles keyboard shortcuts: Tab (autocomplete), ↑↓ (history).
+
+
+
 class EngineeringConsole extends StatefulWidget {
   const EngineeringConsole({super.key});
 
@@ -31,7 +31,7 @@ class _EngineeringConsoleState extends State<EngineeringConsole> {
 
   void _onConsoleStateChanged() {
     if (ConsoleController.instance.isOpen) {
-      // Focus input after expansion animation
+      
       Future.delayed(const Duration(milliseconds: 450), () {
         if (mounted) _inputFocusNode.requestFocus();
       });
@@ -42,7 +42,7 @@ class _EngineeringConsoleState extends State<EngineeringConsole> {
   void _handleKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) return;
 
-    // Tab autocomplete
+    
     if (event.logicalKey == LogicalKeyboardKey.tab) {
       ConsoleController.instance.autocomplete();
       _textController.text = ConsoleController.instance.currentInput;
@@ -52,7 +52,7 @@ class _EngineeringConsoleState extends State<EngineeringConsole> {
       return;
     }
 
-    // History navigation
+    
     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
       ConsoleController.instance.navigateHistory(true);
       _textController.text = ConsoleController.instance.currentInput;
@@ -96,10 +96,12 @@ class _EngineeringConsoleState extends State<EngineeringConsole> {
   Widget build(BuildContext context) {
     final isOpen = ConsoleController.instance.isOpen;
     final screenSize = MediaQuery.sizeOf(context);
+
     
-    // Console dimensions
     final consoleWidth = screenSize.width > 600 ? 560.0 : screenSize.width - 40;
-    final consoleHeight = screenSize.height > 600 ? 480.0 : screenSize.height - 120;
+    final consoleHeight = screenSize.height > 600
+        ? 480.0
+        : screenSize.height - 120;
     const collapsedSize = 64.0;
 
     return Positioned(
@@ -113,24 +115,30 @@ class _EngineeringConsoleState extends State<EngineeringConsole> {
         child: Stack(
           alignment: Alignment.bottomRight,
           children: [
-            // The FAB (visible when closed)
+            
             AnimatedOpacity(
               duration: const Duration(milliseconds: 250),
-              curve: isOpen ? Curves.easeOut : const Interval(0.5, 1.0, curve: Curves.easeIn),
+              curve: isOpen
+                  ? Curves.easeOut
+                  : const Interval(0.5, 1.0, curve: Curves.easeIn),
               opacity: isOpen ? 0.0 : 1.0,
               child: IgnorePointer(
                 ignoring: isOpen,
-                child: TerminalFab(onTap: () {
-                  SoundEngine.instance.playClick();
-                  ConsoleController.instance.open();
-                }),
+                child: TerminalFab(
+                  onTap: () {
+                    SoundEngine.instance.playClick();
+                    ConsoleController.instance.open();
+                  },
+                ),
               ),
             ),
+
             
-            // The Console Window (visible when open)
             AnimatedOpacity(
               duration: const Duration(milliseconds: 350),
-              curve: isOpen ? const Interval(0.4, 1.0, curve: Curves.easeIn) : Curves.easeOut,
+              curve: isOpen
+                  ? const Interval(0.4, 1.0, curve: Curves.easeIn)
+                  : Curves.easeOut,
               opacity: isOpen ? 1.0 : 0.0,
               child: IgnorePointer(
                 ignoring: !isOpen,
@@ -141,30 +149,32 @@ class _EngineeringConsoleState extends State<EngineeringConsole> {
                     isVisible: isOpen,
                     child: Column(
                       children: [
-                        // Output area
+                        
                         Expanded(
                           child: AnimatedBuilder(
                             animation: ConsoleController.instance,
                             builder: (context, _) {
                               return ConsoleOutput(
-                                entries: ConsoleController.instance.outputBuffer,
+                                entries:
+                                    ConsoleController.instance.outputBuffer,
                                 scrollController: _outputScrollController,
                               );
                             },
                           ),
                         ),
-                        // Input area
+                        
                         AnimatedBuilder(
                           animation: ConsoleController.instance,
                           builder: (context, _) {
                             return ConsoleInput(
-                              currentInput: ConsoleController.instance.currentInput,
+                              currentInput:
+                                  ConsoleController.instance.currentInput,
                               onChanged: _onInputChanged,
                               onSubmit: _onSubmit,
-                              onHistoryUp: () =>
-                                  ConsoleController.instance.navigateHistory(true),
-                              onHistoryDown: () =>
-                                  ConsoleController.instance.navigateHistory(false),
+                              onHistoryUp: () => ConsoleController.instance
+                                  .navigateHistory(true),
+                              onHistoryDown: () => ConsoleController.instance
+                                  .navigateHistory(false),
                               onTabComplete: () =>
                                   ConsoleController.instance.autocomplete(),
                               focusNode: _inputFocusNode,

@@ -4,7 +4,7 @@ import 'cursor_engine.dart';
 import 'ambient_engine.dart';
 import 'loading_engine.dart';
 
-/// The central nervous system uniting all environmental modules.
+
 class ExperienceEngine extends ChangeNotifier {
   static final ExperienceEngine instance = ExperienceEngine._();
   ExperienceEngine._();
@@ -38,7 +38,10 @@ class ExperienceEngine extends ChangeNotifier {
     if (!scrollController.hasClients) return;
     maxScrollExtent = scrollController.position.maxScrollExtent;
     if (maxScrollExtent > 0) {
-      globalScrollProgress = (scrollController.offset / maxScrollExtent).clamp(0.0, 1.0);
+      globalScrollProgress = (scrollController.offset / maxScrollExtent).clamp(
+        0.0,
+        1.0,
+      );
     }
     _calculateVisibilityIntersections();
     notifyListeners();

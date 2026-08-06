@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/controllers/dev_mode_controller.dart';
 
-/// Real-time FPS counter with mini bar graph.
-/// Renders via CustomPainter for zero widget rebuild cost.
+
+
 class FpsCounter extends StatelessWidget {
   const FpsCounter({super.key});
 
@@ -29,7 +29,7 @@ class FpsCounter extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // FPS number
+              
               Text(
                 '${fps.toStringAsFixed(0)} FPS',
                 style: GoogleFonts.jetBrainsMono(
@@ -42,7 +42,7 @@ class FpsCounter extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              // Mini bar graph
+              
               SizedBox(
                 width: 120,
                 height: 30,
@@ -61,9 +61,9 @@ class FpsCounter extends StatelessWidget {
   }
 
   Color _getFpsColor(double fps) {
-    if (fps >= 55) return const Color(0xFF10B981); // Green
-    if (fps >= 30) return const Color(0xFFFEBC2E); // Yellow
-    return const Color(0xFFFF5F57); // Red
+    if (fps >= 55) return const Color(0xFF10B981); 
+    if (fps >= 30) return const Color(0xFFFEBC2E); 
+    return const Color(0xFFFF5F57); 
   }
 }
 
@@ -79,11 +79,13 @@ class _FpsBarGraphPainter extends CustomPainter {
 
     final int count = history.length;
     final double barWidth = (size.width / 60).clamp(1.0, 3.0);
-    final double spacing = (size.width - barWidth * count) / (count - 1).clamp(1, 60);
+    final double spacing =
+        (size.width - barWidth * count) / (count - 1).clamp(1, 60);
 
     for (int i = 0; i < count; i++) {
       final double fps = history[i];
-      final double normalizedHeight = (fps / 144.0).clamp(0.0, 1.0) * size.height;
+      final double normalizedHeight =
+          (fps / 144.0).clamp(0.0, 1.0) * size.height;
 
       final Color barColor;
       if (fps >= 55) {
@@ -118,4 +120,3 @@ class _FpsBarGraphPainter extends CustomPainter {
       oldDelegate.history.length != history.length ||
       oldDelegate.currentFps != currentFps;
 }
-

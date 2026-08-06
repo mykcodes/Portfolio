@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'experience_controller.dart';
 
-/// Manages the interactive engineering console state.
-/// Handles command parsing, history navigation, TAB autocomplete,
-/// and output buffering with animated reveal.
+
+
+
 class ConsoleController extends ChangeNotifier {
   static final ConsoleController instance = ConsoleController._();
   ConsoleController._();
@@ -12,19 +12,19 @@ class ConsoleController extends ChangeNotifier {
   bool _isOpen = false;
   bool get isOpen => _isOpen;
 
-  // Input state
+  
   String _currentInput = '';
   String get currentInput => _currentInput;
 
-  // Output buffer — each entry is a console output block
+  
   final List<ConsoleEntry> _outputBuffer = [];
   List<ConsoleEntry> get outputBuffer => List.unmodifiable(_outputBuffer);
 
-  // Command history
+  
   final List<String> _commandHistory = [];
   int _historyIndex = -1;
 
-  // Autocomplete
+  
   static const List<String> _commandRegistry = [
     'help',
     'about',
@@ -52,12 +52,15 @@ class ConsoleController extends ChangeNotifier {
   void toggle() {
     _isOpen = !_isOpen;
     if (_isOpen) {
-      // Add welcome message on first open
+      
       if (_outputBuffer.isEmpty) {
-        _outputBuffer.add(const ConsoleEntry(
-          type: EntryType.system,
-          content: 'MYK-CODES Engineering Console v3.0\nType "help" to see available commands.\n',
-        ));
+        _outputBuffer.add(
+          const ConsoleEntry(
+            type: EntryType.system,
+            content:
+                'MYK-CODES Engineering Console v3.0\nType "help" to see available commands.\n',
+          ),
+        );
       }
     }
     notifyListeners();
@@ -67,10 +70,13 @@ class ConsoleController extends ChangeNotifier {
     if (!_isOpen) {
       _isOpen = true;
       if (_outputBuffer.isEmpty) {
-        _outputBuffer.add(const ConsoleEntry(
-          type: EntryType.system,
-          content: 'MYK-CODES Engineering Console v3.0\nType "help" to see available commands.\n',
-        ));
+        _outputBuffer.add(
+          const ConsoleEntry(
+            type: EntryType.system,
+            content:
+                'MYK-CODES Engineering Console v3.0\nType "help" to see available commands.\n',
+          ),
+        );
       }
       notifyListeners();
     }
@@ -85,38 +91,37 @@ class ConsoleController extends ChangeNotifier {
 
   void updateInput(String value) {
     _currentInput = value;
-    _tabCycleIndex = -1; // Reset autocomplete on manual typing
+    _tabCycleIndex = -1; 
     notifyListeners();
   }
 
-  /// Execute the current input as a command
+  
   void executeCommand() {
     final input = _currentInput.trim().toLowerCase();
     if (input.isEmpty) return;
 
-    // Add command echo to output
-    _outputBuffer.add(ConsoleEntry(
-      type: EntryType.command,
-      content: '> $input',
-    ));
+    
+    _outputBuffer.add(
+      ConsoleEntry(type: EntryType.command, content: '> $input'),
+    );
 
-    // Store in history
+    
     _commandHistory.add(input);
     _historyIndex = _commandHistory.length;
 
-    // Parse and execute
+    
     final response = _parseCommand(input);
     _outputBuffer.add(response);
 
-    // Handle side effects (URLs and Navigation)
+    
     _handleConsoleAction(response.actionType);
 
-    // Clear input
+    
     _currentInput = '';
     _tabCycleIndex = -1;
     notifyListeners();
   }
-  
+
   Future<void> _handleConsoleAction(ConsoleAction action) async {
     switch (action) {
       case ConsoleAction.none:
@@ -168,7 +173,7 @@ class ConsoleController extends ChangeNotifier {
     }
   }
 
-  /// Navigate command history with ↑/↓ arrows
+  
   void navigateHistory(bool up) {
     if (_commandHistory.isEmpty) return;
 
@@ -186,7 +191,7 @@ class ConsoleController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// TAB autocomplete — cycles through matching commands
+  
   void autocomplete() {
     if (_currentInput.isEmpty) return;
 
@@ -233,7 +238,10 @@ class ConsoleController extends ChangeNotifier {
         return _contactResponse();
       case 'clear':
         _outputBuffer.clear();
-        return const ConsoleEntry(type: EntryType.system, content: 'Console cleared.');
+        return const ConsoleEntry(
+          type: EntryType.system,
+          content: 'Console cleared.',
+        );
       case 'theme':
         return _themeResponse();
       case 'performance':
@@ -244,27 +252,40 @@ class ConsoleController extends ChangeNotifier {
         return _statusResponse();
       case 'system':
         return _systemResponse();
-      // Easter Eggs
+      
       case 'sudo':
-        return const ConsoleEntry(type: EntryType.system, content: 'nice try. This incident will be reported.');
+        return const ConsoleEntry(
+          type: EntryType.system,
+          content: 'nice try. This incident will be reported.',
+        );
       case 'whoami':
-        return const ConsoleEntry(type: EntryType.system, content: 'You are a curious engineer. We should talk.');
+        return const ConsoleEntry(
+          type: EntryType.system,
+          content: 'You are a curious engineer. We should talk.',
+        );
       case 'rm -rf /':
-        return const ConsoleEntry(type: EntryType.system, content: 'Permission denied. The system architecture is immutable.');
+        return const ConsoleEntry(
+          type: EntryType.system,
+          content: 'Permission denied. The system architecture is immutable.',
+        );
       case 'matrix':
         if (!ExperienceController.instance.isMatrixMode) {
           ExperienceController.instance.toggleMatrixMode();
         }
-        return const ConsoleEntry(type: EntryType.system, content: 'Wake up, Neo... \nSystem override engaged.');
+        return const ConsoleEntry(
+          type: EntryType.system,
+          content: 'Wake up, Neo... \nSystem override engaged.',
+        );
       default:
         return ConsoleEntry(
           type: EntryType.error,
-          content: 'Command not recognized: "$input"\nType "help" to see available commands.',
+          content:
+              'Command not recognized: "$input"\nType "help" to see available commands.',
         );
     }
   }
 
-  // ─── Command Responses ─────────────────────────────────────────────
+  
 
   ConsoleEntry _helpResponse() {
     return const ConsoleEntry(
@@ -451,7 +472,7 @@ class ConsoleController extends ChangeNotifier {
 └──────────────────────────────────────────┘''',
     );
   }
-  
+
   ConsoleEntry _linkedinResponse() {
     return const ConsoleEntry(
       type: EntryType.output,
@@ -465,7 +486,7 @@ class ConsoleController extends ChangeNotifier {
 └──────────────────────────────────────────┘''',
     );
   }
-  
+
   ConsoleEntry _emailResponse() {
     return const ConsoleEntry(
       type: EntryType.output,
@@ -479,7 +500,7 @@ class ConsoleController extends ChangeNotifier {
 └──────────────────────────────────────────┘''',
     );
   }
-  
+
   ConsoleEntry _portfolioResponse() {
     return const ConsoleEntry(
       type: EntryType.output,
@@ -550,7 +571,7 @@ class ConsoleController extends ChangeNotifier {
 └──────────────────────────────────────────┘''',
     );
   }
-  
+
   ConsoleEntry _statusResponse() {
     return const ConsoleEntry(
       type: EntryType.output,
@@ -566,7 +587,7 @@ class ConsoleController extends ChangeNotifier {
 └──────────────────────────────────────────┘''',
     );
   }
-  
+
   ConsoleEntry _systemResponse() {
     return const ConsoleEntry(
       type: EntryType.output,
@@ -610,15 +631,15 @@ class ConsoleController extends ChangeNotifier {
   }
 }
 
-/// Types of console entries for styling
+
 enum EntryType { command, output, system, error }
 
-/// Optional action triggered by a command
-enum ConsoleAction { 
-  none, 
-  openGithub, 
-  openResume, 
-  openLinkedin, 
+
+enum ConsoleAction {
+  none,
+  openGithub,
+  openResume,
+  openLinkedin,
   openEmail,
   scrollToHero,
   scrollToProjects,
@@ -626,10 +647,10 @@ enum ConsoleAction {
   scrollToSkills,
   scrollToExperience,
   scrollToLab,
-  scrollToTerminal
+  scrollToTerminal,
 }
 
-/// Represents a single entry in the console output buffer
+
 class ConsoleEntry {
   final EntryType type;
   final String content;

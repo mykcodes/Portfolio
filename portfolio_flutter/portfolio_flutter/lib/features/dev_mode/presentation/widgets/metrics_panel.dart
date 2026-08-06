@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/controllers/dev_mode_controller.dart';
 
-/// Side panel displaying all engineering metrics.
-/// Updates via AnimatedBuilder listening to DevModeController.
+
+
 class MetricsPanel extends StatelessWidget {
   const MetricsPanel({super.key});
 
@@ -20,16 +20,13 @@ class MetricsPanel extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xCC0A0A0A),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: const Color(0x1A4F8CFF),
-              width: 1.0,
-            ),
+            border: Border.all(color: const Color(0x1A4F8CFF), width: 1.0),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Header
+              
               Row(
                 children: [
                   Container(
@@ -58,11 +55,10 @@ class MetricsPanel extends StatelessWidget {
               Container(height: 1, color: const Color(0x0DFFFFFF)),
               const SizedBox(height: 12),
 
-              // Metric rows
-              ...metrics.entries.map((entry) => _MetricRow(
-                    label: entry.key,
-                    value: entry.value,
-                  )),
+              
+              ...metrics.entries.map(
+                (entry) => _MetricRow(label: entry.key, value: entry.value),
+              ),
             ],
           ),
         );

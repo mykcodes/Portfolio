@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../data/github_timeline_data.dart';
+import '../../../../../content/sections/github_timeline_data.dart';
 import '../../../../../core/utils/motion_system.dart';
 import '../../../../../core/services/github_service.dart';
 
@@ -64,9 +64,11 @@ class _GithubTimelineWidgetState extends State<GithubTimelineWidget> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return _buildLoadingState();
               }
+
               
-              // Fallback to static data if API failed, rate-limited, or empty
-              if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+              if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data!.isEmpty) {
                 return _buildStaticTimeline();
               }
 
@@ -181,7 +183,7 @@ class _LiveCommitRowState extends State<_LiveCommitRow> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Timeline line and node
+          
           Column(
             children: [
               Container(
@@ -189,23 +191,23 @@ class _LiveCommitRowState extends State<_LiveCommitRow> {
                 height: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: widget.commit.isMajor ? const Color(0xFF4F8CFF) : Colors.transparent,
+                  color: widget.commit.isMajor
+                      ? const Color(0xFF4F8CFF)
+                      : Colors.transparent,
                   border: Border.all(
-                    color: widget.commit.isMajor ? const Color(0xFF4F8CFF) : const Color(0x4DFFFFFF),
+                    color: widget.commit.isMajor
+                        ? const Color(0xFF4F8CFF)
+                        : const Color(0x4DFFFFFF),
                     width: 2,
                   ),
                 ),
               ),
               if (!widget.isLast)
-                Container(
-                  width: 2,
-                  height: 64,
-                  color: const Color(0x1AFFFFFF),
-                ),
+                Container(width: 2, height: 64, color: const Color(0x1AFFFFFF)),
             ],
           ),
           const SizedBox(width: 24),
-          // Commit Data
+          
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,9 +242,13 @@ class _LiveCommitRowState extends State<_LiveCommitRow> {
                   widget.commit.message,
                   style: GoogleFonts.plusJakartaSans(
                     textStyle: TextStyle(
-                      color: widget.commit.isMajor ? Colors.white : const Color(0xCCFFFFFF),
+                      color: widget.commit.isMajor
+                          ? Colors.white
+                          : const Color(0xCCFFFFFF),
                       fontSize: 15,
-                      fontWeight: widget.commit.isMajor ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: widget.commit.isMajor
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                     ),
                   ),
                 ),
@@ -253,27 +259,47 @@ class _LiveCommitRowState extends State<_LiveCommitRow> {
                     const SizedBox(width: 4),
                     Text(
                       widget.commit.language,
-                      style: const TextStyle(color: Color(0x66FFFFFF), fontSize: 11),
+                      style: const TextStyle(
+                        color: Color(0x66FFFFFF),
+                        fontSize: 11,
+                      ),
                     ),
                     const SizedBox(width: 16),
-                    Icon(Icons.star_border, size: 12, color: const Color(0x66FFFFFF)),
+                    Icon(
+                      Icons.star_border,
+                      size: 12,
+                      color: const Color(0x66FFFFFF),
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${widget.commit.stars}',
-                      style: const TextStyle(color: Color(0x66FFFFFF), fontSize: 11),
+                      style: const TextStyle(
+                        color: Color(0x66FFFFFF),
+                        fontSize: 11,
+                      ),
                     ),
                     const SizedBox(width: 16),
-                    Icon(Icons.call_split, size: 12, color: const Color(0x66FFFFFF)),
+                    Icon(
+                      Icons.call_split,
+                      size: 12,
+                      color: const Color(0x66FFFFFF),
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${widget.commit.forks}',
-                      style: const TextStyle(color: Color(0x66FFFFFF), fontSize: 11),
+                      style: const TextStyle(
+                        color: Color(0x66FFFFFF),
+                        fontSize: 11,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Text(
                       'sha: ${widget.commit.hash}',
                       style: GoogleFonts.jetBrainsMono(
-                        textStyle: const TextStyle(color: Color(0x4DFFFFFF), fontSize: 10),
+                        textStyle: const TextStyle(
+                          color: Color(0x4DFFFFFF),
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                   ],
@@ -288,7 +314,7 @@ class _LiveCommitRowState extends State<_LiveCommitRow> {
   }
 }
 
-// Fallback _CommitRow for static data
+
 class _CommitRow extends StatefulWidget {
   final GithubCommit commit;
   final bool isLast;
@@ -333,7 +359,7 @@ class _CommitRowState extends State<_CommitRow> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Timeline line and node
+          
           Column(
             children: [
               Container(
@@ -341,23 +367,23 @@ class _CommitRowState extends State<_CommitRow> {
                 height: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: widget.commit.isMajor ? const Color(0xFF4F8CFF) : Colors.transparent,
+                  color: widget.commit.isMajor
+                      ? const Color(0xFF4F8CFF)
+                      : Colors.transparent,
                   border: Border.all(
-                    color: widget.commit.isMajor ? const Color(0xFF4F8CFF) : const Color(0x4DFFFFFF),
+                    color: widget.commit.isMajor
+                        ? const Color(0xFF4F8CFF)
+                        : const Color(0x4DFFFFFF),
                     width: 2,
                   ),
                 ),
               ),
               if (!widget.isLast)
-                Container(
-                  width: 2,
-                  height: 48,
-                  color: const Color(0x1AFFFFFF),
-                ),
+                Container(width: 2, height: 48, color: const Color(0x1AFFFFFF)),
             ],
           ),
           const SizedBox(width: 24),
-          // Commit Data
+          
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,9 +418,13 @@ class _CommitRowState extends State<_CommitRow> {
                   widget.commit.message,
                   style: GoogleFonts.plusJakartaSans(
                     textStyle: TextStyle(
-                      color: widget.commit.isMajor ? Colors.white : const Color(0xCCFFFFFF),
+                      color: widget.commit.isMajor
+                          ? Colors.white
+                          : const Color(0xCCFFFFFF),
                       fontSize: 15,
-                      fontWeight: widget.commit.isMajor ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: widget.commit.isMajor
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                     ),
                   ),
                 ),
@@ -407,4 +437,3 @@ class _CommitRowState extends State<_CommitRow> {
     );
   }
 }
-

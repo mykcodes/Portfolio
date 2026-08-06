@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 
-/// A reusable spotlight painter that creates a localized cursor-following
-/// radial glow inside any card/container. Used across project cards,
-/// milestone cards, skill cards, and experiment capsules.
-///
-/// Only paints when [isActive] is true (hover state), ensuring zero
-/// performance cost at rest.
+
+
+
+
+
+
 class CursorLightPainter extends CustomPainter {
-  /// Normalized mouse position within the card (-1 to 1 on each axis)
+  
   final Offset normalizedPosition;
 
-  /// Whether the spotlight is active (typically tied to hover state)
+  
   final bool isActive;
 
-  /// The color of the spotlight glow
+  
   final Color lightColor;
 
-  /// Radius of the spotlight in logical pixels
+  
   final double radius;
 
-  /// Maximum opacity of the spotlight center
+  
   final double intensity;
 
   CursorLightPainter({
@@ -34,12 +34,12 @@ class CursorLightPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (!isActive) return;
 
-    // Convert normalized position (-1..1) to actual pixel coordinates
+    
     final double cx = (normalizedPosition.dx * 0.5 + 0.5) * size.width;
     final double cy = (normalizedPosition.dy * 0.5 + 0.5) * size.height;
     final Offset center = Offset(cx, cy);
 
-    // Primary spotlight — tight, follows cursor precisely
+    
     final Paint spotlightPaint = Paint()
       ..shader = RadialGradient(
         colors: [
@@ -50,9 +50,12 @@ class CursorLightPainter extends CustomPainter {
         stops: const [0.0, 0.4, 1.0],
       ).createShader(Rect.fromCircle(center: center, radius: radius));
 
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), spotlightPaint);
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      spotlightPaint,
+    );
 
-    // Secondary ambient wash — much larger, softer, creates depth
+    
     final Paint ambientPaint = Paint()
       ..shader = RadialGradient(
         colors: [
@@ -72,8 +75,8 @@ class CursorLightPainter extends CustomPainter {
   }
 }
 
-/// A convenience widget that wraps [CursorLightPainter] as an overlay layer.
-/// Place this inside a Stack on top of card content with [IgnorePointer].
+
+
 class CursorLightOverlay extends StatelessWidget {
   final Offset normalizedMousePosition;
   final bool isHovered;
@@ -107,4 +110,3 @@ class CursorLightOverlay extends StatelessWidget {
     );
   }
 }
-

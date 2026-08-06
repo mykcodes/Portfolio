@@ -29,8 +29,8 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   final FocusNode _globalKeyFocusNode = FocusNode();
+
   
-  // Konami Code sequence
   final List<LogicalKeyboardKey> _konamiSequence = [
     LogicalKeyboardKey.arrowUp,
     LogicalKeyboardKey.arrowUp,
@@ -50,7 +50,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     super.initState();
     ExperienceController.instance.initialize();
     SoundEngine.instance.initialize();
-    // Auto-focus for keyboard shortcuts
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _globalKeyFocusNode.requestFocus();
     });
@@ -59,13 +59,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   void _handleKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent) return;
 
-    // Konami Code Tracker
+    
     if (event.logicalKey == _konamiSequence[_konamiIndex]) {
       _konamiIndex++;
       if (_konamiIndex == _konamiSequence.length) {
         _konamiIndex = 0;
         ExperienceController.instance.toggleMatrixMode();
-        SoundEngine.instance.playClick(); // Or a custom sound if available
+        SoundEngine.instance.playClick(); 
         if (!ConsoleController.instance.isOpen) {
           ConsoleController.instance.open();
         }
@@ -76,7 +76,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       _konamiIndex = 0;
     }
 
-    // Ctrl+Shift+D → Toggle Developer Mode
+    
     if (event.logicalKey == LogicalKeyboardKey.keyD &&
         HardwareKeyboard.instance.isControlPressed &&
         HardwareKeyboard.instance.isShiftPressed) {
@@ -84,7 +84,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       return;
     }
 
-    // Backtick (`) → Toggle Console
+    
     if (event.logicalKey == LogicalKeyboardKey.backquote &&
         !HardwareKeyboard.instance.isControlPressed &&
         !HardwareKeyboard.instance.isShiftPressed) {
@@ -92,7 +92,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       return;
     }
 
-    // Escape → Close console if open
+    
     if (event.logicalKey == LogicalKeyboardKey.escape) {
       if (ConsoleController.instance.isOpen) {
         ConsoleController.instance.close();
@@ -110,153 +110,210 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   Color _getAmbientColor(String section) {
     switch (section) {
-      case 'hero': return const Color(0xFF070B19);
-      case 'about': return const Color(0xFF060916);
-      case 'builds': return const Color(0xFF050A14);
-      case 'journey': return const Color(0xFF0D0A08);
-      case 'toolbox': return const Color(0xFF080C11);
-      case 'lab': return const Color(0xFF030514);
-      case 'connection': return const Color(0xFF050505);
-      default: return const Color(0xFF050505);
+      case 'hero':
+        return const Color(0xFF070B19);
+      case 'about':
+        return const Color(0xFF060916);
+      case 'builds':
+        return const Color(0xFF050A14);
+      case 'journey':
+        return const Color(0xFF0D0A08);
+      case 'toolbox':
+        return const Color(0xFF080C11);
+      case 'lab':
+        return const Color(0xFF030514);
+      case 'connection':
+        return const Color(0xFF050505);
+      default:
+        return const Color(0xFF050505);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: ExperienceController.instance,
-      builder: (context, child) {
-        final section = ExperienceController.instance.activeSection;
-        final ambientColor = _getAmbientColor(section);
-        
-        return Scaffold(
-          backgroundColor: Colors.black, // Base is black, animated container provides atmosphere
-          body: KeyboardListener(
-            focusNode: _globalKeyFocusNode,
-            onKeyEvent: _handleKeyEvent,
-            child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              // Ambient Atmosphere Layer
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 2500),
-                curve: Curves.easeInOutSine,
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: Alignment.topCenter,
-                    radius: 1.5,
-                    colors: ExperienceController.instance.isMatrixMode 
-                      ? [const Color(0xFF003300), Colors.black] 
-                      : [ambientColor, const Color(0xFF030303)],
-                  ),
-                ),
-              ),
-              const Positioned.fill(
-                child: ConstellationBackground(),
-              ),
-              
-              // Matrix Rain Effect Overlay
-              if (ExperienceController.instance.isMatrixMode)
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: Opacity(
-                      opacity: 0.15,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            // Optional: If you had a matrix asset, you'd use it here.
-                            // For now, a repeating green scanline effect via CSS-like repeating linear gradient approximation
-                            image: NetworkImage('https://media.giphy.com/media/xTiTnwj1LUAw0RAriU/giphy.gif'),
-                            fit: BoxFit.cover,
-                          ),
+    return Scaffold(
+      backgroundColor:
+          Colors.black, 
+      body: KeyboardListener(
+        focusNode: _globalKeyFocusNode,
+        onKeyEvent: _handleKeyEvent,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            
+            AnimatedBuilder(
+              animation: ExperienceController.instance,
+              builder: (context, child) {
+                final section = ExperienceController.instance.activeSection;
+                final ambientColor = _getAmbientColor(section);
+                return Stack(
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 2500),
+                      curve: Curves.easeInOutSine,
+                      decoration: BoxDecoration(
+                        gradient: RadialGradient(
+                          center: Alignment.topCenter,
+                          radius: 1.5,
+                          colors: ExperienceController.instance.isMatrixMode
+                              ? [const Color(0xFF003300), Colors.black]
+                              : [ambientColor, const Color(0xFF030303)],
                         ),
                       ),
                     ),
-                  ),
+                    if (ExperienceController.instance.isMatrixMode)
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: Opacity(
+                            opacity: 0.15,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                    'https://media.giphy.com/media/xTiTnwj1LUAw0RAriU/giphy.gif',
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+            const Positioned.fill(
+              child: RepaintBoundary(child: ConstellationBackground()),
+            ),
+
+            Positioned.fill(
+              child: SingleChildScrollView(
+                controller: ExperienceController.instance.scrollController,
+                physics: const CinematicScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
                 ),
-          
-          Positioned.fill(
-            child: SingleChildScrollView(
-              controller: ExperienceController.instance.scrollController,
-              physics: const CinematicScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-              child: Column(
-                children: [
-                  RepaintBoundary(
-                    child: Container(
-                      key: ExperienceController.instance.sectionKeys['hero'],
-                      height: MediaQuery.sizeOf(context).height,
-                      alignment: Alignment.center,
-                      child: const HeroContent(),
+                child: Column(
+                  children: [
+                    RepaintBoundary(
+                      child: Container(
+                        key: ExperienceController.instance.sectionKeys['hero'],
+                        height: MediaQuery.sizeOf(context).height,
+                        alignment: Alignment.center,
+                        child: const HeroContent(),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 120),
-                  _ParallaxSection(
-                    scrollController: ExperienceController.instance.scrollController,
-                    parallaxFactor: 0.15,
-                    child: RepaintBoundary(child: Container(key: ExperienceController.instance.sectionKeys['about'], child: const AboutView())),
-                  ),
-                  const SizedBox(height: 140),
-                  _ParallaxSection(
-                    scrollController: ExperienceController.instance.scrollController,
-                    parallaxFactor: 0.1,
-                    child: RepaintBoundary(child: Container(key: ExperienceController.instance.sectionKeys['builds'], child: const ProjectsView())),
-                  ),
-                  const SizedBox(height: 140),
-                  _ParallaxSection(
-                    scrollController: ExperienceController.instance.scrollController,
-                    parallaxFactor: 0.05,
-                    child: RepaintBoundary(child: Container(key: ExperienceController.instance.sectionKeys['journey'], child: const JourneyView(scrollProgress: 1.0))),
-                  ),
-                  const SizedBox(height: 140),
-                  _ParallaxSection(
-                    scrollController: ExperienceController.instance.scrollController,
-                    parallaxFactor: 0.08,
-                    child: RepaintBoundary(child: Container(key: ExperienceController.instance.sectionKeys['toolbox'], child: const ToolboxView())),
-                  ),
-                  const SizedBox(height: 140),
-                  _ParallaxSection(
-                    scrollController: ExperienceController.instance.scrollController,
-                    parallaxFactor: 0.12,
-                    child: RepaintBoundary(child: Container(key: ExperienceController.instance.sectionKeys['lab'], child: const ExperimentsView())),
-                  ),
-                  _ParallaxSection(
-                    scrollController: ExperienceController.instance.scrollController,
-                    parallaxFactor: 0.0,
-                    child: RepaintBoundary(child: Container(key: ExperienceController.instance.sectionKeys['connection'], child: const ConnectionView())),
-                  ),
-                ],
+                    const SizedBox(height: 120),
+                    _ParallaxSection(
+                      scrollController:
+                          ExperienceController.instance.scrollController,
+                      parallaxFactor: 0.15,
+                      child: RepaintBoundary(
+                        child: Container(
+                          key: ExperienceController
+                              .instance
+                              .sectionKeys['about'],
+                          child: const AboutView(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 140),
+                    _ParallaxSection(
+                      scrollController:
+                          ExperienceController.instance.scrollController,
+                      parallaxFactor: 0.1,
+                      child: RepaintBoundary(
+                        child: Container(
+                          key: ExperienceController
+                              .instance
+                              .sectionKeys['builds'],
+                          child: const ProjectsView(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 140),
+                    _ParallaxSection(
+                      scrollController:
+                          ExperienceController.instance.scrollController,
+                      parallaxFactor: 0.05,
+                      child: RepaintBoundary(
+                        child: Container(
+                          key: ExperienceController
+                              .instance
+                              .sectionKeys['journey'],
+                          child: const JourneyView(scrollProgress: 1.0),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 140),
+                    _ParallaxSection(
+                      scrollController:
+                          ExperienceController.instance.scrollController,
+                      parallaxFactor: 0.08,
+                      child: RepaintBoundary(
+                        child: Container(
+                          key: ExperienceController
+                              .instance
+                              .sectionKeys['toolbox'],
+                          child: const ToolboxView(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 140),
+                    _ParallaxSection(
+                      scrollController:
+                          ExperienceController.instance.scrollController,
+                      parallaxFactor: 0.12,
+                      child: RepaintBoundary(
+                        child: Container(
+                          key: ExperienceController.instance.sectionKeys['lab'],
+                          child: const ExperimentsView(),
+                        ),
+                      ),
+                    ),
+                    _ParallaxSection(
+                      scrollController:
+                          ExperienceController.instance.scrollController,
+                      parallaxFactor: 0.0,
+                      child: RepaintBoundary(
+                        child: Container(
+                          key: ExperienceController
+                              .instance
+                              .sectionKeys['connection'],
+                          child: const ConnectionView(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          
-          const Positioned(top: 0, left: 0, right: 0, child: HomeNavigationBar()),
 
-          // Developer Mode Overlay (above content, below boot sequence)
-          const Positioned.fill(
-            child: IgnorePointer(
-              child: DevModeOverlay(),
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: HomeNavigationBar(),
             ),
-          ),
 
-          // Interactive Engineering Console
-          const EngineeringConsole(),
-          
-          // Re-insert Boot Sequence Overlay logic here if required
-          const Positioned.fill(
-            child: BootSequenceOverlay(),
-          ),
+            
+            const Positioned.fill(
+              child: IgnorePointer(child: DevModeOverlay()),
+            ),
 
-          // Mobile Drawer Overlay (highest priority)
-          const Positioned.fill(
-            child: MobileGlassDrawer(),
-          ),
-        ],
+            
+            const EngineeringConsole(),
+
+            
+            const Positioned.fill(child: BootSequenceOverlay()),
+
+            
+            const Positioned.fill(child: MobileGlassDrawer()),
+          ],
+        ),
       ),
-     ),
     );
-  },
-  );
-}
+  }
 }
 
 class _ParallaxSection extends StatelessWidget {
@@ -273,7 +330,7 @@ class _ParallaxSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (parallaxFactor == 0) return child;
-    
+
     return AnimatedBuilder(
       animation: scrollController,
       builder: (context, _) {
@@ -286,21 +343,19 @@ class _ParallaxSection extends StatelessWidget {
             if (scrollableState != null) {
               try {
                 final alignment = viewport.getOffsetToReveal(renderObject, 0.5);
-                final offsetFromCenter = alignment.offset - scrollController.offset;
-                // Only apply parallax if it's within viewport (roughly)
+                final offsetFromCenter =
+                    alignment.offset - scrollController.offset;
+                
                 if (offsetFromCenter.abs() < 2000) {
-                   offset = offsetFromCenter * parallaxFactor;
+                  offset = offsetFromCenter * parallaxFactor;
                 }
               } catch (_) {
-                // If the element is not fully laid out yet, ignore
+                
               }
             }
           }
         }
-        return Transform.translate(
-          offset: Offset(0, offset),
-          child: child,
-        );
+        return Transform.translate(offset: Offset(0, offset), child: child);
       },
     );
   }

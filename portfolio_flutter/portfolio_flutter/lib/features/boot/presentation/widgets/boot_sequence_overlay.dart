@@ -9,9 +9,10 @@ class BootSequenceOverlay extends StatefulWidget {
   State<BootSequenceOverlay> createState() => _BootSequenceOverlayState();
 }
 
-class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerProviderStateMixin {
+class _BootSequenceOverlayState extends State<BootSequenceOverlay>
+    with TickerProviderStateMixin {
   late AnimationController _fadeController;
-  
+
   String _terminalOutput = "";
   double _bootProgress = 0.0;
   final List<String> _bootLogs = [
@@ -19,7 +20,7 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
     "Loading Research Lab...",
     "Loading Experience Engine...",
     "Optimizing Interface...",
-    "Ready."
+    "Ready.",
   ];
 
   @override
@@ -35,7 +36,7 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
   }
 
   Future<void> _runCinematicBoot() async {
-    // Staggered Terminal Typing
+    
     await Future.delayed(const Duration(milliseconds: 600));
     for (int i = 0; i < _bootLogs.length; i++) {
       if (!mounted) return;
@@ -47,11 +48,11 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
     }
 
     await Future.delayed(const Duration(milliseconds: 300));
+
     
-    // Command the Global Controller to wake the portfolio world
     ExperienceController.instance.beginWakeUpSequence();
 
-    // Dissolve the overlay smoothly
+    
     if (mounted) {
       await _fadeController.reverse();
     }
@@ -69,7 +70,7 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
       animation: _fadeController,
       builder: (context, child) {
         if (_fadeController.value == 0) return const SizedBox.shrink();
-        
+
         return IgnorePointer(
           ignoring: _fadeController.value < 1.0,
           child: Opacity(
@@ -78,14 +79,12 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
               color: const Color(0xFF050505),
               child: Stack(
                 children: [
-                  // Background Blueprint Grid (faint engineering feel)
+                  
                   Positioned.fill(
-                    child: CustomPaint(
-                      painter: _BootGridPainter(),
-                    ),
+                    child: CustomPaint(painter: _BootGridPainter()),
                   ),
 
-                  // Core Content
+                  
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -119,7 +118,9 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 150),
                             child: Text(
-                              _terminalOutput.isEmpty ? "" : "> $_terminalOutput",
+                              _terminalOutput.isEmpty
+                                  ? ""
+                                  : "> $_terminalOutput",
                               key: ValueKey<String>(_terminalOutput),
                               style: GoogleFonts.jetBrainsMono(
                                 textStyle: const TextStyle(
@@ -133,18 +134,18 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
                         ),
                         const SizedBox(height: 24),
 
-                        // Progress bar
+                        
                         SizedBox(
                           width: 200,
                           child: Stack(
                             children: [
-                              // Track
+                              
                               Container(
                                 height: 1,
                                 width: 200,
                                 color: const Color(0x1AFFFFFF),
                               ),
-                              // Fill
+                              
                               AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
                                 curve: Curves.easeOutCubic,
@@ -154,14 +155,16 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
                                   color: const Color(0xFF4F8CFF),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF4F8CFF).withValues(alpha: 0.5),
+                                      color: const Color(
+                                        0xFF4F8CFF,
+                                      ).withValues(alpha: 0.5),
                                       blurRadius: 6,
                                       spreadRadius: 1,
                                     ),
                                   ],
                                 ),
                               ),
-                              // Leading dot
+                              
                               if (_bootProgress > 0)
                                 Positioned(
                                   left: (200 * _bootProgress) - 2,
@@ -174,7 +177,9 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
                                       color: Colors.white,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFF4F8CFF).withValues(alpha: 0.8),
+                                          color: const Color(
+                                            0xFF4F8CFF,
+                                          ).withValues(alpha: 0.8),
                                           blurRadius: 8,
                                         ),
                                       ],
@@ -197,7 +202,7 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
   }
 }
 
-/// Faint blueprint grid for boot screen background
+
 class _BootGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -215,7 +220,7 @@ class _BootGridPainter extends CustomPainter {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
 
-    // Subtle center crosshair
+    
     final Paint centerPaint = Paint()
       ..color = const Color(0x0AFFFFFF)
       ..strokeWidth = 0.5;
@@ -234,4 +239,3 @@ class _BootGridPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

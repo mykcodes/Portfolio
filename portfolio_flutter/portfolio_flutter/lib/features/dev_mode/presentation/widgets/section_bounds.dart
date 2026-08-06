@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../core/controllers/experience_controller.dart';
 
-/// Renders subtle colored borders around each section's GlobalKey region.
-/// Only visible in Developer Mode. Uses a post-frame callback to read
-/// render box positions and draws overlay rectangles.
+
+
+
 class SectionBounds extends StatefulWidget {
   const SectionBounds({super.key});
 
@@ -74,7 +74,8 @@ class _SectionBoundsState extends State<SectionBounds> {
       children: _sectionRects.entries.map((entry) {
         final color = _sectionColors[entry.key] ?? const Color(0xFFFFFFFF);
         final rect = entry.value;
-        final isActive = ExperienceController.instance.activeSection == entry.key;
+        final isActive =
+            ExperienceController.instance.activeSection == entry.key;
 
         return Positioned(
           left: rect.left,
@@ -92,7 +93,10 @@ class _SectionBoundsState extends State<SectionBounds> {
               child: Align(
                 alignment: Alignment.topLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   margin: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.15),
@@ -117,4 +121,3 @@ class _SectionBoundsState extends State<SectionBounds> {
     );
   }
 }
-

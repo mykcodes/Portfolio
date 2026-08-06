@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../data/projects_data.dart';
+import '../../../../content/portfolio_data.dart';
 import 'widgets/cinematic_project_card.dart';
 import 'widgets/tech_blueprint_background.dart';
 
@@ -13,20 +13,21 @@ class ProjectsView extends StatelessWidget {
 
     return Stack(
       children: [
-        const Positioned.fill(
-          child: TechBlueprintBackground(),
-        ),
+        const Positioned.fill(child: TechBlueprintBackground()),
         Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1000),
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 40.0 : 20.0, vertical: isDesktop ? 80.0 : 40.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: isDesktop ? 40.0 : 20.0,
+                vertical: isDesktop ? 80.0 : 40.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Premium Section Typography
+                  
                   Text(
-                    'SELECTED BUILDS',
+                    ProjectsData.sectionTitle,
                     style: GoogleFonts.plusJakartaSans(
                       textStyle: TextStyle(
                         color: Colors.white,
@@ -38,7 +39,7 @@ class ProjectsView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Architectural implementations and deployed systems.',
+                    ProjectsData.sectionSubtitle,
                     style: GoogleFonts.geist(
                       textStyle: const TextStyle(
                         color: Color(0x99FFFFFF),
@@ -49,8 +50,8 @@ class ProjectsView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 64),
+
                   
-                  // Cinematic Vertical List Layout
                   Column(
                     children: ProjectsData.featuredBuilds.map((project) {
                       return Padding(

@@ -10,7 +10,8 @@ class ExperimentsView extends StatefulWidget {
   State<ExperimentsView> createState() => _ExperimentsViewState();
 }
 
-class _ExperimentsViewState extends State<ExperimentsView> with TickerProviderStateMixin {
+class _ExperimentsViewState extends State<ExperimentsView>
+    with TickerProviderStateMixin {
   late AnimationController _spotlightController;
 
   @override
@@ -20,7 +21,7 @@ class _ExperimentsViewState extends State<ExperimentsView> with TickerProviderSt
       vsync: this,
       duration: const Duration(seconds: 2),
     );
-    // Cinematic atmospheric reveal of the spotlight and typography upon entering view
+    
     Future.delayed(const Duration(milliseconds: 200), () {
       if (mounted) _spotlightController.forward();
     });
@@ -40,7 +41,7 @@ class _ExperimentsViewState extends State<ExperimentsView> with TickerProviderSt
       children: [
         const LaboratoryBackground(),
 
-        // Dynamic Overhead Fading Spotlight Over Laboratory
+        
         Positioned.fill(
           child: AnimatedBuilder(
             animation: _spotlightController,
@@ -52,10 +53,7 @@ class _ExperimentsViewState extends State<ExperimentsView> with TickerProviderSt
                     gradient: RadialGradient(
                       center: Alignment.topCenter,
                       radius: 1.2,
-                      colors: [
-                        Color(0x0A4F8CFF),
-                        Colors.transparent,
-                      ],
+                      colors: [Color(0x0A4F8CFF), Colors.transparent],
                       stops: [0.0, 1.0],
                     ),
                   ),
@@ -65,24 +63,30 @@ class _ExperimentsViewState extends State<ExperimentsView> with TickerProviderSt
           ),
         ),
 
-        // Core Laboratory Content
+        
         Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1200),
             child: Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 40.0 : 20.0, vertical: isDesktop ? 140.0 : 80.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: isDesktop ? 40.0 : 20.0,
+                vertical: isDesktop ? 140.0 : 80.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Cinematic Typography Reveal
+                  
                   AnimatedBuilder(
                     animation: _spotlightController,
                     builder: (context, child) {
                       return Opacity(
                         opacity: _spotlightController.value,
                         child: Transform.translate(
-                          offset: Offset(0, 20 * (1.0 - _spotlightController.value)),
+                          offset: Offset(
+                            0,
+                            20 * (1.0 - _spotlightController.value),
+                          ),
                           child: child,
                         ),
                       );
@@ -119,11 +123,9 @@ class _ExperimentsViewState extends State<ExperimentsView> with TickerProviderSt
                   ),
                   const SizedBox(height: 100),
 
-                  // Mounts the Asymmetric Laboratory Modules
-                  // Modules handle their own complex timed assembly sequences
-                  const RepaintBoundary(
-                    child: ExperimentsLayout(),
-                  ),
+                  
+                  
+                  const RepaintBoundary(child: ExperimentsLayout()),
                 ],
               ),
             ),

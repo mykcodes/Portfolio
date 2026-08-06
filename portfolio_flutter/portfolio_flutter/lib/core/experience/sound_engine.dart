@@ -2,26 +2,32 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
 class SoundEngine {
-  // Singleton instance
-  static final SoundEngine instance = SoundEngine._internal();
   
+  static final SoundEngine instance = SoundEngine._internal();
+
   SoundEngine._internal();
 
   bool _isSoundEnabled = true;
   bool get isSoundEnabled => _isSoundEnabled;
 
-  // Pre-load a few players for low latency
-  final List<AudioPlayer> _players = List.generate(5, (_) => AudioPlayer()..setReleaseMode(ReleaseMode.stop));
+  
+  final List<AudioPlayer> _players = List.generate(
+    5,
+    (_) => AudioPlayer()..setReleaseMode(ReleaseMode.stop),
+  );
   int _currentPlayerIndex = 0;
 
-  final AudioPlayer _terminalPlayer = AudioPlayer()..setReleaseMode(ReleaseMode.stop);
-  final AudioPlayer _ambientPadPlayer = AudioPlayer()..setReleaseMode(ReleaseMode.loop);
-  final AudioPlayer _electricHumPlayer = AudioPlayer()..setReleaseMode(ReleaseMode.loop);
+  final AudioPlayer _terminalPlayer = AudioPlayer()
+    ..setReleaseMode(ReleaseMode.stop);
+  final AudioPlayer _ambientPadPlayer = AudioPlayer()
+    ..setReleaseMode(ReleaseMode.loop);
+  final AudioPlayer _electricHumPlayer = AudioPlayer()
+    ..setReleaseMode(ReleaseMode.loop);
   bool _isAmbientPlaying = false;
 
   Future<void> initialize() async {
-    // Preload all sounds to avoid latency on first play
-    // (In production, we might want to store this preference locally)
+    
+    
     await Future.wait([
       AudioCache.instance.load('audio/hover.wav'),
       AudioCache.instance.load('audio/click.wav'),
@@ -57,10 +63,10 @@ class SoundEngine {
     if (!_isSoundEnabled || _isAmbientPlaying) return;
     try {
       _isAmbientPlaying = true;
-      await _ambientPadPlayer.setVolume(0.08); // Very subtle
+      await _ambientPadPlayer.setVolume(0.08); 
       await _ambientPadPlayer.play(AssetSource('audio/ambient_pad.wav'));
-      
-      await _electricHumPlayer.setVolume(0.03); // Almost imperceptible
+
+      await _electricHumPlayer.setVolume(0.03); 
       await _electricHumPlayer.play(AssetSource('audio/electric_hum.wav'));
     } catch (e) {
       debugPrint("Error starting ambient loops: $e");
@@ -83,7 +89,7 @@ class SoundEngine {
     try {
       final player = _players[_currentPlayerIndex];
       _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.length;
-      
+
       await player.setVolume(volume);
       await player.play(AssetSource(assetPath));
     } catch (e) {
@@ -95,7 +101,7 @@ class SoundEngine {
   void playClick() => _play('audio/click.wav', volume: 0.20);
   void playSuccess() => _play('audio/success.wav', volume: 0.15);
   void playWhoosh() => _play('audio/whoosh.wav', volume: 0.15);
-  
+
   void playTerminalType() async {
     if (!_isSoundEnabled) return;
     try {

@@ -10,7 +10,7 @@ class GlobalMouseRegion extends StatelessWidget {
   Widget build(BuildContext context) {
     return MouseRegion(
       onHover: (event) {
-        // Bridge cursor data to the central experience controller
+        
         ExperienceController.instance.updateCursorPosition(event.position);
       },
       child: child,

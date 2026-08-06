@@ -7,9 +7,7 @@ class LaboratoryBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: IgnorePointer(
-        child: CustomPaint(
-          painter: _LaboratoryEnvPainter(),
-        ),
+        child: CustomPaint(painter: _LaboratoryEnvPainter()),
       ),
     );
   }
@@ -29,12 +27,13 @@ class _LaboratoryEnvPainter extends CustomPainter {
 
     const double gridSize = 60.0;
 
-    // Draw faint blueprint environment
+    
     for (double y = 0; y < size.height; y += gridSize) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
       for (double x = 0; x < size.width; x += gridSize) {
-        if (y == 0) canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
-        // Draw engineering connection nodes at intersections
+        if (y == 0)
+          canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+        
         canvas.drawCircle(Offset(x, y), 1.5, dotPaint);
       }
     }

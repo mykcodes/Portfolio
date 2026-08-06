@@ -4,9 +4,9 @@ import 'widgets/fps_counter.dart';
 import 'widgets/metrics_panel.dart';
 import 'widgets/section_bounds.dart';
 
-/// The main Developer Mode overlay.
-/// Slides in elegantly when activated. Never interrupts normal browsing.
-/// Contains: FPS counter, metrics panel, section boundaries.
+
+
+
 class DevModeOverlay extends StatefulWidget {
   const DevModeOverlay({super.key});
 
@@ -29,19 +29,16 @@ class _DevModeOverlayState extends State<DevModeOverlay>
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _slideController,
-        curve: Curves.easeOutCubic,
-      ),
+      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
     );
 
-    _panelSlideAnimation = Tween<Offset>(
-      begin: const Offset(1.0, 0.0), // Slide from right
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
+    _panelSlideAnimation =
+        Tween<Offset>(
+          begin: const Offset(1.0, 0.0), 
+          end: Offset.zero,
+        ).animate(
+          CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+        );
 
     DevModeController.instance.addListener(_onDevModeChanged);
   }
@@ -74,14 +71,12 @@ class _DevModeOverlayState extends State<DevModeOverlay>
           opacity: _fadeAnimation,
           child: Stack(
             children: [
-              // Section boundary overlays (behind everything)
+              
               const Positioned.fill(
-                child: IgnorePointer(
-                  child: SectionBounds(),
-                ),
+                child: IgnorePointer(child: SectionBounds()),
               ),
 
-              // FPS Counter — top right
+              
               Positioned(
                 top: 80,
                 right: 16,
@@ -91,7 +86,7 @@ class _DevModeOverlayState extends State<DevModeOverlay>
                 ),
               ),
 
-              // Metrics Panel — right side, below FPS
+              
               Positioned(
                 top: 170,
                 right: 16,

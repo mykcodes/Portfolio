@@ -17,7 +17,7 @@ class MobileGlassDrawer extends StatelessWidget {
 
         return Stack(
           children: [
-            // Backdrop blur and tap-to-close
+            
             IgnorePointer(
               ignoring: !isOpen,
               child: GestureDetector(
@@ -30,7 +30,9 @@ class MobileGlassDrawer extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
                   curve: Curves.easeOutCubic,
-                  color: isOpen ? Colors.black.withValues(alpha: 0.4) : Colors.transparent,
+                  color: isOpen
+                      ? Colors.black.withValues(alpha: 0.4)
+                      : Colors.transparent,
                   width: double.infinity,
                   height: double.infinity,
                   child: isOpen
@@ -42,8 +44,8 @@ class MobileGlassDrawer extends StatelessWidget {
                 ),
               ),
             ),
+
             
-            // Sliding Glass Drawer
             AnimatedPositioned(
               duration: MotionSystem.standard,
               curve: MotionSystem.deceleration,
@@ -67,7 +69,9 @@ class MobileGlassDrawer extends StatelessWidget {
                         children: [
                           const SizedBox(height: 24),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24.0,
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -84,10 +88,15 @@ class MobileGlassDrawer extends StatelessWidget {
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    ExperienceController.instance.toggleMobileDrawer();
+                                    ExperienceController.instance
+                                        .toggleMobileDrawer();
                                     SoundEngine.instance.playClick();
                                   },
-                                  icon: const Icon(Icons.close, color: Colors.white54, size: 20),
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.white54,
+                                    size: 20,
+                                  ),
                                 ),
                               ],
                             ),
@@ -138,7 +147,9 @@ class _DrawerItem extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
-                  color: isActive ? const Color(0xFF4F8CFF) : Colors.transparent,
+                  color: isActive
+                      ? const Color(0xFF4F8CFF)
+                      : Colors.transparent,
                   width: 3,
                 ),
               ),
@@ -159,8 +170,12 @@ class _DrawerItem extends StatelessWidget {
                 ),
                 if (isActive) ...[
                   const Spacer(),
-                  const Icon(Icons.chevron_right, color: Color(0xFF4F8CFF), size: 16),
-                ]
+                  const Icon(
+                    Icons.chevron_right,
+                    color: Color(0xFF4F8CFF),
+                    size: 16,
+                  ),
+                ],
               ],
             ),
           ),

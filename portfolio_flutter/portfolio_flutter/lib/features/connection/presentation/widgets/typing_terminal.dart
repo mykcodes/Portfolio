@@ -24,7 +24,7 @@ class _TypingTerminalState extends State<TypingTerminal> {
     super.initState();
     _startCursorBlink();
   }
-  
+
   void _startCursorBlink() async {
     while (mounted) {
       await Future.delayed(const Duration(milliseconds: 500));
@@ -41,22 +41,22 @@ class _TypingTerminalState extends State<TypingTerminal> {
     const String target2 = "Checking availability...";
     const String target3 = "Connection established.";
 
-    // Slight delay before terminal boots
+    
     await Future.delayed(const Duration(milliseconds: 200));
 
-    // Type Line 1
+    
     for (int i = 0; i <= target1.length; i++) {
       if (!mounted) return;
       setState(() => _line1 = target1.substring(0, i));
       if (i > 0) SoundEngine.instance.playTerminalType();
       await Future.delayed(const Duration(milliseconds: 10));
     }
-    
+
     SoundEngine.instance.playTerminalEnter();
 
     await Future.delayed(const Duration(milliseconds: 150));
 
-    // Type Line 2
+    
     for (int i = 0; i <= target2.length; i++) {
       if (!mounted) return;
       setState(() => _line2 = target2.substring(0, i));
@@ -66,14 +66,14 @@ class _TypingTerminalState extends State<TypingTerminal> {
 
     await Future.delayed(const Duration(milliseconds: 200));
 
-    // Snap Line 3
+    
     if (!mounted) return;
     setState(() => _line3 = target3);
     SoundEngine.instance.playSuccess();
-    
+
     await Future.delayed(const Duration(milliseconds: 100));
 
-    // Reveal List
+    
     if (!mounted) return;
     setState(() => _showList = true);
   }
@@ -96,7 +96,7 @@ class _TypingTerminalState extends State<TypingTerminal> {
               color: Color(0x054F8CFF),
               blurRadius: 30,
               offset: Offset(0, 16),
-            )
+            ),
           ],
         ),
         child: ClipRRect(
@@ -108,32 +108,48 @@ class _TypingTerminalState extends State<TypingTerminal> {
               decoration: BoxDecoration(
                 color: const Color(0x0AFFFFFF),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: const Color(0x14FFFFFF),
-                  width: 1.0,
-                ),
+                border: Border.all(color: const Color(0x14FFFFFF), width: 1.0),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildTerminalLine(_line1, const Color(0xFF4F8CFF), isActive: _line2.isEmpty && !_showList),
+                  _buildTerminalLine(
+                    _line1,
+                    const Color(0xFF4F8CFF),
+                    isActive: _line2.isEmpty && !_showList,
+                  ),
                   if (_line2.isNotEmpty) ...[
                     const SizedBox(height: 12),
-                    _buildTerminalLine(_line2, const Color(0x8CFFFFFF), isActive: _line3.isEmpty && !_showList),
+                    _buildTerminalLine(
+                      _line2,
+                      const Color(0x8CFFFFFF),
+                      isActive: _line3.isEmpty && !_showList,
+                    ),
                   ],
                   if (_line3.isNotEmpty) ...[
                     const SizedBox(height: 12),
-                    _buildTerminalLine(_line3, const Color(0xFF10B981), isActive: !_showList), // Success Green
+                    _buildTerminalLine(
+                      _line3,
+                      const Color(0xFF10B981),
+                      isActive: !_showList,
+                    ), 
                   ],
                   if (_showList) ...[
                     const SizedBox(height: 24),
-                    _buildTerminalLine("Available for:", const Color(0xCCFFFFFF), isActive: false),
+                    _buildTerminalLine(
+                      "Available for:",
+                      const Color(0xCCFFFFFF),
+                      isActive: false,
+                    ),
                     const SizedBox(height: 12),
                     _buildListItem("Engineering Opportunities"),
                     _buildListItem("Research Projects"),
                     _buildListItem("Startups"),
-                    _buildListItem("Collaboration", isActive: true), // Final cursor here
+                    _buildListItem(
+                      "Collaboration",
+                      isActive: true,
+                    ), 
                   ],
                 ],
               ),

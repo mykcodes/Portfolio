@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../data/connection_data.dart';
+import '../../../../content/portfolio_data.dart';
 
 class AvailabilityIndicator extends StatefulWidget {
   const AvailabilityIndicator({super.key});
@@ -9,7 +9,8 @@ class AvailabilityIndicator extends StatefulWidget {
   State<AvailabilityIndicator> createState() => _AvailabilityIndicatorState();
 }
 
-class _AvailabilityIndicatorState extends State<AvailabilityIndicator> with TickerProviderStateMixin {
+class _AvailabilityIndicatorState extends State<AvailabilityIndicator>
+    with TickerProviderStateMixin {
   late AnimationController _pulseController;
 
   @override
@@ -34,10 +35,7 @@ class _AvailabilityIndicatorState extends State<AvailabilityIndicator> with Tick
       decoration: BoxDecoration(
         color: const Color(0x0AFFFFFF),
         borderRadius: BorderRadius.circular(100),
-        border: Border.all(
-          color: const Color(0x14FFFFFF),
-          width: 1.0,
-        ),
+        border: Border.all(color: const Color(0x14FFFFFF), width: 1.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -53,9 +51,14 @@ class _AvailabilityIndicatorState extends State<AvailabilityIndicator> with Tick
                   color: const Color(0xFF10B981),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF10B981).withValues(alpha: (0.3 + (_pulseController.value * 0.5)).clamp(0.0, 1.0)),
+                      color: const Color(0xFF10B981).withValues(
+                        alpha: (0.3 + (_pulseController.value * 0.5)).clamp(
+                          0.0,
+                          1.0,
+                        ),
+                      ),
                       blurRadius: 8 + (_pulseController.value * 4),
-                    )
+                    ),
                   ],
                 ),
               );
@@ -63,7 +66,7 @@ class _AvailabilityIndicatorState extends State<AvailabilityIndicator> with Tick
           ),
           const SizedBox(width: 12),
           Text(
-            ConnectionData.availabilityStatus,
+            FooterData.availabilityStatus,
             style: GoogleFonts.geist(
               textStyle: const TextStyle(
                 color: Color(0xCCFFFFFF),
@@ -112,7 +115,7 @@ class SignatureFooter extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'Every great product begins with curiosity.',
+          FooterData.signature,
           style: GoogleFonts.geist(
             textStyle: const TextStyle(
               color: Color(0x40FFFFFF),
@@ -125,4 +128,3 @@ class SignatureFooter extends StatelessWidget {
     );
   }
 }
-

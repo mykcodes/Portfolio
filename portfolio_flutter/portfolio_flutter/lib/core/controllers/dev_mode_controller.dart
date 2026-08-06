@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'experience_controller.dart';
 
-/// Manages the engineering overlay (Developer Mode).
-/// Activated via Ctrl+Shift+D. Tracks FPS, velocities, and system state.
-///
-/// Performance: Uses a single [Ticker] for frame counting.
-/// FPS is sampled every 500ms to avoid per-frame notification overhead.
+
+
+
+
+
 class DevModeController extends ChangeNotifier {
   static final DevModeController instance = DevModeController._();
   DevModeController._();
@@ -14,25 +14,26 @@ class DevModeController extends ChangeNotifier {
   bool _isActive = false;
   bool get isActive => _isActive;
 
-  // FPS Tracking
+  
   Ticker? _fpsTicker;
   int _frameCount = 0;
   DateTime _lastFpsSample = DateTime.now();
   double _currentFps = 0.0;
   double get currentFps => _currentFps;
 
-  // Frame time history for the mini bar graph (last 60 samples)
+  
   final List<double> _fpsHistory = [];
   List<double> get fpsHistory => List.unmodifiable(_fpsHistory);
 
-  // Derived metrics (read from ExperienceController)
+  
   double get scrollVelocity => ExperienceController.instance.scrollVelocity;
   double get cursorVelocity => ExperienceController.instance.cursorVelocity;
   String get activeSection => ExperienceController.instance.activeSection;
-  double get scrollProgress => ExperienceController.instance.globalScrollProgress;
+  double get scrollProgress =>
+      ExperienceController.instance.globalScrollProgress;
   double get ambientIntensity => ExperienceController.instance.ambientIntensity;
 
-  // Animation controller tracking
+  
   int _activeAnimationControllers = 0;
   int get activeAnimationControllers => _activeAnimationControllers;
 
@@ -41,7 +42,10 @@ class DevModeController extends ChangeNotifier {
   }
 
   void unregisterAnimationController() {
-    _activeAnimationControllers = (_activeAnimationControllers - 1).clamp(0, 9999);
+    _activeAnimationControllers = (_activeAnimationControllers - 1).clamp(
+      0,
+      9999,
+    );
   }
 
   void toggle() {
@@ -66,7 +70,7 @@ class DevModeController extends ChangeNotifier {
     final now = DateTime.now();
     final delta = now.difference(_lastFpsSample).inMilliseconds;
 
-    // Sample FPS every 500ms
+    
     if (delta >= 500) {
       _currentFps = (_frameCount / delta) * 1000.0;
       _frameCount = 0;
@@ -88,7 +92,7 @@ class DevModeController extends ChangeNotifier {
     _fpsHistory.clear();
   }
 
-  /// Build a snapshot of all current metrics for the overlay panel.
+  
   Map<String, String> get metricsSnapshot => {
     'FPS': _currentFps.toStringAsFixed(1),
     'Scroll Velocity': '${scrollVelocity.toStringAsFixed(1)} px/s',

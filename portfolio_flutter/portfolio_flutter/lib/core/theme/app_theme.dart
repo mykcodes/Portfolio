@@ -3,10 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'portfolio_colors.dart';
 
 class AppTheme {
-  // Private constructor to prevent instantiation
+  
   AppTheme._();
 
-  // Define our custom colors based on the design system
+  
   static const PortfolioColors _darkColors = PortfolioColors(
     background: Color(0xFF050505),
     surface: Color(0xFF0A0A0A),
@@ -17,20 +17,20 @@ class AppTheme {
     border: Color(0xFF141414),
   );
 
-  /// The primary dark theme for the portfolio.
+  
   static ThemeData get darkTheme {
-    final baseTextTheme = GoogleFonts.chakraPetchTextTheme(ThemeData.dark().textTheme);
+    final baseTextTheme = GoogleFonts.chakraPetchTextTheme(
+      ThemeData.dark().textTheme,
+    );
 
     return ThemeData(
       useMaterial3: true,
       scaffoldBackgroundColor: _darkColors.background,
+
       
-      // Inject our custom semantic colors
-      extensions: <ThemeExtension<dynamic>>[
-        _darkColors,
-      ],
+      extensions: <ThemeExtension<dynamic>>[_darkColors],
+
       
-      // Configure default Material fallback colors mapping to our system
       colorScheme: ColorScheme.dark(
         surface: _darkColors.surface,
         primary: _darkColors.accent,
@@ -38,7 +38,7 @@ class AppTheme {
         secondary: _darkColors.secondaryText,
       ),
 
-      // Global Typography Configuration
+      
       textTheme: baseTextTheme.copyWith(
         displayLarge: baseTextTheme.displayLarge?.copyWith(
           color: _darkColors.primaryText,
@@ -80,7 +80,7 @@ class AppTheme {
   }
 }
 
-/// Extension helper for quick access in UI widgets
+
 extension ThemeContextExtension on BuildContext {
   PortfolioColors get colors => Theme.of(this).extension<PortfolioColors>()!;
   TextTheme get typography => Theme.of(this).textTheme;

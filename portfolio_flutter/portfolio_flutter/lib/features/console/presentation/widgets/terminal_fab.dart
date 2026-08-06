@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 
 class TerminalFab extends StatefulWidget {
   final VoidCallback onTap;
-  
+
   const TerminalFab({super.key, required this.onTap});
 
   @override
   State<TerminalFab> createState() => _TerminalFabState();
 }
 
-class _TerminalFabState extends State<TerminalFab> with SingleTickerProviderStateMixin {
+class _TerminalFabState extends State<TerminalFab>
+    with SingleTickerProviderStateMixin {
   bool _isHovered = false;
   late AnimationController _breathingController;
 
@@ -55,15 +56,23 @@ class _TerminalFabState extends State<TerminalFab> with SingleTickerProviderStat
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: _isHovered ? const Color(0x2A4F8CFF) : const Color(0x1A4F8CFF),
+                      color: _isHovered
+                          ? const Color(0x2A4F8CFF)
+                          : const Color(0x1A4F8CFF),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: _isHovered ? const Color(0x664F8CFF) : const Color(0x334F8CFF),
+                        color: _isHovered
+                            ? const Color(0x664F8CFF)
+                            : const Color(0x334F8CFF),
                         width: 1.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF4F8CFF).withValues(alpha: _isHovered ? 0.4 : 0.2 + (_breathingController.value * 0.1)),
+                          color: const Color(0xFF4F8CFF).withValues(
+                            alpha: _isHovered
+                                ? 0.4
+                                : 0.2 + (_breathingController.value * 0.1),
+                          ),
                           blurRadius: _isHovered ? 30 : 20,
                           spreadRadius: _isHovered ? 4 : 2,
                         ),
@@ -72,7 +81,9 @@ class _TerminalFabState extends State<TerminalFab> with SingleTickerProviderStat
                     child: Center(
                       child: Icon(
                         Icons.terminal_rounded,
-                        color: _isHovered ? Colors.white : const Color(0xCCFFFFFF),
+                        color: _isHovered
+                            ? Colors.white
+                            : const Color(0xCCFFFFFF),
                         size: 28,
                       ),
                     ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Custom theme extension to handle our specific premium color palette.
-/// This ensures type-safe access to our semantic colors without hacking Material's ColorScheme.
+
+
 class PortfolioColors extends ThemeExtension<PortfolioColors> {
   final Color background;
   final Color surface;

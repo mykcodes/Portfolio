@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/utils/motion_system.dart';
 import '../../../../core/widgets/cursor_light_painter.dart';
-import '../../models/skill_model.dart';
+import '../../../../content/portfolio_data.dart';
 
 class SkillCard extends StatefulWidget {
-  final SkillModel skill;
+  final ToolboxContent skill;
   final bool isSelected;
   final VoidCallback onHoverEntered;
 
@@ -90,14 +90,20 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
         curve: MotionSystem.deceleration,
         transform: Matrix4.identity()
           ..setEntry(3, 2, 0.001)
-          ..multiply(Matrix4.translationValues(0.0, _isHovered ? -8.0 : 0.0, 0.0))
+          ..multiply(
+            Matrix4.translationValues(0.0, _isHovered ? -8.0 : 0.0, 0.0),
+          )
           ..rotateX(_isHovered ? -_mousePosition.dy * 0.05 : 0.0)
           ..rotateY(_isHovered ? _mousePosition.dx * 0.05 : 0.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          boxShadow: activeHighlight 
+          boxShadow: activeHighlight
               ? [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8)),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
                 ]
               : [],
         ),
@@ -116,13 +122,17 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        activeHighlight ? const Color(0x14FFFFFF) : const Color(0x0AFFFFFF),
+                        activeHighlight
+                            ? const Color(0x14FFFFFF)
+                            : const Color(0x0AFFFFFF),
                         const Color(0x02FFFFFF),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: activeHighlight ? const Color(0x4DFFFFFF) : const Color(0x12FFFFFF),
+                      color: activeHighlight
+                          ? const Color(0x4DFFFFFF)
+                          : const Color(0x12FFFFFF),
                       width: 1.0,
                     ),
                   ),
@@ -130,13 +140,14 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Layered Modular Tech Icon Anchor Component — with breathing pulse
+                      
                       AnimatedBuilder(
                         animation: _breathingController,
                         builder: (context, child) {
                           final double pulse = _breathingController.value;
-                          final double scale = 1.0 + math.sin(pulse * math.pi) * 0.06;
-                          
+                          final double scale =
+                              1.0 + math.sin(pulse * math.pi) * 0.06;
+
                           return AnimatedRotation(
                             turns: _isHovered ? (3 / 360) : 0,
                             duration: MotionSystem.swift,
@@ -150,7 +161,9 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
                                   color: const Color(0x0DFFFFFF),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: activeHighlight ? const Color(0x33FFFFFF) : const Color(0x0DFFFFFF),
+                                    color: activeHighlight
+                                        ? const Color(0x33FFFFFF)
+                                        : const Color(0x0DFFFFFF),
                                     width: 1.0,
                                   ),
                                 ),
@@ -158,7 +171,9 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
                                   child: Icon(
                                     Icons.terminal_rounded,
                                     size: 18,
-                                    color: activeHighlight ? const Color(0xFF4F8CFF) : Colors.white60,
+                                    color: activeHighlight
+                                        ? const Color(0xFF4F8CFF)
+                                        : Colors.white60,
                                   ),
                                 ),
                               ),
@@ -167,8 +182,8 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
                         },
                       ),
                       const SizedBox(height: 20),
+
                       
-                      // Component Module Label
                       Text(
                         widget.skill.name,
                         style: GoogleFonts.plusJakartaSans(
@@ -181,8 +196,8 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
                         ),
                       ),
                       const SizedBox(height: 8),
+
                       
-                      // Structural Module Data Description
                       Text(
                         widget.skill.description,
                         maxLines: 2,
@@ -199,8 +214,8 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
+
                 
-                // Cursor Spotlight Overlay
                 CursorLightOverlay(
                   normalizedMousePosition: _mousePosition,
                   isHovered: _isHovered,
@@ -208,7 +223,7 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
                   intensity: 0.08,
                 ),
 
-                // Premium Diagonal Glass Reflection Sweep overlay effect
+                
                 AnimatedBuilder(
                   animation: _reflectionController,
                   builder: (context, child) {
@@ -251,7 +266,7 @@ class _ReflectionSweepPainter extends CustomPainter {
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
     final double sweepPosition = (size.width * 2) * progress - size.width;
-    
+
     canvas.save();
     canvas.translate(sweepPosition, 0);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
@@ -263,4 +278,3 @@ class _ReflectionSweepPainter extends CustomPainter {
     return oldDelegate.progress != progress;
   }
 }
-

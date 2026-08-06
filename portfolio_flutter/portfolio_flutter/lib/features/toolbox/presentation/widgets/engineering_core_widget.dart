@@ -2,6 +2,9 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../content/portfolio_data.dart';
+
+import '../../../../core/controllers/experience_controller.dart';
 
 class EngineeringCoreWidget extends StatefulWidget {
   const EngineeringCoreWidget({super.key});
@@ -10,46 +13,74 @@ class EngineeringCoreWidget extends StatefulWidget {
   State<EngineeringCoreWidget> createState() => _EngineeringCoreWidgetState();
 }
 
-class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget> with TickerProviderStateMixin {
+class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget>
+    with TickerProviderStateMixin {
   late AnimationController _orbController;
   late AnimationController _orbitController;
-  
+
   bool _isCoreHovered = false;
-  
-  final List<_TechModule> _modules = [
-    _TechModule(name: 'Flutter', orbitLevel: 1, angleOffset: 0.0, speedMultiplier: 1.0),
-    _TechModule(name: 'C++', orbitLevel: 1, angleOffset: 3.14, speedMultiplier: 1.0),
-    _TechModule(name: 'Cloud', orbitLevel: 2, angleOffset: 1.0, speedMultiplier: 0.8),
-    _TechModule(name: 'AI', orbitLevel: 2, angleOffset: 4.14, speedMultiplier: 0.8),
-    _TechModule(name: 'Python', orbitLevel: 2, angleOffset: 2.5, speedMultiplier: 0.8),
-    _TechModule(name: 'Cybersecurity', orbitLevel: 3, angleOffset: 0.5, speedMultiplier: 0.6),
-    _TechModule(name: 'Docker', orbitLevel: 3, angleOffset: 2.0, speedMultiplier: 0.6),
-    _TechModule(name: 'Firebase', orbitLevel: 3, angleOffset: 3.5, speedMultiplier: 0.6),
-    _TechModule(name: 'Node', orbitLevel: 3, angleOffset: 5.0, speedMultiplier: 0.6),
-    _TechModule(name: 'Linux', orbitLevel: 4, angleOffset: 1.5, speedMultiplier: 0.4),
-    _TechModule(name: 'Git', orbitLevel: 4, angleOffset: 4.5, speedMultiplier: 0.4),
-  ];
+
+  late final List<_TechModule> _modules;
 
   _TechModule? _activeModule;
 
   @override
   void initState() {
     super.initState();
-    // Orb breathing and plasma shifting
+    
+    _modules = ToolboxData.engineeringModules.asMap().entries.map((entry) {
+      final index = entry.key;
+      final content = entry.value;
+      
+      final orbitLevel = (index % 4) + 1;
+      final angleOffset = index * (math.pi * 2 / ToolboxData.engineeringModules.length);
+      final speedMultiplier = 1.0 - (orbitLevel * 0.15);
+      
+      String shortName = content.name;
+      if (shortName.contains('Artificial')) shortName = 'AI';
+      if (shortName.contains('Data Structures')) shortName = 'DSA';
+      if (shortName.contains('JavaScript')) shortName = 'React';
+      if (shortName.contains('Git')) shortName = 'Git';
+      
+      return _TechModule(
+        name: shortName,
+        orbitLevel: orbitLevel,
+        angleOffset: angleOffset,
+        speedMultiplier: speedMultiplier,
+        content: content,
+      );
+    }).toList();
+
+    
     _orbController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
     )..repeat(reverse: true);
 
-    // Continuous orbital rotation
+    
     _orbitController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 60),
     )..repeat();
+
+    ExperienceController.instance.addListener(_onSectionChanged);
+    _onSectionChanged(); 
+  }
+
+  void _onSectionChanged() {
+    if (!mounted) return;
+    if (ExperienceController.instance.activeSection == 'toolbox') {
+      if (!_orbController.isAnimating) _orbController.repeat(reverse: true);
+      if (!_orbitController.isAnimating) _orbitController.repeat();
+    } else {
+      if (_orbController.isAnimating) _orbController.stop();
+      if (_orbitController.isAnimating) _orbitController.stop();
+    }
   }
 
   @override
   void dispose() {
+    ExperienceController.instance.removeListener(_onSectionChanged);
     _orbController.dispose();
     _orbitController.dispose();
     super.dispose();
@@ -58,7 +89,7 @@ class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget> with Tick
   void _onModuleTapped(_TechModule module) {
     setState(() {
       if (_activeModule == module) {
-        _activeModule = null; // Toggle off
+        _activeModule = null; 
       } else {
         _activeModule = module;
       }
@@ -71,18 +102,18 @@ class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget> with Tick
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
         final isDesktop = screenWidth >= 1024;
-        
+
         final center = Offset(
-          isDesktop ? screenWidth * 0.4 : screenWidth * 0.5, 
+          isDesktop ? screenWidth * 0.4 : screenWidth * 0.5,
           isDesktop ? 350 : 300,
         );
-        
+
         return SizedBox(
           width: double.infinity,
           height: isDesktop ? 700 : 600,
           child: Stack(
             children: [
-              // Background Layer
+              
               RepaintBoundary(
                 child: CustomPaint(
                   size: Size.infinite,
@@ -90,7 +121,7 @@ class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget> with Tick
                 ),
               ),
 
-              // Energy Connections
+              
               RepaintBoundary(
                 child: AnimatedBuilder(
                   animation: _orbitController,
@@ -108,7 +139,7 @@ class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget> with Tick
                 ),
               ),
 
-              // Orbiting Modules
+              
               RepaintBoundary(
                 child: AnimatedBuilder(
                   animation: _orbitController,
@@ -128,7 +159,7 @@ class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget> with Tick
                 ),
               ),
 
-              // The Central Living Orb
+              
               Positioned(
                 left: center.dx - 60,
                 top: center.dy - 60,
@@ -138,7 +169,7 @@ class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget> with Tick
                   child: GestureDetector(
                     onTap: () {
                       setState(() => _activeModule = null);
-                      // Haptic/Shockwave logic could go here
+                      
                     },
                     child: _CoreOrb(
                       orbController: _orbController,
@@ -148,13 +179,16 @@ class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget> with Tick
                 ),
               ),
 
-              // Floating Information Panel (Active Module Details)
+              
               if (_activeModule != null)
                 Positioned(
                   right: isDesktop ? 40 : 20,
                   top: isDesktop ? 100 : 20,
                   width: isDesktop ? 380 : screenWidth - 40,
-                  child: _FloatingInfoPanel(module: _activeModule!, onClose: () => setState(() => _activeModule = null)),
+                  child: _FloatingInfoPanel(
+                    module: _activeModule!,
+                    onClose: () => setState(() => _activeModule = null),
+                  ),
                 ),
             ],
           ),
@@ -178,7 +212,7 @@ class _CoreOrb extends StatelessWidget {
         final breath = orbController.value;
         final scale = 1.0 + (breath * 0.05) + (isHovered ? 0.1 : 0.0);
         final glowOpacity = 0.5 + (breath * 0.3) + (isHovered ? 0.2 : 0.0);
-        
+
         return Transform.scale(
           scale: scale,
           child: Container(
@@ -187,15 +221,19 @@ class _CoreOrb extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               boxShadow: [
-                // Outer Volumetric Glow
+                
                 BoxShadow(
-                  color: const Color(0xFF4F8CFF).withValues(alpha: glowOpacity * 0.3),
+                  color: const Color(
+                    0xFF4F8CFF,
+                  ).withValues(alpha: glowOpacity * 0.3),
                   blurRadius: 100,
                   spreadRadius: 20 + (breath * 10),
                 ),
-                // Inner Core Heat
+                
                 BoxShadow(
-                  color: const Color(0xFF4F8CFF).withValues(alpha: glowOpacity * 0.6),
+                  color: const Color(
+                    0xFF4F8CFF,
+                  ).withValues(alpha: glowOpacity * 0.6),
                   blurRadius: 40,
                   spreadRadius: 5,
                 ),
@@ -208,12 +246,18 @@ class _CoreOrb extends StatelessWidget {
                   const Color(0xFF0F1A3A).withValues(alpha: 0.8),
                 ],
                 stops: const [0.0, 0.3, 0.7, 1.0],
-                // Plasma shifting effect
-                center: Alignment(0.1 * math.cos(breath * math.pi), 0.1 * math.sin(breath * math.pi)),
+                
+                center: Alignment(
+                  0.1 * math.cos(breath * math.pi),
+                  0.1 * math.sin(breath * math.pi),
+                ),
               ),
             ),
             child: CustomPaint(
-              painter: _OrbRingsPainter(rotation: breath * math.pi * 2, isHovered: isHovered),
+              painter: _OrbRingsPainter(
+                rotation: breath * math.pi * 2,
+                isHovered: isHovered,
+              ),
             ),
           ),
         );
@@ -228,27 +272,58 @@ class _OrbRingsPainter extends CustomPainter {
 
   _OrbRingsPainter({required this.rotation, required this.isHovered});
 
+  static final Paint _normalPaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.2)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1.0;
+
+  static final Paint _hoverPaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.4)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1.0;
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final paint = Paint()
-      ..color = Colors.white.withValues(alpha: isHovered ? 0.4 : 0.2)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+    final paint = isHovered ? _hoverPaint : _normalPaint;
 
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.rotate(rotation);
-    canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: size.width * 0.9, height: size.height * 0.3), paint);
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset.zero,
+        width: size.width * 0.9,
+        height: size.height * 0.3,
+      ),
+      paint,
+    );
     canvas.rotate(math.pi / 3);
-    canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: size.width * 0.85, height: size.height * 0.25), paint);
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset.zero,
+        width: size.width * 0.85,
+        height: size.height * 0.25,
+      ),
+      paint,
+    );
     canvas.rotate(math.pi / 3);
-    canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: size.width * 0.9, height: size.height * 0.3), paint);
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset.zero,
+        width: size.width * 0.9,
+        height: size.height * 0.3,
+      ),
+      paint,
+    );
     canvas.restore();
   }
 
   @override
-  bool shouldRepaint(covariant _OrbRingsPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _OrbRingsPainter oldDelegate) {
+    return oldDelegate.rotation != rotation ||
+        oldDelegate.isHovered != isHovered;
+  }
 }
 
 class _TechModule {
@@ -256,12 +331,14 @@ class _TechModule {
   final int orbitLevel;
   final double angleOffset;
   final double speedMultiplier;
+  final ToolboxContent content;
 
   _TechModule({
     required this.name,
     required this.orbitLevel,
     required this.angleOffset,
     required this.speedMultiplier,
+    required this.content,
   });
 }
 
@@ -278,39 +355,46 @@ class _EnergyConnectionsPainter extends CustomPainter {
     required this.activeModule,
   });
 
+  static final Paint _defaultPaint = Paint()
+    ..color = const Color(0xFF4F8CFF).withValues(alpha: 0.1)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1.0;
+
+  static final Paint _activePaint = Paint()
+    ..color = const Color(0xFF4F8CFF).withValues(alpha: 0.5)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 2.0;
+
   @override
   void paint(Canvas canvas, Size size) {
-    final defaultPaint = Paint()
-      ..color = const Color(0xFF4F8CFF).withValues(alpha: 0.1)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-
-    final activePaint = Paint()
-      ..color = const Color(0xFF4F8CFF).withValues(alpha: 0.5)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
     for (var m in modules) {
       final double radius = 100.0 + (m.orbitLevel * 60.0);
-      final double currentAngle = m.angleOffset + (rotationValue * math.pi * 2 * m.speedMultiplier);
-      
+      final double currentAngle =
+          m.angleOffset + (rotationValue * math.pi * 2 * m.speedMultiplier);
+
       final dx = center.dx + math.cos(currentAngle) * radius;
       final dy = center.dy + math.sin(currentAngle) * radius;
-      
+
       final path = Path()
         ..moveTo(center.dx, center.dy)
         ..quadraticBezierTo(
           center.dx + (dx - center.dx) * 0.5,
-          center.dy + (dy - center.dy) * 0.2, // Adds a slight curve to the energy line
-          dx, dy
+          center.dy +
+              (dy - center.dy) * 0.2, 
+          dx,
+          dy,
         );
 
-      canvas.drawPath(path, m == activeModule ? activePaint : defaultPaint);
+      canvas.drawPath(path, m == activeModule ? _activePaint : _defaultPaint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _EnergyConnectionsPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _EnergyConnectionsPainter oldDelegate) {
+    return oldDelegate.rotationValue != rotationValue ||
+        oldDelegate.activeModule != activeModule ||
+        oldDelegate.center != center;
+  }
 }
 
 class _ModuleWidget extends StatefulWidget {
@@ -337,9 +421,12 @@ class _ModuleWidgetState extends State<_ModuleWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final double radius = 100.0 + (widget.module.orbitLevel * 60.0) + (_isHovered ? 10.0 : 0.0);
-    final double currentAngle = widget.module.angleOffset + (widget.rotationValue * math.pi * 2 * widget.module.speedMultiplier);
-    
+    final double radius =
+        100.0 + (widget.module.orbitLevel * 60.0) + (_isHovered ? 10.0 : 0.0);
+    final double currentAngle =
+        widget.module.angleOffset +
+        (widget.rotationValue * math.pi * 2 * widget.module.speedMultiplier);
+
     final dx = widget.center.dx + math.cos(currentAngle) * radius;
     final dy = widget.center.dy + math.sin(currentAngle) * radius;
 
@@ -358,14 +445,24 @@ class _ModuleWidgetState extends State<_ModuleWidget> {
             width: 80,
             height: 40,
             decoration: BoxDecoration(
-              color: widget.isActive || _isHovered ? const Color(0x1A4F8CFF) : const Color(0x05FFFFFF),
+              color: widget.isActive || _isHovered
+                  ? const Color(0x1A4F8CFF)
+                  : const Color(0x05FFFFFF),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: widget.isActive || _isHovered ? const Color(0x664F8CFF) : const Color(0x1AFFFFFF),
+                color: widget.isActive || _isHovered
+                    ? const Color(0x664F8CFF)
+                    : const Color(0x1AFFFFFF),
                 width: 1,
               ),
               boxShadow: widget.isActive || _isHovered
-                  ? [BoxShadow(color: const Color(0x334F8CFF), blurRadius: 10, spreadRadius: 1)]
+                  ? [
+                      BoxShadow(
+                        color: const Color(0x334F8CFF),
+                        blurRadius: 10,
+                        spreadRadius: 1,
+                      ),
+                    ]
                   : [],
             ),
             alignment: Alignment.center,
@@ -373,7 +470,9 @@ class _ModuleWidgetState extends State<_ModuleWidget> {
               widget.module.name,
               style: GoogleFonts.plusJakartaSans(
                 textStyle: TextStyle(
-                  color: widget.isActive || _isHovered ? Colors.white : const Color(0x8CFFFFFF),
+                  color: widget.isActive || _isHovered
+                      ? Colors.white
+                      : const Color(0x8CFFFFFF),
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                 ),
@@ -426,7 +525,7 @@ class _FloatingInfoPanel extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      module.name,
+                      module.content.name,
                       style: GoogleFonts.plusJakartaSans(
                         textStyle: const TextStyle(
                           color: Colors.white,
@@ -436,20 +535,44 @@ class _FloatingInfoPanel extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white54, size: 18),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white54,
+                        size: 18,
+                      ),
                       onPressed: onClose,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                     ),
                   ],
                 ),
+                const SizedBox(height: 12),
+                Text(
+                  module.content.description,
+                  style: GoogleFonts.geist(
+                    textStyle: const TextStyle(
+                      color: Color(0xCCFFFFFF),
+                      fontSize: 14,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 16),
-                _InfoRow(title: 'Classification', value: 'Primary Capability'),
-                _InfoRow(title: 'Experience', value: 'Production Level'),
-                _InfoRow(title: 'Integrations', value: 'Multiple active systems'),
+                _InfoRow(
+                  title: 'Experience',
+                  value: module.content.yearsOfExperience,
+                ),
+                _InfoRow(
+                  title: 'Current Focus',
+                  value: module.content.currentFocus,
+                ),
+                _InfoRow(
+                  title: 'Linked Projects',
+                  value: module.content.linkedProjects.join(', '),
+                ),
                 const SizedBox(height: 24),
                 Text(
-                  'Engineering Philosophy',
+                  'TAGS',
                   style: GoogleFonts.geist(
                     textStyle: const TextStyle(
                       color: Color(0xFF4F8CFF),
@@ -461,7 +584,7 @@ class _FloatingInfoPanel extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Utilized extensively to architect scalable, high-performance systems with strict adherence to maintainability and clean design patterns.',
+                  module.content.tags.join(' • '),
                   style: GoogleFonts.geist(
                     textStyle: const TextStyle(
                       color: Color(0xCCFFFFFF),
@@ -495,13 +618,20 @@ class _InfoRow extends StatelessWidget {
           Text(
             title,
             style: GoogleFonts.jetBrainsMono(
-              textStyle: const TextStyle(color: Color(0x66FFFFFF), fontSize: 11),
+              textStyle: const TextStyle(
+                color: Color(0x66FFFFFF),
+                fontSize: 11,
+              ),
             ),
           ),
           Text(
             value,
             style: GoogleFonts.geist(
-              textStyle: const TextStyle(color: Color(0xCCFFFFFF), fontSize: 12, fontWeight: FontWeight.w500),
+              textStyle: const TextStyle(
+                color: Color(0xCCFFFFFF),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -518,7 +648,7 @@ class _CoreBackgroundPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
-    // Faint blueprint grid
+    
     const double gridSize = 40.0;
     for (double i = 0; i < size.width; i += gridSize) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
@@ -527,9 +657,9 @@ class _CoreBackgroundPainter extends CustomPainter {
       canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
     }
 
-    // Tiny floating particles (static for performance, relies on parallax)
+    
     final dotPaint = Paint()..color = const Color(0x1AFFFFFF);
-    final random = math.Random(42); // Seeded for consistency
+    final random = math.Random(42); 
     for (int i = 0; i < 50; i++) {
       final x = random.nextDouble() * size.width;
       final y = random.nextDouble() * size.height;

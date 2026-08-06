@@ -3,41 +3,41 @@ import '../utils/motion_system.dart';
 
 enum SystemState { booting, waking, active }
 
-/// The Global Experience Engine.
-/// Synchronizes all scrolling, ambient lighting, cursor physics, and section visibility.
+
+
 class ExperienceController extends ChangeNotifier {
   static final ExperienceController instance = ExperienceController._();
   ExperienceController._();
 
   final ScrollController scrollController = ScrollController();
 
-  // Global State Properties
+  
   SystemState systemState = SystemState.booting;
-  // Cursor isolated state to prevent global rebuilds
+  
   final ValueNotifier<Offset> cursorNotifier = ValueNotifier(Offset.zero);
   Offset get globalCursor => cursorNotifier.value;
   double ambientIntensity = 0.0;
-  double globalScrollProgress = 0.0; // Tracks precise 0.0 -> 1.0 page depth
+  double globalScrollProgress = 0.0; 
   String activeSection = 'hero';
 
-  // Easter Egg States
+  
   bool isMatrixMode = false;
   bool isOverclocked = false;
 
-  // Mobile Navigation State
+  
   bool isMobileDrawerOpen = false;
 
-  // Velocity tracking for DevMode & context-aware environment
-  double scrollVelocity = 0.0; // px/s
-  double cursorVelocity = 0.0; // px/frame
+  
+  double scrollVelocity = 0.0; 
+  double cursorVelocity = 0.0; 
   double _lastScrollOffset = 0.0;
   DateTime _lastScrollTime = DateTime.now();
   Offset _lastCursorPosition = Offset.zero;
-  
-  // Prevents scroll listener from fighting the active indicator during manual navigation
-  bool _isAutoScrolling = false; 
 
-  // Master Layout Anchors
+  
+  bool _isAutoScrolling = false;
+
+  
   final Map<String, GlobalKey> sectionKeys = {
     'hero': GlobalKey(),
     'about': GlobalKey(),
@@ -56,7 +56,7 @@ class ExperienceController extends ChangeNotifier {
 
   void updateCursorPosition(Offset position) {
     if (cursorNotifier.value != position) {
-      // Calculate cursor velocity
+      
       cursorVelocity = (position - _lastCursorPosition).distance;
       _lastCursorPosition = position;
       cursorNotifier.value = position;
@@ -85,7 +85,7 @@ class ExperienceController extends ChangeNotifier {
 
   void toggleOverclock() {
     isOverclocked = !isOverclocked;
-    // Auto-disable overclock after 5 seconds
+    
     if (isOverclocked) {
       Future.delayed(const Duration(seconds: 5), () {
         if (isOverclocked) {
@@ -104,11 +104,11 @@ class ExperienceController extends ChangeNotifier {
 
   void _onScrollStateChanged() {
     if (!scrollController.hasClients) return;
-    
+
     final double offset = scrollController.offset;
     final double maxScroll = scrollController.position.maxScrollExtent;
 
-    // Calculate scroll velocity
+    
     final now = DateTime.now();
     final dt = now.difference(_lastScrollTime).inMilliseconds;
     if (dt > 0) {
@@ -116,13 +116,14 @@ class ExperienceController extends ChangeNotifier {
     }
     _lastScrollOffset = offset;
     _lastScrollTime = now;
-    
+
     if (maxScroll > 0) {
       globalScrollProgress = (offset / maxScroll).clamp(0.0, 1.0);
+
       
-      // Cinematic Environment Control
       if (globalScrollProgress > 0.75) {
-        final double fadeProgress = ((globalScrollProgress - 0.75) / 0.25).clamp(0.0, 1.0);
+        final double fadeProgress = ((globalScrollProgress - 0.75) / 0.25)
+            .clamp(0.0, 1.0);
         ambientIntensity = 1.0 - (fadeProgress * 0.7);
       } else {
         ambientIntensity = 1.0;
@@ -132,27 +133,27 @@ class ExperienceController extends ChangeNotifier {
     if (!_isAutoScrolling) {
       _determineActiveSection();
     }
-    
+
     notifyListeners();
   }
 
-  /// Calculates which section is currently occupying the focal point of the screen
+  
   void _determineActiveSection() {
     if (!scrollController.hasClients) return;
 
-    // SURGICAL FIX: Lock the active section to 'hero' when at the absolute top.
-    // This prevents unpredictable layout-pass geometry (like lazy-loaded modules)
-    // from falsely hijacking the active state before the viewport has fully settled.
+    
+    
+    
     if (scrollController.offset <= 0.0) {
       if (activeSection != 'hero') {
         activeSection = 'hero';
       }
       return;
     }
-    
+
     String? visibleSection;
     double minDistance = double.infinity;
-    
+
     final double focalPoint = scrollController.position.viewportDimension * 0.3;
 
     sectionKeys.forEach((keyName, globalKey) {
@@ -162,7 +163,7 @@ class ExperienceController extends ChangeNotifier {
         if (box != null) {
           final double yPos = box.localToGlobal(Offset.zero).dy;
           final double distance = (yPos - focalPoint).abs();
-          
+
           if (distance < minDistance) {
             minDistance = distance;
             visibleSection = keyName;
@@ -176,23 +177,23 @@ class ExperienceController extends ChangeNotifier {
     }
   }
 
-  /// Global smooth scroll router utilized by the Navigation system
+  
   Future<void> scrollToSection(String sectionName) async {
     final key = sectionKeys[sectionName];
     if (key?.currentContext != null) {
-      // 1. Immediately update active state so the navbar indicator glides FIRST.
+      
       _isAutoScrolling = true;
       activeSection = sectionName;
       notifyListeners();
 
-      // 2. Execute the synchronized cinematic scroll.
+      
       await Scrollable.ensureVisible(
         key!.currentContext!,
         duration: MotionSystem.cinematicDuration,
         curve: MotionSystem.cinematic,
         alignment: 0.1,
       );
-      
+
       _isAutoScrolling = false;
     }
   }

@@ -2,9 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../core/controllers/console_controller.dart';
 
-/// The glass surface container for the engineering console.
-/// Dark minimal terminal with frosted glass, subtle reflections,
-/// and professional border treatment.
+
+
+
 class ConsoleSurface extends StatelessWidget {
   final Widget child;
   final bool isVisible;
@@ -23,12 +23,9 @@ class ConsoleSurface extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 24.0, sigmaY: 24.0),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xE8080808), // Near-opaque dark
+            color: const Color(0xE8080808), 
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0x1AFFFFFF),
-              width: 1.0,
-            ),
+            border: Border.all(color: const Color(0x1AFFFFFF), width: 1.0),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x40000000),
@@ -46,14 +43,11 @@ class ConsoleSurface extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title bar
+              
               _ConsoleTitleBar(),
-              // Divider
-              Container(
-                height: 1,
-                color: const Color(0x14FFFFFF),
-              ),
-              // Content
+              
+              Container(height: 1, color: const Color(0x14FFFFFF)),
+              
               Expanded(child: child),
             ],
           ),
@@ -71,7 +65,7 @@ class _ConsoleTitleBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          // Window control dots
+          
           _WindowDot(
             color: const Color(0xFFFF5F57),
             onTap: () => ConsoleController.instance.close(),
@@ -82,7 +76,7 @@ class _ConsoleTitleBar extends StatelessWidget {
           _WindowDot(color: const Color(0xFF28C840)),
           const SizedBox(width: 16),
 
-          // Title
+          
           const Expanded(
             child: Text(
               'myk-codes — engineering console',
@@ -96,7 +90,7 @@ class _ConsoleTitleBar extends StatelessWidget {
             ),
           ),
 
-          // Subtle version indicator
+          
           const Text(
             'v3.0',
             style: TextStyle(
@@ -115,7 +109,7 @@ class _ConsoleTitleBar extends StatelessWidget {
 class _WindowDot extends StatefulWidget {
   final Color color;
   final VoidCallback? onTap;
-  
+
   const _WindowDot({required this.color, this.onTap});
 
   @override
@@ -130,7 +124,9 @@ class _WindowDotState extends State<_WindowDot> {
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      cursor: widget.onTap != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
       child: GestureDetector(
         onTap: widget.onTap,
         child: Container(
@@ -138,7 +134,9 @@ class _WindowDotState extends State<_WindowDot> {
           height: 12,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: _isHovered && widget.onTap != null ? widget.color : widget.color.withValues(alpha: 0.8),
+            color: _isHovered && widget.onTap != null
+                ? widget.color
+                : widget.color.withValues(alpha: 0.8),
           ),
           child: _isHovered && widget.onTap != null
               ? const Icon(Icons.close, size: 8, color: Colors.black54)
@@ -148,4 +146,3 @@ class _WindowDotState extends State<_WindowDot> {
     );
   }
 }
-

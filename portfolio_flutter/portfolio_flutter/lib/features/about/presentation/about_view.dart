@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../content/portfolio_data.dart';
 
 class AboutView extends StatelessWidget {
   const AboutView({super.key});
@@ -12,7 +13,7 @@ class AboutView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 64.0),
       child: Column(
         children: [
-          // Section Header
+          
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -23,7 +24,7 @@ class AboutView extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Text(
-                'SYSTEM.DOSSIER',
+                AboutData.sectionTitle,
                 style: GoogleFonts.jetBrainsMono(
                   textStyle: const TextStyle(
                     color: Color(0xFF4F8CFF),
@@ -42,8 +43,8 @@ class AboutView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 64),
+
           
-          // Main Dossier Content
           Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 900),
@@ -57,7 +58,7 @@ class AboutView extends StatelessWidget {
 
   Widget _buildDossierCard(BuildContext context) {
     final bool isDesktop = MediaQuery.sizeOf(context).width >= 600;
-    
+
     return Container(
       decoration: BoxDecoration(
         color: const Color(0x05FFFFFF),
@@ -68,7 +69,7 @@ class AboutView extends StatelessWidget {
             color: Color(0x054F8CFF),
             blurRadius: 40,
             offset: Offset(0, 10),
-          )
+          ),
         ],
       ),
       child: ClipRRect(
@@ -77,22 +78,20 @@ class AboutView extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
           child: Stack(
             children: [
-              // Blueprint Grid Background
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: _BlueprintGridPainter(),
-                ),
-              ),
               
+              Positioned.fill(
+                child: CustomPaint(painter: _BlueprintGridPainter()),
+              ),
+
               Padding(
                 padding: EdgeInsets.all(isDesktop ? 48.0 : 24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildLabel('IDENTIFICATION'),
+                    _buildLabel(AboutData.identificationLabel),
                     const SizedBox(height: 8),
                     Text(
-                      'Mayank Sharma',
+                      AboutData.fullName,
                       style: GoogleFonts.geist(
                         textStyle: TextStyle(
                           color: Colors.white,
@@ -104,7 +103,7 @@ class AboutView extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Software Engineer',
+                      AboutData.role,
                       style: GoogleFonts.jetBrainsMono(
                         textStyle: const TextStyle(
                           color: Color(0x99FFFFFF),
@@ -113,13 +112,13 @@ class AboutView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 48),
-                    
-                    _buildLabel('CURRENT MISSION'),
+
+                    _buildLabel(AboutData.missionLabel),
                     const SizedBox(height: 12),
                     Text(
-                      'Building high-performance native architectures and distributed systems. Exploring the intersection of artificial intelligence, fluid rendering, and spatial interfaces.',
+                      AboutData.missionText,
                       style: GoogleFonts.plusJakartaSans(
                         textStyle: const TextStyle(
                           color: Color(0xCCFFFFFF),
@@ -131,98 +130,98 @@ class AboutView extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 48),
-                    
+
                     isDesktop
-                    ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildLabel('PHILOSOPHY'),
-                                const SizedBox(height: 12),
-                                Text(
-                                  '"Every pixel should be intentional. Every interaction should communicate craftsmanship."',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    textStyle: const TextStyle(
-                                      color: Color(0x99FFFFFF),
-                                      fontSize: 15,
-                                      fontStyle: FontStyle.italic,
-                                      fontWeight: FontWeight.w400,
-                                      height: 1.6,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 48),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildLabel('EDUCATION'),
-                                const SizedBox(height: 12),
-                                Text(
-                                  'B.Tech Computer Science\nUndergraduate',
-                                  style: GoogleFonts.jetBrainsMono(
-                                    textStyle: const TextStyle(
-                                      color: Color(0xCCFFFFFF),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                      height: 1.6,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
+                        ? Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildLabel('PHILOSOPHY'),
-                              const SizedBox(height: 12),
-                              Text(
-                                '"Every pixel should be intentional. Every interaction should communicate craftsmanship."',
-                                style: GoogleFonts.plusJakartaSans(
-                                  textStyle: const TextStyle(
-                                    color: Color(0x99FFFFFF),
-                                    fontSize: 15,
-                                    fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.w400,
-                                    height: 1.6,
-                                  ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildLabel(AboutData.philosophyLabel),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      AboutData.philosophyText,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        textStyle: const TextStyle(
+                                          color: Color(0x99FFFFFF),
+                                          fontSize: 15,
+                                          fontStyle: FontStyle.italic,
+                                          fontWeight: FontWeight.w400,
+                                          height: 1.6,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 48),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildLabel(AboutData.educationLabel),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      AboutData.educationText,
+                                      style: GoogleFonts.jetBrainsMono(
+                                        textStyle: const TextStyle(
+                                          color: Color(0xCCFFFFFF),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          height: 1.6,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
-                          ),
-                          const SizedBox(height: 32),
-                          Column(
+                          )
+                        : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildLabel('EDUCATION'),
-                              const SizedBox(height: 12),
-                              Text(
-                                'B.Tech Computer Science\nUndergraduate',
-                                style: GoogleFonts.jetBrainsMono(
-                                  textStyle: const TextStyle(
-                                    color: Color(0xCCFFFFFF),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    height: 1.6,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildLabel(AboutData.philosophyLabel),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    AboutData.philosophyText,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      textStyle: const TextStyle(
+                                        color: Color(0x99FFFFFF),
+                                        fontSize: 15,
+                                        fontStyle: FontStyle.italic,
+                                        fontWeight: FontWeight.w400,
+                                        height: 1.6,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
+                              ),
+                              const SizedBox(height: 32),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildLabel(AboutData.educationLabel),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    AboutData.educationText,
+                                    style: GoogleFonts.jetBrainsMono(
+                                      textStyle: const TextStyle(
+                                        color: Color(0xCCFFFFFF),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        height: 1.6,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
                   ],
                 ),
               ),
@@ -256,13 +255,13 @@ class _BlueprintGridPainter extends CustomPainter {
       ..strokeWidth = 1.0;
 
     final double step = 20.0;
+
     
-    // Draw vertical lines
     for (double i = 0; i <= size.width; i += step) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
     }
+
     
-    // Draw horizontal lines
     for (double i = 0; i <= size.height; i += step) {
       canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
     }
