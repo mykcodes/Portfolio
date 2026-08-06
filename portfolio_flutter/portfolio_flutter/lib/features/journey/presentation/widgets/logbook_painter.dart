@@ -16,7 +16,7 @@ class LogbookPainter extends CustomPainter {
     final random = math.Random(seed);
     
     final paint = Paint()
-      ..color = const Color(0xFF4F8CFF).withOpacity(isHovered ? 0.08 : 0.03)
+      ..color = const Color(0xFF4F8CFF).withValues(alpha: isHovered ? 0.08 : 0.03)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
@@ -32,7 +32,7 @@ class LogbookPainter extends CustomPainter {
     // Draw some random architectural nodes / arcs based on seed
     final nodeCount = random.nextInt(4) + 3;
     final highlightPaint = Paint()
-      ..color = const Color(0xFF4F8CFF).withOpacity(isHovered ? 0.15 : 0.05)
+      ..color = const Color(0xFF4F8CFF).withValues(alpha: isHovered ? 0.15 : 0.05)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
@@ -68,3 +68,4 @@ class LogbookPainter extends CustomPainter {
     return oldDelegate.isHovered != isHovered || oldDelegate.seed != seed;
   }
 }
+

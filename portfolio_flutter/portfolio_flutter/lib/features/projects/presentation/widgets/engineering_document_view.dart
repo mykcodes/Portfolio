@@ -1,9 +1,6 @@
-import 'dart:math';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import '../../../../core/utils/motion_system.dart';
 import '../../models/project_model.dart';
 import 'interactive_sandbox.dart';
 
@@ -24,7 +21,7 @@ class _EngineeringDocumentViewState extends State<EngineeringDocumentView> with 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Divider(color: Colors.white.withOpacity(0.1), height: 1),
+          Divider(color: Colors.white.withValues(alpha: 0.1), height: 1),
           const SizedBox(height: 32),
           
           // 1. Interactive Sandbox Demo
@@ -94,7 +91,7 @@ class _EngineeringDocumentViewState extends State<EngineeringDocumentView> with 
             label,
             style: GoogleFonts.jetBrainsMono(
               textStyle: TextStyle(
-                color: accent.withOpacity(0.8),
+                color: accent.withValues(alpha: 0.8),
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1.5,
@@ -231,12 +228,12 @@ class _ArchitecturePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final Paint nodeBorderPaint = Paint()
-      ..color = const Color(0xFF4F8CFF).withOpacity(0.5 * drawProgress)
+      ..color = const Color(0xFF4F8CFF).withValues(alpha: 0.5 * drawProgress)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
     final Paint textPaint = Paint()
-      ..color = const Color(0xCCFFFFFF).withOpacity(drawProgress);
+      ..color = const Color(0xCCFFFFFF).withValues(alpha: drawProgress);
 
     // Hardcoded nodes for visual effect
     final List<Offset> nodes = [
@@ -565,3 +562,4 @@ class _VerticalTimelineState extends State<_VerticalTimeline> with TickerProvide
     );
   }
 }
+

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../data/connection_data.dart';
 import 'widgets/typing_terminal.dart';
 import 'widgets/connection_footer.dart';
 import 'widgets/github_timeline/github_timeline_widget.dart';
@@ -10,6 +9,8 @@ class ConnectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = MediaQuery.sizeOf(context).width >= 600;
+
     return Stack(
       children: [
         // Cinematic Vignette Overlay: Calms the background constellation
@@ -38,7 +39,7 @@ class ConnectionView extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 720), // Narrower constraints for focus
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 160.0),
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 40.0 : 20.0, vertical: isDesktop ? 160.0 : 100.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -49,12 +50,12 @@ class ConnectionView extends StatelessWidget {
                       "LET'S BUILD SOMETHING\nTHAT PEOPLE REMEMBER.",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.plusJakartaSans(
-                        textStyle: const TextStyle(
+                        textStyle: TextStyle(
                           color: Colors.white,
-                          fontSize: 48,
+                          fontSize: isDesktop ? 48 : 32,
                           fontWeight: FontWeight.w800,
                           height: 1.15,
-                          letterSpacing: 2.0,
+                          letterSpacing: isDesktop ? 2.0 : 1.0,
                         ),
                       ),
                     ),

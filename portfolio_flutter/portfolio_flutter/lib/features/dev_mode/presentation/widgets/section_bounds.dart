@@ -85,7 +85,7 @@ class _SectionBoundsState extends State<SectionBounds> {
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: color.withOpacity(isActive ? 0.4 : 0.15),
+                  color: color.withValues(alpha: isActive ? 0.4 : 0.15),
                   width: isActive ? 1.5 : 0.5,
                 ),
               ),
@@ -95,7 +95,7 @@ class _SectionBoundsState extends State<SectionBounds> {
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   margin: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.15),
+                    color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(3),
                   ),
                   child: Text(
@@ -104,7 +104,7 @@ class _SectionBoundsState extends State<SectionBounds> {
                       fontFamily: 'JetBrains Mono',
                       fontSize: 8,
                       fontWeight: FontWeight.w700,
-                      color: color.withOpacity(0.8),
+                      color: color.withValues(alpha: 0.8),
                       letterSpacing: 1.5,
                     ),
                   ),
@@ -117,3 +117,4 @@ class _SectionBoundsState extends State<SectionBounds> {
     );
   }
 }
+

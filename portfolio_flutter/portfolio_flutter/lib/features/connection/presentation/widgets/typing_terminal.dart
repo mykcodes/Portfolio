@@ -42,36 +42,36 @@ class _TypingTerminalState extends State<TypingTerminal> {
     const String target3 = "Connection established.";
 
     // Slight delay before terminal boots
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future.delayed(const Duration(milliseconds: 200));
 
     // Type Line 1
     for (int i = 0; i <= target1.length; i++) {
       if (!mounted) return;
       setState(() => _line1 = target1.substring(0, i));
       if (i > 0) SoundEngine.instance.playTerminalType();
-      await Future.delayed(const Duration(milliseconds: 30));
+      await Future.delayed(const Duration(milliseconds: 10));
     }
     
     SoundEngine.instance.playTerminalEnter();
 
-    await Future.delayed(const Duration(milliseconds: 400));
+    await Future.delayed(const Duration(milliseconds: 150));
 
     // Type Line 2
     for (int i = 0; i <= target2.length; i++) {
       if (!mounted) return;
       setState(() => _line2 = target2.substring(0, i));
       if (i > 0) SoundEngine.instance.playTerminalType();
-      await Future.delayed(const Duration(milliseconds: 20));
+      await Future.delayed(const Duration(milliseconds: 5));
     }
 
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future.delayed(const Duration(milliseconds: 200));
 
     // Snap Line 3
     if (!mounted) return;
     setState(() => _line3 = target3);
     SoundEngine.instance.playSuccess();
     
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 100));
 
     // Reveal List
     if (!mounted) return;

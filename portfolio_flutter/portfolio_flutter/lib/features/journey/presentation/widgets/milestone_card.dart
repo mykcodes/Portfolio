@@ -59,14 +59,14 @@ class _MilestoneCardState extends State<MilestoneCard> {
         curve: MotionSystem.deceleration,
         transform: Matrix4.identity()
           ..setEntry(3, 2, 0.001)
-          ..translate(0.0, _isHovered ? -6.0 : 0.0)
+          ..multiply(Matrix4.translationValues(0.0, _isHovered ? -6.0 : 0.0, 0.0))
           ..rotateX(_isHovered ? -_mousePosition.dy * 0.04 : 0.0)
           ..rotateY(_isHovered ? _mousePosition.dx * 0.04 : 0.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16), // Logbook style is sharper
           boxShadow: _isHovered 
               ? [
-                  BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 40, offset: const Offset(0, 15)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 40, offset: const Offset(0, 15)),
                 ]
               : [],
         ),
@@ -264,3 +264,4 @@ class _MilestoneCardState extends State<MilestoneCard> {
     );
   }
 }
+

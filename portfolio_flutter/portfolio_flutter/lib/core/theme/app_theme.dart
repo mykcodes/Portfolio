@@ -32,7 +32,6 @@ class AppTheme {
       
       // Configure default Material fallback colors mapping to our system
       colorScheme: ColorScheme.dark(
-        background: _darkColors.background,
         surface: _darkColors.surface,
         primary: _darkColors.accent,
         onPrimary: _darkColors.primaryText,

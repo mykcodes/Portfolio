@@ -101,7 +101,7 @@ class _HomeNavigationBarState extends State<HomeNavigationBar> with TickerProvid
                                           color: const Color(0xFF4F8CFF),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: const Color(0xFF4F8CFF).withOpacity(0.6),
+                                              color: const Color(0xFF4F8CFF).withValues(alpha: 0.6),
                                               blurRadius: 4,
                                               spreadRadius: 1,
                                             ),
@@ -121,12 +121,12 @@ class _HomeNavigationBarState extends State<HomeNavigationBar> with TickerProvid
                                               color: Colors.white,
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: const Color(0xFF4F8CFF).withOpacity(0.8),
+                                                  color: const Color(0xFF4F8CFF).withValues(alpha: 0.8),
                                                   blurRadius: 8,
                                                   spreadRadius: 2,
                                                 ),
                                                 BoxShadow(
-                                                  color: Colors.white.withOpacity(0.4),
+                                                  color: Colors.white.withValues(alpha: 0.4),
                                                   blurRadius: 4,
                                                 ),
                                               ],
@@ -143,36 +143,68 @@ class _HomeNavigationBarState extends State<HomeNavigationBar> with TickerProvid
                           // Main Navigation Content Row
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                            child: IntrinsicWidth(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Brand Logo & Typography Unit
-                                  _NavBrandIdentity(entryAnimation: _entryController),
-                                  const SizedBox(width: 48),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final screenWidth = MediaQuery.sizeOf(context).width;
+                                final isMobile = screenWidth < 800; // Combine small tablet and mobile to hamburger for absolute safety and premium feel
+                                final isTablet = screenWidth >= 800 && screenWidth < 1100;
+                                
+                                final double logoSpacing = isTablet ? 24.0 : 48.0;
+                                final double itemSpacing = isTablet ? 8.0 : 24.0;
+                                final double scale = isTablet ? 0.9 : 1.0;
 
-                                  // The Interactive Items
-                                  Row(
+                                if (isMobile) {
+                                  // Mobile View: Logo + Hamburger
+                                  return Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      _NavBrandIdentity(entryAnimation: _entryController),
+                                      const SizedBox(width: 32),
+                                      IconButton(
+                                        icon: const Icon(Icons.menu, color: Colors.white, size: 24),
+                                        onPressed: () {
+                                          ExperienceController.instance.toggleMobileDrawer();
+                                          SoundEngine.instance.playClick();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                }
+
+                                // Desktop / Tablet View
+                                return Transform.scale(
+                                  scale: scale,
+                                  child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      _NavItem(id: 'hero', label: '// SYSTEM', index: 0, entryAnim: _entryController),
-                                      _NavItem(id: 'builds', label: 'BUILDS', index: 1, entryAnim: _entryController),
-                                      _NavItem(id: 'journey', label: 'JOURNEY', index: 2, entryAnim: _entryController),
-                                      _NavItem(id: 'toolbox', label: 'TOOLBOX', index: 3, entryAnim: _entryController),
-                                      _NavItem(id: 'lab', label: 'LABORATORY', index: 4, entryAnim: _entryController),
-                                      _NavItem(id: 'connection', label: 'TERMINAL', index: 5, entryAnim: _entryController),
+                                      _NavBrandIdentity(entryAnimation: _entryController),
+                                      SizedBox(width: logoSpacing),
+                                      
+                                      // The Interactive Items
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          _NavItem(id: 'about', label: 'ABOUT', index: 0, entryAnim: _entryController),
+                                          _NavItem(id: 'builds', label: 'BUILDS', index: 1, entryAnim: _entryController),
+                                          _NavItem(id: 'journey', label: 'JOURNEY', index: 2, entryAnim: _entryController),
+                                          _NavItem(id: 'toolbox', label: 'TOOLBOX', index: 3, entryAnim: _entryController),
+                                          _NavItem(id: 'lab', label: 'LABORATORY', index: 4, entryAnim: _entryController),
+                                          _NavItem(id: 'connection', label: 'TERMINAL', index: 5, entryAnim: _entryController),
+                                        ],
+                                      ),
+                                      SizedBox(width: itemSpacing),
+                                      
+                                      // Console Toggle — subtle >_ icon
+                                      _ConsoleToggleButton(entryAnim: _entryController),
                                     ],
                                   ),
-                                  const SizedBox(width: 24),
-
-                                  // Console Toggle — subtle >_ icon
-                                  _ConsoleToggleButton(entryAnim: _entryController),
-                                ],
-                              ),
+                                );
+                              }
                             ),
                           ),
-                        ],
-                      ),
+                      ],
+                    ),
                     ),
                   ),
                 ),
@@ -196,6 +228,8 @@ class _NavBrandIdentity extends StatefulWidget {
 
 class _NavBrandIdentityState extends State<_NavBrandIdentity> {
   bool _isHovered = false;
+  int _tapCount = 0;
+  DateTime _lastTap = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +242,23 @@ class _NavBrandIdentityState extends State<_NavBrandIdentity> {
         onExit: (_) => setState(() => _isHovered = false),
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
-          onTap: () => ExperienceController.instance.scrollToSection('hero'),
+          onTap: () {
+            ExperienceController.instance.scrollToSection('hero');
+            
+            // Easter Egg Logic
+            final now = DateTime.now();
+            if (now.difference(_lastTap).inMilliseconds < 600) {
+              _tapCount++;
+              if (_tapCount >= 5) {
+                _tapCount = 0;
+                ExperienceController.instance.toggleOverclock();
+                SoundEngine.instance.playClick();
+              }
+            } else {
+              _tapCount = 1;
+            }
+            _lastTap = now;
+          },
           child: Container(
             padding: const EdgeInsets.only(left: 12.0, right: 16.0, top: 8.0, bottom: 8.0),
             color: Colors.transparent,
@@ -216,20 +266,29 @@ class _NavBrandIdentityState extends State<_NavBrandIdentity> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Animated Geometric Icon
-                TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: _isHovered ? 1.0 : 0.0),
-                  duration: MotionSystem.micro,
-                  curve: MotionSystem.deceleration,
-                  builder: (context, value, child) {
-                    return Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()
-                        ..rotateZ(value * 0.035) 
-                        ..scale(1.0 + (value * 0.02)),
-                      child: CustomPaint(
-                        size: const Size(20, 20),
-                        painter: _GeometricBrandPainter(hoverValue: value),
-                      ),
+                AnimatedBuilder(
+                  animation: ExperienceController.instance,
+                  builder: (context, _) {
+                    final bool isOverclocked = ExperienceController.instance.isOverclocked;
+                    
+                    return TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.0, end: _isHovered ? 1.0 : (isOverclocked ? 5.0 : 0.0)),
+                      duration: isOverclocked ? const Duration(milliseconds: 1500) : MotionSystem.micro,
+                      curve: isOverclocked ? Curves.linear : MotionSystem.deceleration,
+                      builder: (context, value, child) {
+                        return Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.rotationZ(isOverclocked ? value * 6.28 : value * 0.035) 
+                            ..multiply(Matrix4.diagonal3Values(1.0 + (value * 0.02).clamp(0.0, 0.2), 1.0 + (value * 0.02).clamp(0.0, 0.2), 1.0)),
+                          child: CustomPaint(
+                            size: const Size(20, 20),
+                            painter: _GeometricBrandPainter(
+                              hoverValue: isOverclocked ? 1.0 : value,
+                              isOverclocked: isOverclocked,
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -259,7 +318,8 @@ class _NavBrandIdentityState extends State<_NavBrandIdentity> {
 /// Custom minimal geometric engineering logo (Interlocking Angles)
 class _GeometricBrandPainter extends CustomPainter {
   final double hoverValue;
-  _GeometricBrandPainter({required this.hoverValue});
+  final bool isOverclocked;
+  _GeometricBrandPainter({required this.hoverValue, this.isOverclocked = false});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -270,8 +330,10 @@ class _GeometricBrandPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
       
     final Paint glowPaint = Paint()
-      ..color = const Color(0xFF4F8CFF).withOpacity(hoverValue * 0.8)
-      ..strokeWidth = 2.0
+      ..color = isOverclocked 
+          ? const Color(0xFFFF3366).withValues(alpha: 0.8)
+          : const Color(0xFF4F8CFF).withValues(alpha: hoverValue * 0.8)
+      ..strokeWidth = isOverclocked ? 3.0 : 2.0
       ..strokeCap = StrokeCap.square
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0)
       ..style = PaintingStyle.stroke;
@@ -292,11 +354,14 @@ class _GeometricBrandPainter extends CustomPainter {
     }
 
     canvas.drawPath(path1, linePaint);
-    canvas.drawPath(path2, linePaint..color = Color.lerp(Colors.white54, const Color(0xFF4F8CFF), hoverValue)!);
+    canvas.drawPath(path2, linePaint..color = isOverclocked 
+        ? Colors.white 
+        : Color.lerp(Colors.white54, const Color(0xFF4F8CFF), hoverValue)!);
   }
 
   @override
-  bool shouldRepaint(covariant _GeometricBrandPainter oldDelegate) => oldDelegate.hoverValue != hoverValue;
+  bool shouldRepaint(covariant _GeometricBrandPainter oldDelegate) => 
+      oldDelegate.hoverValue != hoverValue || oldDelegate.isOverclocked != isOverclocked;
 }
 
 /// Navigation Item with Sequential Reveal and Magnetic Hover
@@ -361,7 +426,7 @@ class _NavItemState extends State<_NavItem> {
           child: AnimatedContainer(
             duration: MotionSystem.swift,
             curve: MotionSystem.deceleration,
-            transform: Matrix4.identity()..translate(_magneticOffset.dx, _magneticOffset.dy),
+            transform: Matrix4.translationValues(_magneticOffset.dx, _magneticOffset.dy, 0.0),
             padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12.0),
             color: Colors.transparent, 
             child: Column(
@@ -395,7 +460,7 @@ class _NavItemState extends State<_NavItem> {
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: const Color(0xFF4F8CFF).withOpacity(0.6),
+                              color: const Color(0xFF4F8CFF).withValues(alpha: 0.6),
                               blurRadius: 6,
                               spreadRadius: 1,
                             ),
@@ -494,3 +559,4 @@ class _ConsoleToggleButtonState extends State<_ConsoleToggleButton> {
     );
   }
 }
+

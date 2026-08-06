@@ -1,8 +1,6 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/controllers/experience_controller.dart';
-import '../../../../core/utils/motion_system.dart';
 
 class BootSequenceOverlay extends StatefulWidget {
   const BootSequenceOverlay({super.key});
@@ -156,7 +154,7 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
                                   color: const Color(0xFF4F8CFF),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF4F8CFF).withOpacity(0.5),
+                                      color: const Color(0xFF4F8CFF).withValues(alpha: 0.5),
                                       blurRadius: 6,
                                       spreadRadius: 1,
                                     ),
@@ -176,7 +174,7 @@ class _BootSequenceOverlayState extends State<BootSequenceOverlay> with TickerPr
                                       color: Colors.white,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFF4F8CFF).withOpacity(0.8),
+                                          color: const Color(0xFF4F8CFF).withValues(alpha: 0.8),
                                           blurRadius: 8,
                                         ),
                                       ],
@@ -236,3 +234,4 @@ class _BootGridPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+

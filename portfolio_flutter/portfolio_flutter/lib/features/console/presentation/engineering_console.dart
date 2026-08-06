@@ -5,10 +5,11 @@ import '../../../core/experience/sound_engine.dart';
 import 'widgets/console_surface.dart';
 import 'widgets/console_input.dart';
 import 'widgets/console_output.dart';
+import 'widgets/terminal_fab.dart';
 
 /// The main interactive engineering console overlay.
-/// Opens from bottom-right with smooth animation.
-/// Handles keyboard shortcuts: Tab (autocomplete), ↑↓ (history), ` (toggle).
+/// Features a floating quick-access button that morphs into the full terminal window.
+/// Handles keyboard shortcuts: Tab (autocomplete), ↑↓ (history).
 class EngineeringConsole extends StatefulWidget {
   const EngineeringConsole({super.key});
 
@@ -16,12 +17,7 @@ class EngineeringConsole extends StatefulWidget {
   State<EngineeringConsole> createState() => _EngineeringConsoleState();
 }
 
-class _EngineeringConsoleState extends State<EngineeringConsole>
-    with TickerProviderStateMixin {
-  late AnimationController _slideController;
-  late Animation<Offset> _slideAnimation;
-  late Animation<double> _fadeAnimation;
-
+class _EngineeringConsoleState extends State<EngineeringConsole> {
   final FocusNode _inputFocusNode = FocusNode();
   final TextEditingController _textController = TextEditingController();
   final ScrollController _outputScrollController = ScrollController();
@@ -30,38 +26,15 @@ class _EngineeringConsoleState extends State<EngineeringConsole>
   @override
   void initState() {
     super.initState();
-    _slideController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(1.0, 0.3), // Slide from right + slightly below
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _slideController,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-      ),
-    );
-
     ConsoleController.instance.addListener(_onConsoleStateChanged);
   }
 
   void _onConsoleStateChanged() {
     if (ConsoleController.instance.isOpen) {
-      _slideController.forward();
-      // Focus input after animation
+      // Focus input after expansion animation
       Future.delayed(const Duration(milliseconds: 450), () {
         if (mounted) _inputFocusNode.requestFocus();
       });
-    } else {
-      _slideController.reverse();
     }
     setState(() {});
   }
@@ -112,7 +85,6 @@ class _EngineeringConsoleState extends State<EngineeringConsole>
   @override
   void dispose() {
     ConsoleController.instance.removeListener(_onConsoleStateChanged);
-    _slideController.dispose();
     _inputFocusNode.dispose();
     _textController.dispose();
     _outputScrollController.dispose();
@@ -122,72 +94,91 @@ class _EngineeringConsoleState extends State<EngineeringConsole>
 
   @override
   Widget build(BuildContext context) {
-    if (!ConsoleController.instance.isOpen && !_slideController.isAnimating) {
-      return const SizedBox.shrink();
-    }
-
+    final isOpen = ConsoleController.instance.isOpen;
     final screenSize = MediaQuery.sizeOf(context);
-    // Console takes up right side of screen, max 560px wide, max 480px tall
+    
+    // Console dimensions
     final consoleWidth = screenSize.width > 600 ? 560.0 : screenSize.width - 40;
     final consoleHeight = screenSize.height > 600 ? 480.0 : screenSize.height - 120;
+    const collapsedSize = 64.0;
 
     return Positioned(
       right: 20,
       bottom: 20,
-      width: consoleWidth,
-      height: consoleHeight,
-      child: AnimatedBuilder(
-        animation: _slideController,
-        builder: (context, child) {
-          return FadeTransition(
-            opacity: _fadeAnimation,
-            child: SlideTransition(
-              position: _slideAnimation,
-              child: child,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutCubic,
+        width: isOpen ? consoleWidth : collapsedSize,
+        height: isOpen ? consoleHeight : collapsedSize,
+        child: Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            // The FAB (visible when closed)
+            AnimatedOpacity(
+              duration: const Duration(milliseconds: 250),
+              curve: isOpen ? Curves.easeOut : const Interval(0.5, 1.0, curve: Curves.easeIn),
+              opacity: isOpen ? 0.0 : 1.0,
+              child: IgnorePointer(
+                ignoring: isOpen,
+                child: TerminalFab(onTap: () {
+                  SoundEngine.instance.playClick();
+                  ConsoleController.instance.open();
+                }),
+              ),
             ),
-          );
-        },
-        child: KeyboardListener(
-          focusNode: _keyboardFocusNode,
-          onKeyEvent: _handleKeyEvent,
-          child: ConsoleSurface(
-            isVisible: ConsoleController.instance.isOpen,
-            child: Column(
-              children: [
-                // Output area
-                Expanded(
-                  child: AnimatedBuilder(
-                    animation: ConsoleController.instance,
-                    builder: (context, _) {
-                      return ConsoleOutput(
-                        entries: ConsoleController.instance.outputBuffer,
-                        scrollController: _outputScrollController,
-                      );
-                    },
+            
+            // The Console Window (visible when open)
+            AnimatedOpacity(
+              duration: const Duration(milliseconds: 350),
+              curve: isOpen ? const Interval(0.4, 1.0, curve: Curves.easeIn) : Curves.easeOut,
+              opacity: isOpen ? 1.0 : 0.0,
+              child: IgnorePointer(
+                ignoring: !isOpen,
+                child: KeyboardListener(
+                  focusNode: _keyboardFocusNode,
+                  onKeyEvent: _handleKeyEvent,
+                  child: ConsoleSurface(
+                    isVisible: isOpen,
+                    child: Column(
+                      children: [
+                        // Output area
+                        Expanded(
+                          child: AnimatedBuilder(
+                            animation: ConsoleController.instance,
+                            builder: (context, _) {
+                              return ConsoleOutput(
+                                entries: ConsoleController.instance.outputBuffer,
+                                scrollController: _outputScrollController,
+                              );
+                            },
+                          ),
+                        ),
+                        // Input area
+                        AnimatedBuilder(
+                          animation: ConsoleController.instance,
+                          builder: (context, _) {
+                            return ConsoleInput(
+                              currentInput: ConsoleController.instance.currentInput,
+                              onChanged: _onInputChanged,
+                              onSubmit: _onSubmit,
+                              onHistoryUp: () =>
+                                  ConsoleController.instance.navigateHistory(true),
+                              onHistoryDown: () =>
+                                  ConsoleController.instance.navigateHistory(false),
+                              onTabComplete: () =>
+                                  ConsoleController.instance.autocomplete(),
+                              focusNode: _inputFocusNode,
+                              textController: _textController,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                // Input area
-                AnimatedBuilder(
-                  animation: ConsoleController.instance,
-                  builder: (context, _) {
-                    return ConsoleInput(
-                      currentInput: ConsoleController.instance.currentInput,
-                      onChanged: _onInputChanged,
-                      onSubmit: _onSubmit,
-                      onHistoryUp: () =>
-                          ConsoleController.instance.navigateHistory(true),
-                      onHistoryDown: () =>
-                          ConsoleController.instance.navigateHistory(false),
-                      onTabComplete: () =>
-                          ConsoleController.instance.autocomplete(),
-                      focusNode: _inputFocusNode,
-                      textController: _textController,
-                    );
-                  },
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

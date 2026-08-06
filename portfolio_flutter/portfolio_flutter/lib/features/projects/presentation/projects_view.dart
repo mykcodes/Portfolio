@@ -9,6 +9,8 @@ class ProjectsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = MediaQuery.sizeOf(context).width >= 600;
+
     return Stack(
       children: [
         const Positioned.fill(
@@ -18,7 +20,7 @@ class ProjectsView extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1000),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 80.0),
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 40.0 : 20.0, vertical: isDesktop ? 80.0 : 40.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -26,11 +28,11 @@ class ProjectsView extends StatelessWidget {
                   Text(
                     'SELECTED BUILDS',
                     style: GoogleFonts.plusJakartaSans(
-                      textStyle: const TextStyle(
+                      textStyle: TextStyle(
                         color: Colors.white,
-                        fontSize: 42,
+                        fontSize: isDesktop ? 42 : 32,
                         fontWeight: FontWeight.w800,
-                        letterSpacing: 3.0,
+                        letterSpacing: isDesktop ? 3.0 : 1.5,
                       ),
                     ),
                   ),

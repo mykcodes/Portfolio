@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/physics.dart';
 
 /// Implements physical momentum, damped deceleration, and velocity smoothing.
 /// Tuned for a premium, weighted feel — like scrolling inside Apple Vision Pro.

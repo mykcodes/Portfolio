@@ -189,7 +189,7 @@ class _BootConstellationPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
     
     final linePaint = Paint()
-      ..color = Colors.white.withOpacity(0.1)
+      ..color = Colors.white.withValues(alpha: 0.1)
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
 
@@ -214,3 +214,4 @@ class _BootConstellationPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+

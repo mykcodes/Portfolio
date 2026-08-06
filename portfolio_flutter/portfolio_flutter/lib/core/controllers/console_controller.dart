@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'experience_controller.dart';
 
 /// Manages the interactive engineering console state.
 /// Handles command parsing, history navigation, TAB autocomplete,
@@ -32,11 +34,16 @@ class ConsoleController extends ChangeNotifier {
     'skills',
     'experience',
     'github',
+    'linkedin',
+    'email',
+    'portfolio',
     'contact',
     'clear',
     'theme',
     'performance',
     'future',
+    'status',
+    'system',
   ];
 
   int _tabCycleIndex = -1;
@@ -47,7 +54,7 @@ class ConsoleController extends ChangeNotifier {
     if (_isOpen) {
       // Add welcome message on first open
       if (_outputBuffer.isEmpty) {
-        _outputBuffer.add(ConsoleEntry(
+        _outputBuffer.add(const ConsoleEntry(
           type: EntryType.system,
           content: 'MYK-CODES Engineering Console v3.0\nType "help" to see available commands.\n',
         ));
@@ -60,7 +67,7 @@ class ConsoleController extends ChangeNotifier {
     if (!_isOpen) {
       _isOpen = true;
       if (_outputBuffer.isEmpty) {
-        _outputBuffer.add(ConsoleEntry(
+        _outputBuffer.add(const ConsoleEntry(
           type: EntryType.system,
           content: 'MYK-CODES Engineering Console v3.0\nType "help" to see available commands.\n',
         ));
@@ -101,10 +108,64 @@ class ConsoleController extends ChangeNotifier {
     final response = _parseCommand(input);
     _outputBuffer.add(response);
 
+    // Handle side effects (URLs and Navigation)
+    _handleConsoleAction(response.actionType);
+
     // Clear input
     _currentInput = '';
     _tabCycleIndex = -1;
     notifyListeners();
+  }
+  
+  Future<void> _handleConsoleAction(ConsoleAction action) async {
+    switch (action) {
+      case ConsoleAction.none:
+        break;
+      case ConsoleAction.openGithub:
+        _launchUrl('https://github.com/mykcodes');
+        break;
+      case ConsoleAction.openResume:
+        _launchUrl('https://mykcodes.com/resume.pdf');
+        break;
+      case ConsoleAction.openLinkedin:
+        _launchUrl('https://linkedin.com/in/mykcodes');
+        break;
+      case ConsoleAction.openEmail:
+        _launchUrl('mailto:contact@mykcodes.com');
+        break;
+      case ConsoleAction.scrollToHero:
+        ExperienceController.instance.scrollToSection('hero');
+        break;
+      case ConsoleAction.scrollToProjects:
+        ExperienceController.instance.scrollToSection('builds');
+        break;
+      case ConsoleAction.scrollToAbout:
+        ExperienceController.instance.scrollToSection('about');
+        break;
+      case ConsoleAction.scrollToSkills:
+        ExperienceController.instance.scrollToSection('toolbox');
+        break;
+      case ConsoleAction.scrollToExperience:
+        ExperienceController.instance.scrollToSection('journey');
+        break;
+      case ConsoleAction.scrollToLab:
+        ExperienceController.instance.scrollToSection('lab');
+        break;
+      case ConsoleAction.scrollToTerminal:
+        ExperienceController.instance.scrollToSection('connection');
+        break;
+    }
+  }
+
+  Future<void> _launchUrl(String url) async {
+    try {
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      }
+    } catch (e) {
+      debugPrint('Could not launch $url');
+    }
   }
 
   /// Navigate command history with ↑/↓ arrows
@@ -162,17 +223,39 @@ class ConsoleController extends ChangeNotifier {
         return _experienceResponse();
       case 'github':
         return _githubResponse();
+      case 'linkedin':
+        return _linkedinResponse();
+      case 'email':
+        return _emailResponse();
+      case 'portfolio':
+        return _portfolioResponse();
       case 'contact':
         return _contactResponse();
       case 'clear':
         _outputBuffer.clear();
-        return ConsoleEntry(type: EntryType.system, content: 'Console cleared.');
+        return const ConsoleEntry(type: EntryType.system, content: 'Console cleared.');
       case 'theme':
         return _themeResponse();
       case 'performance':
         return _performanceResponse();
       case 'future':
         return _futureResponse();
+      case 'status':
+        return _statusResponse();
+      case 'system':
+        return _systemResponse();
+      // Easter Eggs
+      case 'sudo':
+        return const ConsoleEntry(type: EntryType.system, content: 'nice try. This incident will be reported.');
+      case 'whoami':
+        return const ConsoleEntry(type: EntryType.system, content: 'You are a curious engineer. We should talk.');
+      case 'rm -rf /':
+        return const ConsoleEntry(type: EntryType.system, content: 'Permission denied. The system architecture is immutable.');
+      case 'matrix':
+        if (!ExperienceController.instance.isMatrixMode) {
+          ExperienceController.instance.toggleMatrixMode();
+        }
+        return const ConsoleEntry(type: EntryType.system, content: 'Wake up, Neo... \nSystem override engaged.');
       default:
         return ConsoleEntry(
           type: EntryType.error,
@@ -184,7 +267,7 @@ class ConsoleController extends ChangeNotifier {
   // ─── Command Responses ─────────────────────────────────────────────
 
   ConsoleEntry _helpResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
       content: '''
 ╔══════════════════════════════════════════╗
@@ -199,11 +282,16 @@ class ConsoleController extends ChangeNotifier {
 ║  skills        Technology stack           ║
 ║  experience    Engineering timeline       ║
 ║  github        Open GitHub profile        ║
+║  linkedin      Open LinkedIn profile      ║
+║  email         Launch mail client         ║
 ║  contact       Connection channels        ║
+║  portfolio     Scroll to top              ║
 ║  clear         Clear console              ║
 ║  theme         Current theme state        ║
 ║  performance   Runtime metrics            ║
 ║  future        What comes next            ║
+║  status        System vitals              ║
+║  system        Environment info           ║
 ║                                          ║
 ║  ↑↓  History  │  TAB  Autocomplete       ║
 ╚══════════════════════════════════════════╝''',
@@ -211,8 +299,9 @@ class ConsoleController extends ChangeNotifier {
   }
 
   ConsoleEntry _aboutResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
+      actionType: ConsoleAction.scrollToAbout,
       content: '''
 ┌─ ABOUT ──────────────────────────────────┐
 │                                          │
@@ -228,18 +317,13 @@ class ConsoleController extends ChangeNotifier {
 │   Every interaction should communicate   │
 │   craftsmanship."                        │
 │                                          │
-│  Currently exploring:                    │
-│  → AI/ML Systems                         │
-│  → Cloud Infrastructure                  │
-│  → Cybersecurity                         │
-│  → WebGL Rendering                       │
-│                                          │
+│  [Navigating to Dossier...]              │
 └──────────────────────────────────────────┘''',
     );
   }
 
   ConsoleEntry _resumeResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
       actionType: ConsoleAction.openResume,
       content: '''
@@ -255,40 +339,33 @@ class ConsoleController extends ChangeNotifier {
 │  ├─ Cloud / Firebase        ███████░░░   │
 │  └─ AI / ML                 ██████░░░░   │
 │                                          │
-│  HIGHLIGHTS                              │
-│  → Cross-platform native architectures   │
-│  → Real-time state synchronization       │
-│  → WebGL rendering pipelines             │
-│  → Production deployment experience      │
-│                                          │
-│  [Opening resume...]                     │
+│  [Opening resume in new tab...]          │
 └──────────────────────────────────────────┘''',
     );
   }
 
   ConsoleEntry _projectsResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
+      actionType: ConsoleAction.scrollToProjects,
       content: '''
 ┌─ SELECTED BUILDS ────────────────────────┐
 │                                          │
 │  ■ Neural Node Synchronizer              │
 │    Real-time distributed state mgmt      │
-│    Stack: Dart FFI, C++, WebSockets      │
 │    Status: ████████████████ DEPLOYED      │
 │                                          │
 │  ■ Quantum Fluid Renderer                │
 │    High-perf WebGL fluid simulation      │
-│    Stack: Flutter Web, WebGL, GLSL       │
 │    Status: ████████████░░░░ IN PROGRESS   │
 │                                          │
-│  Run "architecture" for system diagrams  │
+│  [Navigating to Builds...]               │
 └──────────────────────────────────────────┘''',
     );
   }
 
   ConsoleEntry _architectureResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
       content: '''
 ┌─ PORTFOLIO ARCHITECTURE ─────────────────┐
@@ -315,17 +392,14 @@ class ConsoleController extends ChangeNotifier {
 │  ├──────┴──────┴──────┴────────┤        │
 │  │  Lab  │  Connection          │        │
 │  └──────────────────────────────┘        │
-│                                          │
-│  Rendering: CustomPainter + Ticker       │
-│  State: ChangeNotifier (Singleton)       │
-│  Scroll: Cinematic Spring Physics        │
 └──────────────────────────────────────────┘''',
     );
   }
 
   ConsoleEntry _skillsResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
+      actionType: ConsoleAction.scrollToSkills,
       content: '''
 ┌─ TECHNOLOGY STACK ───────────────────────┐
 │                                          │
@@ -333,56 +407,39 @@ class ConsoleController extends ChangeNotifier {
 │  ├─ Dart ·········· ████████████  2y     │
 │  ├─ Python ········ ████████░░░░  1y     │
 │  ├─ C++ ·········── ████████░░░░  1y     │
-│  └─ GLSL ········── ██████░░░░░░  <1y    │
 │                                          │
 │  FRAMEWORKS                              │
 │  ├─ Flutter ······── ████████████         │
 │  ├─ FastAPI ·····── ████████░░░░         │
-│  └─ TensorFlow ··── ██████░░░░░░         │
 │                                          │
-│  INFRASTRUCTURE                          │
-│  ├─ Firebase ····── ████████░░░░         │
-│  ├─ Cloud ·······── ███████░░░░░         │
-│  ├─ Git ·········── ████████████         │
-│  └─ CI/CD ·······── ██████░░░░░░         │
-│                                          │
-│  DOMAINS                                 │
-│  ├─ AI/ML            ├─ WebGL            │
-│  ├─ Cybersecurity    └─ Real-time Sync   │
+│  [Navigating to Toolbox...]              │
 └──────────────────────────────────────────┘''',
     );
   }
 
   ConsoleEntry _experienceResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
+      actionType: ConsoleAction.scrollToExperience,
       content: '''
 ┌─ ENGINEERING TIMELINE ───────────────────┐
 │                                          │
 │  2024 ─── THE BEGINNING                  │
 │  │  ░░ Discovered programming            │
-│  │  ░░ First algorithms in C++           │
-│  │  ░░ Problem-solving foundations        │
 │  │                                       │
 │  2025 ─── BUILDING PRODUCTS              │
 │  │  ▓▓ Flutter cross-platform apps       │
-│  │  ▓▓ Firebase backend integration      │
-│  │  ▓▓ Git workflow mastery              │
 │  │                                       │
 │  2026 ─── AI + CLOUD                     │
 │  │  ██ Intelligent systems design        │
-│  │  ██ Cloud infrastructure              │
-│  │  ██ Cybersecurity exploration         │
 │  │                                       │
-│  NEXT ─── EVOLUTION                      │
-│     ▶▶ Building software for millions    │
-│                                          │
+│  [Navigating to Journey...]              │
 └──────────────────────────────────────────┘''',
     );
   }
 
   ConsoleEntry _githubResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
       actionType: ConsoleAction.openGithub,
       content: '''
@@ -394,10 +451,53 @@ class ConsoleController extends ChangeNotifier {
 └──────────────────────────────────────────┘''',
     );
   }
+  
+  ConsoleEntry _linkedinResponse() {
+    return const ConsoleEntry(
+      type: EntryType.output,
+      actionType: ConsoleAction.openLinkedin,
+      content: '''
+┌─ LINKEDIN ───────────────────────────────┐
+│                                          │
+│  linkedin.com/in/mykcodes                │
+│                                          │
+│  [Opening in new tab...]                 │
+└──────────────────────────────────────────┘''',
+    );
+  }
+  
+  ConsoleEntry _emailResponse() {
+    return const ConsoleEntry(
+      type: EntryType.output,
+      actionType: ConsoleAction.openEmail,
+      content: '''
+┌─ EMAIL ──────────────────────────────────┐
+│                                          │
+│  contact@mykcodes.com                    │
+│                                          │
+│  [Launching mail client...]              │
+└──────────────────────────────────────────┘''',
+    );
+  }
+  
+  ConsoleEntry _portfolioResponse() {
+    return const ConsoleEntry(
+      type: EntryType.output,
+      actionType: ConsoleAction.scrollToHero,
+      content: '''
+┌─ PORTFOLIO ──────────────────────────────┐
+│                                          │
+│  Resetting viewport to hero section.     │
+│                                          │
+│  [Navigating...]                         │
+└──────────────────────────────────────────┘''',
+    );
+  }
 
   ConsoleEntry _contactResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
+      actionType: ConsoleAction.scrollToTerminal,
       content: '''
 ┌─ CONNECTION CHANNELS ────────────────────┐
 │                                          │
@@ -407,12 +507,13 @@ class ConsoleController extends ChangeNotifier {
 │                                          │
 │  Status: ● Available for Opportunities   │
 │                                          │
+│  [Navigating to Terminal...]             │
 └──────────────────────────────────────────┘''',
     );
   }
 
   ConsoleEntry _themeResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
       content: '''
 ┌─ THEME ENGINE STATE ─────────────────────┐
@@ -432,7 +533,7 @@ class ConsoleController extends ChangeNotifier {
   }
 
   ConsoleEntry _performanceResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
       content: '''
 ┌─ RUNTIME PERFORMANCE ────────────────────┐
@@ -441,7 +542,6 @@ class ConsoleController extends ChangeNotifier {
 │  Target FPS:    120 Hz                   │
 │  Scroll:        CinematicSpringPhysics   │
 │  Cursor:        Ticker @ VSync           │
-│  Constellation: 250 nodes (procedural)   │
 │  Painters:      RepaintBoundary isolated │
 │  Animations:    Procedural sine waves    │
 │  Sound:         Pre-loaded AudioCache    │
@@ -450,15 +550,46 @@ class ConsoleController extends ChangeNotifier {
 └──────────────────────────────────────────┘''',
     );
   }
+  
+  ConsoleEntry _statusResponse() {
+    return const ConsoleEntry(
+      type: EntryType.output,
+      content: '''
+┌─ SYSTEM STATUS ──────────────────────────┐
+│                                          │
+│  Core Loop:      ONLINE                  │
+│  Render Engine:  STABLE                  │
+│  Audio System:   SYNCHRONIZED            │
+│  Network:        CONNECTED               │
+│                                          │
+│  All systems operating within parameters.│
+└──────────────────────────────────────────┘''',
+    );
+  }
+  
+  ConsoleEntry _systemResponse() {
+    return const ConsoleEntry(
+      type: EntryType.output,
+      content: '''
+┌─ ENVIRONMENT INFO ───────────────────────┐
+│                                          │
+│  OS:             Dart VM / Browser       │
+│  Architecture:   Cross-Platform UI       │
+│  Build:          1.0.0+1 (Production)    │
+│  Uptime:         Tracking...             │
+│                                          │
+└──────────────────────────────────────────┘''',
+    );
+  }
 
   ConsoleEntry _futureResponse() {
-    return ConsoleEntry(
+    return const ConsoleEntry(
       type: EntryType.output,
       content: '''
 ┌─ WHAT COMES NEXT ────────────────────────┐
 │                                          │
 │  ▸ Edge Intelligence                     │
-│    On-device LLM inference at 15 tok/s   │
+│    On-device LLM inference               │
 │                                          │
 │  ▸ Zero-Trust Networking                 │
 │    P2P encrypted state sync              │
@@ -466,14 +597,7 @@ class ConsoleController extends ChangeNotifier {
 │  ▸ Spatial Computing                     │
 │    3D interfaces beyond flat screens     │
 │                                          │
-│  ▸ Open Source Contributions             │
-│    Giving back to the ecosystem          │
-│                                          │
 │  // The architecture is ready.           │
-│  // The environment is initialized.      │
-│  // Let's build something people         │
-│  // remember.                            │
-│                                          │
 └──────────────────────────────────────────┘''',
     );
   }
@@ -490,7 +614,20 @@ class ConsoleController extends ChangeNotifier {
 enum EntryType { command, output, system, error }
 
 /// Optional action triggered by a command
-enum ConsoleAction { none, openGithub, openResume, openLinkedin }
+enum ConsoleAction { 
+  none, 
+  openGithub, 
+  openResume, 
+  openLinkedin, 
+  openEmail,
+  scrollToHero,
+  scrollToProjects,
+  scrollToAbout,
+  scrollToSkills,
+  scrollToExperience,
+  scrollToLab,
+  scrollToTerminal
+}
 
 /// Represents a single entry in the console output buffer
 class ConsoleEntry {

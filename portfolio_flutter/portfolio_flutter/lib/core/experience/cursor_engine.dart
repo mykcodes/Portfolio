@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'motion_engine.dart';
 
 /// Manages interactive physics without replacing the native hardware cursor.
 class CursorEngine extends ChangeNotifier {

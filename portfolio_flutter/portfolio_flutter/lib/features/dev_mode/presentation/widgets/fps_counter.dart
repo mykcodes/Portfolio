@@ -21,7 +21,7 @@ class FpsCounter extends StatelessWidget {
             color: const Color(0xCC0A0A0A),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: _getFpsColor(fps).withOpacity(0.3),
+              color: _getFpsColor(fps).withValues(alpha: 0.3),
               width: 1.0,
             ),
           ),
@@ -95,7 +95,7 @@ class _FpsBarGraphPainter extends CustomPainter {
       }
 
       final paint = Paint()
-        ..color = barColor.withOpacity(0.7)
+        ..color = barColor.withValues(alpha: 0.7)
         ..style = PaintingStyle.fill;
 
       canvas.drawRRect(
@@ -118,3 +118,4 @@ class _FpsBarGraphPainter extends CustomPainter {
       oldDelegate.history.length != history.length ||
       oldDelegate.currentFps != currentFps;
 }
+

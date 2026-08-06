@@ -53,10 +53,10 @@ class _ProjectCardState extends State<ProjectCard> {
         curve: MotionSystem.deceleration,
         transform: Matrix4.identity()
           ..setEntry(3, 2, 0.001)
-          ..translate(0.0, _isHovered ? -8.0 : 0.0)
+          ..multiply(Matrix4.translationValues(0.0, _isHovered ? -8.0 : 0.0, 0.0))
           ..rotateX(_isHovered ? -_mousePosition.dy * 0.03 : 0.0)
           ..rotateY(_isHovered ? _mousePosition.dx * 0.03 : 0.0)
-          ..scale(_isHovered ? 1.02 : 1.0),
+          ..multiply(Matrix4.diagonal3Values(_isHovered ? 1.02 : 1.0, _isHovered ? 1.02 : 1.0, 1.0)),
         transformAlignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
@@ -66,7 +66,7 @@ class _ProjectCardState extends State<ProjectCard> {
                   const BoxShadow(color: Color(0x144F8CFF), blurRadius: 20, offset: Offset(0, 10)),
                 ]
               : [
-                  BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 30, offset: const Offset(0, 10)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 30, offset: const Offset(0, 10)),
                 ],
         ),
         child: ClipRRect(
@@ -123,7 +123,7 @@ class _ProjectCardState extends State<ProjectCard> {
                               child: Icon(
                                 Icons.developer_board_outlined,
                                 size: 40,
-                                color: Colors.white.withOpacity(0.15),
+                                color: Colors.white.withValues(alpha: 0.15),
                               ),
                             ),
                           ),
@@ -217,8 +217,7 @@ class _ProjectCardState extends State<ProjectCard> {
                             AnimatedContainer(
                               duration: MotionSystem.swift,
                               curve: MotionSystem.deceleration,
-                              transform: Matrix4.identity()
-                                ..translate(_isHovered ? 4.0 : 0.0),
+                              transform: Matrix4.translationValues(_isHovered ? 4.0 : 0.0, 0.0, 0.0),
                               child: Icon(
                                 Icons.arrow_forward_rounded,
                                 size: 16,
@@ -253,7 +252,7 @@ class _ProjectCardState extends State<ProjectCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Divider(color: Colors.white.withOpacity(0.08), height: 1),
+          Divider(color: Colors.white.withValues(alpha: 0.08), height: 1),
           const SizedBox(height: 20),
           Text(
             'ARCHITECTURE',
@@ -292,3 +291,4 @@ class _ProjectCardState extends State<ProjectCard> {
     );
   }
 }
+

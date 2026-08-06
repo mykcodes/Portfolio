@@ -43,9 +43,9 @@ class CursorLightPainter extends CustomPainter {
     final Paint spotlightPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          lightColor.withOpacity(intensity),
-          lightColor.withOpacity(intensity * 0.3),
-          lightColor.withOpacity(0.0),
+          lightColor.withValues(alpha: intensity),
+          lightColor.withValues(alpha: intensity * 0.3),
+          lightColor.withValues(alpha: 0.0),
         ],
         stops: const [0.0, 0.4, 1.0],
       ).createShader(Rect.fromCircle(center: center, radius: radius));
@@ -56,8 +56,8 @@ class CursorLightPainter extends CustomPainter {
     final Paint ambientPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          lightColor.withOpacity(intensity * 0.15),
-          lightColor.withOpacity(0.0),
+          lightColor.withValues(alpha: intensity * 0.15),
+          lightColor.withValues(alpha: 0.0),
         ],
         stops: const [0.0, 1.0],
       ).createShader(Rect.fromCircle(center: center, radius: radius * 2.5));
@@ -107,3 +107,4 @@ class CursorLightOverlay extends StatelessWidget {
     );
   }
 }
+

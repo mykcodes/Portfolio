@@ -11,7 +11,9 @@ import '../../console/presentation/engineering_console.dart';
 import '../../dev_mode/presentation/dev_mode_overlay.dart';
 import 'widgets/constellation_background.dart';
 import 'widgets/home_navigation_bar.dart';
+import 'widgets/mobile_glass_drawer.dart';
 import 'widgets/hero_content.dart';
+import '../../about/presentation/about_view.dart';
 import '../../projects/presentation/projects_view.dart';
 import '../../journey/presentation/journey_view.dart';
 import '../../toolbox/presentation/toolbox_view.dart';
@@ -27,6 +29,21 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   final FocusNode _globalKeyFocusNode = FocusNode();
+  
+  // Konami Code sequence
+  final List<LogicalKeyboardKey> _konamiSequence = [
+    LogicalKeyboardKey.arrowUp,
+    LogicalKeyboardKey.arrowUp,
+    LogicalKeyboardKey.arrowDown,
+    LogicalKeyboardKey.arrowDown,
+    LogicalKeyboardKey.arrowLeft,
+    LogicalKeyboardKey.arrowRight,
+    LogicalKeyboardKey.arrowLeft,
+    LogicalKeyboardKey.arrowRight,
+    LogicalKeyboardKey.keyB,
+    LogicalKeyboardKey.keyA,
+  ];
+  int _konamiIndex = 0;
 
   @override
   void initState() {
@@ -41,6 +58,23 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   void _handleKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent) return;
+
+    // Konami Code Tracker
+    if (event.logicalKey == _konamiSequence[_konamiIndex]) {
+      _konamiIndex++;
+      if (_konamiIndex == _konamiSequence.length) {
+        _konamiIndex = 0;
+        ExperienceController.instance.toggleMatrixMode();
+        SoundEngine.instance.playClick(); // Or a custom sound if available
+        if (!ConsoleController.instance.isOpen) {
+          ConsoleController.instance.open();
+        }
+        ConsoleController.instance.updateInput('matrix');
+        ConsoleController.instance.executeCommand();
+      }
+    } else {
+      _konamiIndex = 0;
+    }
 
     // Ctrl+Shift+D → Toggle Developer Mode
     if (event.logicalKey == LogicalKeyboardKey.keyD &&
@@ -77,6 +111,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Color _getAmbientColor(String section) {
     switch (section) {
       case 'hero': return const Color(0xFF070B19);
+      case 'about': return const Color(0xFF060916);
       case 'builds': return const Color(0xFF050A14);
       case 'journey': return const Color(0xFF0D0A08);
       case 'toolbox': return const Color(0xFF080C11);
@@ -110,16 +145,35 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   gradient: RadialGradient(
                     center: Alignment.topCenter,
                     radius: 1.5,
-                    colors: [
-                      ambientColor,
-                      const Color(0xFF030303),
-                    ],
+                    colors: ExperienceController.instance.isMatrixMode 
+                      ? [const Color(0xFF003300), Colors.black] 
+                      : [ambientColor, const Color(0xFF030303)],
                   ),
                 ),
               ),
               const Positioned.fill(
-            child: ConstellationBackground(),
-          ),
+                child: ConstellationBackground(),
+              ),
+              
+              // Matrix Rain Effect Overlay
+              if (ExperienceController.instance.isMatrixMode)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: Opacity(
+                      opacity: 0.15,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            // Optional: If you had a matrix asset, you'd use it here.
+                            // For now, a repeating green scanline effect via CSS-like repeating linear gradient approximation
+                            image: NetworkImage('https://media.giphy.com/media/xTiTnwj1LUAw0RAriU/giphy.gif'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
           
           Positioned.fill(
             child: SingleChildScrollView(
@@ -136,6 +190,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     ),
                   ),
                   const SizedBox(height: 120),
+                  _ParallaxSection(
+                    scrollController: ExperienceController.instance.scrollController,
+                    parallaxFactor: 0.15,
+                    child: RepaintBoundary(child: Container(key: ExperienceController.instance.sectionKeys['about'], child: const AboutView())),
+                  ),
+                  const SizedBox(height: 140),
                   _ParallaxSection(
                     scrollController: ExperienceController.instance.scrollController,
                     parallaxFactor: 0.1,
@@ -185,6 +245,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           const Positioned.fill(
             child: BootSequenceOverlay(),
           ),
+
+          // Mobile Drawer Overlay (highest priority)
+          const Positioned.fill(
+            child: MobileGlassDrawer(),
+          ),
         ],
       ),
      ),
@@ -217,19 +282,17 @@ class _ParallaxSection extends StatelessWidget {
           final renderObject = context.findRenderObject();
           if (renderObject is RenderBox) {
             final viewport = RenderAbstractViewport.of(renderObject);
-            if (viewport != null) {
-              final scrollableState = Scrollable.maybeOf(context);
-              if (scrollableState != null) {
-                try {
-                  final alignment = viewport.getOffsetToReveal(renderObject, 0.5);
-                  final offsetFromCenter = alignment.offset - scrollController.offset;
-                  // Only apply parallax if it's within viewport (roughly)
-                  if (offsetFromCenter.abs() < 2000) {
-                     offset = offsetFromCenter * parallaxFactor;
-                  }
-                } catch (e) {
-                  // Fallback if render box hasn't fully laid out
+            final scrollableState = Scrollable.maybeOf(context);
+            if (scrollableState != null) {
+              try {
+                final alignment = viewport.getOffsetToReveal(renderObject, 0.5);
+                final offsetFromCenter = alignment.offset - scrollController.offset;
+                // Only apply parallax if it's within viewport (roughly)
+                if (offsetFromCenter.abs() < 2000) {
+                   offset = offsetFromCenter * parallaxFactor;
                 }
+              } catch (_) {
+                // If the element is not fully laid out yet, ignore
               }
             }
           }

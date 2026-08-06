@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/skill_model.dart';
-import '../data/skills_data.dart';
-import 'widgets/knowledge_graph/knowledge_graph_widget.dart';
-import 'widgets/skill_details_panel.dart';
+import 'widgets/engineering_core_widget.dart';
 import 'widgets/toolbox_background.dart';
 
 class ToolboxView extends StatefulWidget {
@@ -14,8 +11,6 @@ class ToolboxView extends StatefulWidget {
 }
 
 class _ToolboxViewState extends State<ToolboxView> {
-  // Enforces a strict default selection framework mapped cleanly to Flutter module node data
-  SkillModel? _selectedModule = SkillsData.engineeringModules.first;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +28,7 @@ class _ToolboxViewState extends State<ToolboxView> {
             constraints: const BoxConstraints(maxWidth: 1200),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 100.0),
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 40.0 : 20.0, vertical: isDesktop ? 100.0 : 60.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -55,65 +50,20 @@ class _ToolboxViewState extends State<ToolboxView> {
                   Text(
                     "Engineering Workstation.\nCore Technology Architecture Stack.",
                     style: GoogleFonts.plusJakartaSans(
-                      textStyle: const TextStyle(
+                      textStyle: TextStyle(
                         color: Colors.white,
-                        fontSize: 44,
+                        fontSize: isDesktop ? 44 : 28,
                         fontWeight: FontWeight.w700,
                         height: 1.2,
-                        letterSpacing: -1.5,
+                        letterSpacing: isDesktop ? -1.5 : -1.0,
                       ),
                     ),
                   ),
                   const SizedBox(height: 80),
 
-                  // Responsive Core Split Engine Configurations
-                  RepaintBoundary(
-                    child: isDesktop 
-                        ? Row(
-                            key: const ValueKey<String>('desktop_toolbox'),
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                flex: 6,
-                                child: SizedBox(
-                                  height: 600,
-                                  child: KnowledgeGraphWidget(
-                                    onSkillSelected: (mod) {
-                                      setState(() => _selectedModule = mod);
-                                    },
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 48),
-                              Expanded(
-                                flex: 5,
-                                child: _selectedModule != null 
-                                    ? SkillDetailsPanel(skill: _selectedModule!)
-                                    : const Center(
-                                        child: Text(
-                                          'Select a node to view details',
-                                          style: TextStyle(color: Color(0x66FFFFFF)),
-                                        ),
-                                      ),
-                              ),
-                            ],
-                          )
-                        : Column(
-                            key: const ValueKey<String>('mobile_toolbox'),
-                            children: [
-                              SizedBox(
-                                height: 400,
-                                child: KnowledgeGraphWidget(
-                                  onSkillSelected: (mod) {
-                                    setState(() => _selectedModule = mod);
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 32),
-                              if (_selectedModule != null)
-                                SkillDetailsPanel(skill: _selectedModule!),
-                            ],
-                          ),
+                  // The Engineering Core
+                  const RepaintBoundary(
+                    child: EngineeringCoreWidget(),
                   ),
                 ],
               ),

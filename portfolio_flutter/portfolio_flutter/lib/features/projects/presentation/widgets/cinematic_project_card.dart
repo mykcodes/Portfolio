@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/utils/motion_system.dart';
@@ -96,10 +95,10 @@ class _CinematicProjectCardState extends State<CinematicProjectCard> with Ticker
               curve: MotionSystem.deceleration,
               transform: Matrix4.identity()
                 ..setEntry(3, 2, 0.001)
-                ..translate(0.0, _isHovered ? (_isPressed ? 2.0 : -8.0) : 0.0)
+                ..multiply(Matrix4.translationValues(0.0, _isHovered ? (_isPressed ? 2.0 : -8.0) : 0.0, 0.0))
                 ..rotateX(_isHovered ? -_mousePosition.dy * 0.02 : 0.0)
                 ..rotateY(_isHovered ? _mousePosition.dx * 0.02 : 0.0)
-                ..scale(_isPressed ? 0.98 : 1.0),
+                ..multiply(Matrix4.diagonal3Values(_isPressed ? 0.98 : 1.0, _isPressed ? 0.98 : 1.0, 1.0)),
               transformAlignment: Alignment.center,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -114,7 +113,7 @@ class _CinematicProjectCardState extends State<CinematicProjectCard> with Ticker
                 border: Border.all(
                   color: _isHovered 
                       ? const Color(0x664F8CFF) 
-                      : const Color(0xFF4F8CFF).withOpacity(0.05 + breathe * 0.1),
+                      : const Color(0xFF4F8CFF).withValues(alpha: 0.05 + breathe * 0.1),
                   width: 1.0,
                 ),
                 boxShadow: _isHovered 
@@ -123,8 +122,8 @@ class _CinematicProjectCardState extends State<CinematicProjectCard> with Ticker
                         const BoxShadow(color: Color(0x0A4F8CFF), blurRadius: 20, offset: Offset(0, 10)),
                       ]
                     : [
-                        BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 30, offset: const Offset(0, 15)),
-                        BoxShadow(color: const Color(0xFF4F8CFF).withOpacity(breathe * 0.03), blurRadius: 20, spreadRadius: breathe * 5),
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 30, offset: const Offset(0, 15)),
+                        BoxShadow(color: const Color(0xFF4F8CFF).withValues(alpha: breathe * 0.03), blurRadius: 20, spreadRadius: breathe * 5),
                       ],
               ),
               child: child,
@@ -271,62 +270,6 @@ class _CinematicProjectCardState extends State<CinematicProjectCard> with Ticker
   }
 }
 
-class _ActionButton extends StatefulWidget {
-  final String label;
-  final String url;
-  final bool isPrimary;
-
-  const _ActionButton({required this.label, required this.url, this.isPrimary = false});
-
-  @override
-  State<_ActionButton> createState() => _ActionButtonState();
-}
-
-class _ActionButtonState extends State<_ActionButton> {
-  bool _isHovered = false;
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTapDown: (_) => setState(() => _isPressed = true),
-        onTapUp: (_) => setState(() => _isPressed = false),
-        onTapCancel: () => setState(() => _isPressed = false),
-        child: AnimatedContainer(
-          duration: MotionSystem.micro,
-          curve: MotionSystem.deceleration,
-          transform: Matrix4.identity()..scale(_isPressed ? 0.95 : 1.0),
-          transformAlignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-        decoration: BoxDecoration(
-          color: widget.isPrimary 
-              ? (_isHovered ? const Color(0xFF5A94FF) : const Color(0xFF4F8CFF))
-              : (_isHovered ? const Color(0x1AFFFFFF) : const Color(0x0AFFFFFF)),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: widget.isPrimary ? Colors.transparent : const Color(0x1AFFFFFF),
-          ),
-        ),
-        child: Text(
-          widget.label,
-          style: GoogleFonts.geist(
-            textStyle: TextStyle(
-              color: widget.isPrimary ? Colors.white : (_isHovered ? Colors.white : const Color(0x99FFFFFF)),
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ),
-        ),
-      ),
-    );
-  }
-}
 
 // =========================================================================
 // Enhanced Blueprint Painter — with animated diagonal sweep
@@ -384,7 +327,7 @@ class _CornerBracketPainter extends CustomPainter {
     if (progress <= 0) return;
 
     final Paint paint = Paint()
-      ..color = const Color(0xFF4F8CFF).withOpacity(0.25 * progress)
+      ..color = const Color(0xFF4F8CFF).withValues(alpha: 0.25 * progress)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.square;
@@ -412,3 +355,4 @@ class _CornerBracketPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _CornerBracketPainter old) => old.progress != progress;
 }
+

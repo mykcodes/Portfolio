@@ -131,7 +131,7 @@ class _PremiumCursorPainter extends CustomPainter {
 
     // 1. Outer glow (very subtle, blue-tinted)
     final Paint glowPaint = Paint()
-      ..color = _glowColor.withOpacity(0.06 + velocity * 0.04)
+      ..color = _glowColor.withValues(alpha: 0.06 + velocity * 0.04)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20.0);
     canvas.drawCircle(position, dynamicRadius + 12.0, glowPaint);
 
@@ -139,7 +139,7 @@ class _PremiumCursorPainter extends CustomPainter {
     for (int i = 1; i < trail.length; i++) {
       final double t = i / trail.length;
       final Paint trailPaint = Paint()
-        ..color = _cursorColor.withOpacity(0.06 * (1.0 - t) * velocity)
+        ..color = _cursorColor.withValues(alpha: 0.06 * (1.0 - t) * velocity)
         ..style = PaintingStyle.stroke
         ..strokeWidth = dynamicStroke * (1.0 - t * 0.5);
       canvas.drawCircle(trail[i], dynamicRadius * (1.0 - t * 0.15), trailPaint);
@@ -147,20 +147,20 @@ class _PremiumCursorPainter extends CustomPainter {
 
     // 3. Precision ring (outer)
     final Paint ringPaint = Paint()
-      ..color = _cursorColor.withOpacity(0.35 + velocity * 0.15)
+      ..color = _cursorColor.withValues(alpha: 0.35 + velocity * 0.15)
       ..style = PaintingStyle.stroke
       ..strokeWidth = dynamicStroke;
     canvas.drawCircle(position, dynamicRadius, ringPaint);
 
     // 4. Inner dot (center)
     final Paint dotPaint = Paint()
-      ..color = _cursorColor.withOpacity(0.85)
+      ..color = _cursorColor.withValues(alpha: 0.85)
       ..style = PaintingStyle.fill;
     canvas.drawCircle(position, _dotRadius, dotPaint);
 
     // 5. Tiny crosshair lines inside ring (engineering precision detail)
     final Paint crosshairPaint = Paint()
-      ..color = _cursorColor.withOpacity(0.12)
+      ..color = _cursorColor.withValues(alpha: 0.12)
       ..strokeWidth = 0.5;
 
     const double crossLen = 4.0;
@@ -194,3 +194,4 @@ class _PremiumCursorPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _PremiumCursorPainter oldDelegate) => true;
 }
+

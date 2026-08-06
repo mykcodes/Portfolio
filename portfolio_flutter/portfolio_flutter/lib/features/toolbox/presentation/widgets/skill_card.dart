@@ -90,14 +90,14 @@ class _SkillCardState extends State<SkillCard> with TickerProviderStateMixin {
         curve: MotionSystem.deceleration,
         transform: Matrix4.identity()
           ..setEntry(3, 2, 0.001)
-          ..translate(0.0, _isHovered ? -8.0 : 0.0)
+          ..multiply(Matrix4.translationValues(0.0, _isHovered ? -8.0 : 0.0, 0.0))
           ..rotateX(_isHovered ? -_mousePosition.dy * 0.05 : 0.0)
           ..rotateY(_isHovered ? _mousePosition.dx * 0.05 : 0.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           boxShadow: activeHighlight 
               ? [
-                  BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 8)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8)),
                 ]
               : [],
         ),
@@ -243,9 +243,9 @@ class _ReflectionSweepPainter extends CustomPainter {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          Colors.white.withOpacity(0.0),
-          Colors.white.withOpacity(0.08),
-          Colors.white.withOpacity(0.0),
+          Colors.white.withValues(alpha: 0.0),
+          Colors.white.withValues(alpha: 0.08),
+          Colors.white.withValues(alpha: 0.0),
         ],
         stops: const [0.0, 0.5, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
@@ -263,3 +263,4 @@ class _ReflectionSweepPainter extends CustomPainter {
     return oldDelegate.progress != progress;
   }
 }
+

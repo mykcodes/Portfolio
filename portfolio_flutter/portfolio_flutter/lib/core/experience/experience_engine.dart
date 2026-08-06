@@ -3,7 +3,6 @@ import 'motion_engine.dart';
 import 'cursor_engine.dart';
 import 'ambient_engine.dart';
 import 'loading_engine.dart';
-import 'scroll_engine.dart';
 
 /// The central nervous system uniting all environmental modules.
 class ExperienceEngine extends ChangeNotifier {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../experience/sound_engine.dart';
 import '../utils/motion_system.dart';
 
 enum SystemState { booting, waking, active }
@@ -21,6 +20,13 @@ class ExperienceController extends ChangeNotifier {
   double globalScrollProgress = 0.0; // Tracks precise 0.0 -> 1.0 page depth
   String activeSection = 'hero';
 
+  // Easter Egg States
+  bool isMatrixMode = false;
+  bool isOverclocked = false;
+
+  // Mobile Navigation State
+  bool isMobileDrawerOpen = false;
+
   // Velocity tracking for DevMode & context-aware environment
   double scrollVelocity = 0.0; // px/s
   double cursorVelocity = 0.0; // px/frame
@@ -34,6 +40,7 @@ class ExperienceController extends ChangeNotifier {
   // Master Layout Anchors
   final Map<String, GlobalKey> sectionKeys = {
     'hero': GlobalKey(),
+    'about': GlobalKey(),
     'builds': GlobalKey(),
     'journey': GlobalKey(),
     'toolbox': GlobalKey(),
@@ -68,6 +75,30 @@ class ExperienceController extends ChangeNotifier {
 
   void updateAmbientIntensity(double intensity) {
     ambientIntensity = intensity;
+    notifyListeners();
+  }
+
+  void toggleMatrixMode() {
+    isMatrixMode = !isMatrixMode;
+    notifyListeners();
+  }
+
+  void toggleOverclock() {
+    isOverclocked = !isOverclocked;
+    // Auto-disable overclock after 5 seconds
+    if (isOverclocked) {
+      Future.delayed(const Duration(seconds: 5), () {
+        if (isOverclocked) {
+          isOverclocked = false;
+          notifyListeners();
+        }
+      });
+    }
+    notifyListeners();
+  }
+
+  void toggleMobileDrawer() {
+    isMobileDrawerOpen = !isMobileDrawerOpen;
     notifyListeners();
   }
 

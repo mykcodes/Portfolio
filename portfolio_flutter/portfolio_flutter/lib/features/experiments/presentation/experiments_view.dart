@@ -34,6 +34,8 @@ class _ExperimentsViewState extends State<ExperimentsView> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = MediaQuery.sizeOf(context).width >= 600;
+
     return Stack(
       children: [
         const LaboratoryBackground(),
@@ -69,7 +71,7 @@ class _ExperimentsViewState extends State<ExperimentsView> with TickerProviderSt
             constraints: const BoxConstraints(maxWidth: 1200),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 140.0),
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 40.0 : 20.0, vertical: isDesktop ? 140.0 : 80.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -91,11 +93,11 @@ class _ExperimentsViewState extends State<ExperimentsView> with TickerProviderSt
                         Text(
                           'CURRENT EXPERIMENTS',
                           style: GoogleFonts.plusJakartaSans(
-                            textStyle: const TextStyle(
+                            textStyle: TextStyle(
                               color: Colors.white,
-                              fontSize: 56,
+                              fontSize: isDesktop ? 56 : 32,
                               fontWeight: FontWeight.w800,
-                              letterSpacing: 4.0,
+                              letterSpacing: isDesktop ? 4.0 : 2.0,
                               height: 1.1,
                             ),
                           ),

@@ -152,7 +152,7 @@ class _SandboxPainter extends CustomPainter {
         final double dist = math.sqrt(dx * dx + dy * dy);
         
         if (dist < 80) {
-          linePaint.color = const Color(0xFF4F8CFF).withOpacity((1 - dist / 80) * 0.3);
+          linePaint.color = const Color(0xFF4F8CFF).withValues(alpha: (1 - dist / 80) * 0.3);
           canvas.drawLine(p1, p2, linePaint);
         }
       }
@@ -167,3 +167,4 @@ class _SandboxPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _SandboxPainter old) => true;
 }
+

@@ -110,7 +110,7 @@ class _ExperimentCapsuleState extends State<ExperimentCapsule> with TickerProvid
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 400),
             curve: Curves.easeOutCubic,
-            transform: Matrix4.identity()..translate(0.0, _isHovered ? -8.0 : 0.0),
+            transform: Matrix4.translationValues(0.0, _isHovered ? -8.0 : 0.0, 0.0),
             child: Opacity(
               opacity: _glassAnim.value,
               child: Container(
@@ -143,7 +143,7 @@ class _ExperimentCapsuleState extends State<ExperimentCapsule> with TickerProvid
                                 const Color(0x1AFFFFFF), 
                                 const Color(0x4D4F8CFF), 
                                 _hoverController.value
-                              )!.withOpacity(_borderAnim.value * (_isHovered ? 0.6 : 0.2)),
+                              )!.withValues(alpha: _borderAnim.value * (_isHovered ? 0.6 : 0.2)),
                               width: 1.0,
                             ),
                           ),
@@ -258,7 +258,7 @@ class _ExperimentCapsuleState extends State<ExperimentCapsule> with TickerProvid
                               // Hidden Details (Revealed on Hover)
                               SizeTransition(
                                 sizeFactor: _hoverController,
-                                axisAlignment: -1.0,
+                                alignment: Alignment.topCenter,
                                 child: FadeTransition(
                                   opacity: _hoverController,
                                   child: Padding(
@@ -324,7 +324,7 @@ class _ExperimentCapsuleState extends State<ExperimentCapsule> with TickerProvid
                 color: const Color(0xFF4F8CFF),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF4F8CFF).withOpacity((0.3 + ambientPulse + hoverBoost).clamp(0.0, 1.0)),
+                    color: const Color(0xFF4F8CFF).withValues(alpha: (0.3 + ambientPulse + hoverBoost).clamp(0.0, 1.0)),
                     blurRadius: 6 + (ambientPulse * 6) + (_hoverController.value * 8),
                   )
                 ],
@@ -447,3 +447,4 @@ class _CapsuleBlueprintPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _CapsuleBlueprintPainter oldDelegate) => true; // Needs constant repaint during hover
 }
+

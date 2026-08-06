@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../data/milestone_data.dart';
@@ -23,7 +22,7 @@ class JourneyView extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 1200),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 40.0),
+          padding: EdgeInsets.symmetric(horizontal: isDesktop ? 40.0 : 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -45,12 +44,12 @@ class JourneyView extends StatelessWidget {
               Text(
                 "System architecture evolution.\nDocumenting the build process.",
                 style: GoogleFonts.plusJakartaSans(
-                  textStyle: const TextStyle(
+                  textStyle: TextStyle(
                     color: Colors.white,
-                    fontSize: 44,
+                    fontSize: isDesktop ? 44 : 28,
                     fontWeight: FontWeight.w700,
                     height: 1.2,
-                    letterSpacing: -1.5,
+                    letterSpacing: isDesktop ? -1.5 : -1.0,
                   ),
                 ),
               ),
@@ -213,7 +212,7 @@ class _TimelineWaypointNodeState extends State<_TimelineWaypointNode> with Ticke
             boxShadow: widget.isActive
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF4F8CFF).withOpacity((0.3 + pulse * 0.3).clamp(0.0, 1.0)),
+                      color: const Color(0xFF4F8CFF).withValues(alpha: (0.3 + pulse * 0.3).clamp(0.0, 1.0)),
                       blurRadius: 12 + pulse * 8,
                     )
                   ]
@@ -280,3 +279,4 @@ class _DiscoveryScrollWrapperState extends State<_DiscoveryScrollWrapper> {
     );
   }
 }
+

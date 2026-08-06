@@ -53,7 +53,7 @@ class _AvailabilityIndicatorState extends State<AvailabilityIndicator> with Tick
                   color: const Color(0xFF10B981),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF10B981).withOpacity((0.3 + (_pulseController.value * 0.5)).clamp(0.0, 1.0)),
+                      color: const Color(0xFF10B981).withValues(alpha: (0.3 + (_pulseController.value * 0.5)).clamp(0.0, 1.0)),
                       blurRadius: 8 + (_pulseController.value * 4),
                     )
                   ],
@@ -125,3 +125,4 @@ class SignatureFooter extends StatelessWidget {
     );
   }
 }
+

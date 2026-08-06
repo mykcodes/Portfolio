@@ -35,7 +35,7 @@ class JourneyPathPainter extends CustomPainter {
     }
 
     // Passive underlying trajectory line
-    paint.color = pathColor.withOpacity(0.08);
+    paint.color = pathColor.withValues(alpha: 0.08);
     canvas.drawPath(path, paint);
 
     // Active illuminated traveling progress path
@@ -45,10 +45,10 @@ class JourneyPathPainter extends CustomPainter {
       final double extractLength = metric.length * scrollProgress;
       final Path extractPath = metric.extractPath(0, extractLength);
 
-      glowPaint.color = pathColor.withOpacity(0.18);
+      glowPaint.color = pathColor.withValues(alpha: 0.18);
       canvas.drawPath(extractPath, glowPaint);
 
-      paint.color = pathColor.withOpacity(0.65);
+      paint.color = pathColor.withValues(alpha: 0.65);
       canvas.drawPath(extractPath, paint);
 
       // NEW: Traveling light particle at the leading edge
@@ -57,19 +57,19 @@ class JourneyPathPainter extends CustomPainter {
         if (tangent != null) {
           // Bright leading dot
           final Paint dotPaint = Paint()
-            ..color = pathColor.withOpacity(0.9)
+            ..color = pathColor.withValues(alpha: 0.9)
             ..style = PaintingStyle.fill;
           canvas.drawCircle(tangent.position, 4.0, dotPaint);
 
           // Glow halo around the dot
           final Paint haloPaint = Paint()
-            ..color = pathColor.withOpacity(0.3)
+            ..color = pathColor.withValues(alpha: 0.3)
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12.0);
           canvas.drawCircle(tangent.position, 10.0, haloPaint);
 
           // Wider ambient glow
           final Paint ambientPaint = Paint()
-            ..color = pathColor.withOpacity(0.08)
+            ..color = pathColor.withValues(alpha: 0.08)
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 30.0);
           canvas.drawCircle(tangent.position, 30.0, ambientPaint);
         }
@@ -82,3 +82,4 @@ class JourneyPathPainter extends CustomPainter {
     return oldDelegate.scrollProgress != scrollProgress || oldDelegate.pathColor != pathColor;
   }
 }
+

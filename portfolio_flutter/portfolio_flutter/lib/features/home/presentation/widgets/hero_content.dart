@@ -35,8 +35,8 @@ class HeroContent extends StatelessWidget {
           child: Transform(
             transform: Matrix4.identity()
               ..setEntry(3, 2, 0.001)
-              ..translate(0.0, dy, 0.0)
-              ..scale(scale),
+              ..multiply(Matrix4.translationValues(0.0, dy, 0.0))
+              ..multiply(Matrix4.diagonal3Values(scale, scale, 1.0)),
             alignment: Alignment.center,
             child: child,
           ),
@@ -147,9 +147,11 @@ class HeroContent extends StatelessWidget {
               // 5. Buttons 
               _StaggeredItem(
                 delayMs: 3000,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 24,
+                  runSpacing: 16,
                   children: [
                     _PrimaryAction(
                       text: 'View Selected Builds',
@@ -161,7 +163,6 @@ class HeroContent extends StatelessWidget {
                         }
                       },
                     ),
-                    const SizedBox(width: 24),
                     _SecondaryAction(
                       text: 'My Journey',
                       onTap: () {
@@ -240,11 +241,11 @@ class _HeroBlueprintPainter extends CustomPainter {
     final Paint linePaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
-      ..color = const Color(0xFF4F8CFF).withOpacity((0.08 * opacityCycle).clamp(0.0, 1.0));
+      ..color = const Color(0xFF4F8CFF).withValues(alpha: (0.08 * opacityCycle).clamp(0.0, 1.0));
 
     final Paint nodePaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = const Color(0xFF4F8CFF).withOpacity((0.15 * opacityCycle).clamp(0.0, 1.0));
+      ..color = const Color(0xFF4F8CFF).withValues(alpha: (0.15 * opacityCycle).clamp(0.0, 1.0));
 
     // Base coordinates
     final double centerX = size.width / 2;
@@ -254,7 +255,7 @@ class _HeroBlueprintPainter extends CustomPainter {
     final double scanLineY = (time / (math.pi * 2) * size.height * 2) % size.height;
     
     canvas.drawLine(Offset(0, scanLineY), Offset(size.width, scanLineY), 
-      Paint()..color=const Color(0xFF4F8CFF).withOpacity(0.05)..strokeWidth=0.5);
+      Paint()..color=const Color(0xFF4F8CFF).withValues(alpha: 0.05)..strokeWidth=0.5);
 
     // Architectural layout lines that slowly build out
     final List<Offset> points = [
@@ -284,7 +285,7 @@ class _HeroBlueprintPainter extends CustomPainter {
        final double localT = t * 2.0;
        final Offset pulsePos = Offset.lerp(points[0], points[1], localT)!;
        
-       canvas.drawCircle(pulsePos, 4.0, Paint()..color=Colors.white.withOpacity(0.5)..maskFilter=const MaskFilter.blur(BlurStyle.normal, 4.0));
+       canvas.drawCircle(pulsePos, 4.0, Paint()..color=Colors.white.withValues(alpha: 0.5)..maskFilter=const MaskFilter.blur(BlurStyle.normal, 4.0));
     }
   }
 
@@ -401,7 +402,7 @@ class _BreathingLetterSpacingState extends State<_BreathingLetterSpacing> with T
         final double wave = math.sin(_controller.value * math.pi * 2) * 0.008;
         return Transform(
           alignment: Alignment.center,
-          transform: Matrix4.identity()..scale(1.0 + wave, 1.0),
+          transform: Matrix4.diagonal3Values(1.0 + wave, 1.0, 1.0),
           child: child,
         );
       },
@@ -459,9 +460,8 @@ class _PrimaryActionState extends State<_PrimaryAction> with TickerProviderState
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeOutExpo,
-        transform: Matrix4.identity()
-          ..translate(0.0, _isHovered ? -4.0 : 0.0) 
-          ..scale(_isHovered ? 1.03 : 1.0),
+        transform: Matrix4.translationValues(0.0, _isHovered ? -4.0 : 0.0, 0.0)
+          ..multiply(Matrix4.diagonal3Values(_isHovered ? 1.03 : 1.0, _isHovered ? 1.03 : 1.0, 1.0)),
         transformAlignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 18),
         decoration: BoxDecoration(
@@ -470,14 +470,14 @@ class _PrimaryActionState extends State<_PrimaryAction> with TickerProviderState
           boxShadow: _isHovered 
               ? [
                   BoxShadow(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     blurRadius: 24,
                     spreadRadius: -4,
                     offset: const Offset(0, 12),
                   ),
                   // Inner glow
                   BoxShadow(
-                    color: const Color(0xFF4F8CFF).withOpacity(0.08),
+                    color: const Color(0xFF4F8CFF).withValues(alpha: 0.08),
                     blurRadius: 40,
                     spreadRadius: -8,
                   ),
@@ -531,7 +531,7 @@ class _ButtonSweepPainter extends CustomPainter {
         end: Alignment.centerRight,
         colors: [
           Colors.transparent,
-          const Color(0xFF4F8CFF).withOpacity(0.06),
+          const Color(0xFF4F8CFF).withValues(alpha: 0.06),
           Colors.transparent,
         ],
         stops: const [0.0, 0.5, 1.0],
@@ -597,9 +597,8 @@ class _SecondaryActionState extends State<_SecondaryAction> with TickerProviderS
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeOutExpo,
-        transform: Matrix4.identity()
-          ..translate(0.0, _isHovered ? -2.0 : 0.0)
-          ..scale(_isHovered ? 1.01 : 1.0),
+        transform: Matrix4.translationValues(0.0, _isHovered ? -2.0 : 0.0, 0.0)
+          ..multiply(Matrix4.diagonal3Values(_isHovered ? 1.01 : 1.0, _isHovered ? 1.01 : 1.0, 1.0)),
         transformAlignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 18),
         decoration: BoxDecoration(
@@ -660,9 +659,9 @@ class _GlassReflectionPainter extends CustomPainter {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          Colors.white.withOpacity(0.0),
-          Colors.white.withOpacity(0.1),
-          Colors.white.withOpacity(0.0),
+          Colors.white.withValues(alpha: 0.0),
+          Colors.white.withValues(alpha: 0.1),
+          Colors.white.withValues(alpha: 0.0),
         ],
         stops: const [0.0, 0.5, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
@@ -722,3 +721,4 @@ class _StaggeredItemState extends State<_StaggeredItem> {
     );
   }
 }
+

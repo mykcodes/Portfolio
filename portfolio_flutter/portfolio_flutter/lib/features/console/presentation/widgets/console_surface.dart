@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../../../../core/controllers/console_controller.dart';
 
 /// The glass surface container for the engineering console.
 /// Dark minimal terminal with frosted glass, subtle reflections,
@@ -71,7 +72,10 @@ class _ConsoleTitleBar extends StatelessWidget {
       child: Row(
         children: [
           // Window control dots
-          _WindowDot(color: const Color(0xFFFF5F57)),
+          _WindowDot(
+            color: const Color(0xFFFF5F57),
+            onTap: () => ConsoleController.instance.close(),
+          ),
           const SizedBox(width: 8),
           _WindowDot(color: const Color(0xFFFEBC2E)),
           const SizedBox(width: 8),
@@ -108,19 +112,40 @@ class _ConsoleTitleBar extends StatelessWidget {
   }
 }
 
-class _WindowDot extends StatelessWidget {
+class _WindowDot extends StatefulWidget {
   final Color color;
-  const _WindowDot({required this.color});
+  final VoidCallback? onTap;
+  
+  const _WindowDot({required this.color, this.onTap});
+
+  @override
+  State<_WindowDot> createState() => _WindowDotState();
+}
+
+class _WindowDotState extends State<_WindowDot> {
+  bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 12,
-      height: 12,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color.withOpacity(0.8),
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: _isHovered && widget.onTap != null ? widget.color : widget.color.withValues(alpha: 0.8),
+          ),
+          child: _isHovered && widget.onTap != null
+              ? const Icon(Icons.close, size: 8, color: Colors.black54)
+              : null,
+        ),
       ),
     );
   }
 }
+

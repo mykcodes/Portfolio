@@ -275,9 +275,9 @@ class _AtmosphereEnginePainter extends CustomPainter {
     final Paint primaryPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          const Color(0xFF4F8CFF).withOpacity((0.10 * globalIntensity).clamp(0.0, 1.0)),
-          const Color(0xFF4F8CFF).withOpacity((0.03 * globalIntensity).clamp(0.0, 1.0)),
-          const Color(0xFF4F8CFF).withOpacity(0.0),
+          const Color(0xFF4F8CFF).withValues(alpha: (0.10 * globalIntensity).clamp(0.0, 1.0)),
+          const Color(0xFF4F8CFF).withValues(alpha: (0.03 * globalIntensity).clamp(0.0, 1.0)),
+          const Color(0xFF4F8CFF).withValues(alpha: 0.0),
         ],
         stops: const [0.0, 0.4, 1.0],
       ).createShader(Rect.fromCircle(center: mousePosition, radius: 350));
@@ -287,9 +287,9 @@ class _AtmosphereEnginePainter extends CustomPainter {
     final Paint fogPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          const Color(0xFF4F8CFF).withOpacity((0.04 * globalIntensity).clamp(0.0, 1.0)),
-          const Color(0xFF4F8CFF).withOpacity((0.01 * globalIntensity).clamp(0.0, 1.0)),
-          const Color(0xFF4F8CFF).withOpacity(0.0),
+          const Color(0xFF4F8CFF).withValues(alpha: (0.04 * globalIntensity).clamp(0.0, 1.0)),
+          const Color(0xFF4F8CFF).withValues(alpha: (0.01 * globalIntensity).clamp(0.0, 1.0)),
+          const Color(0xFF4F8CFF).withValues(alpha: 0.0),
         ],
         stops: const [0.0, 0.3, 1.0],
       ).createShader(Rect.fromCircle(center: mousePosition, radius: 800));
@@ -299,8 +299,8 @@ class _AtmosphereEnginePainter extends CustomPainter {
     final Paint warmPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          const Color(0xFFFFFFFF).withOpacity((0.02 * globalIntensity).clamp(0.0, 1.0)),
-          const Color(0xFFFFFFFF).withOpacity(0.0),
+          const Color(0xFFFFFFFF).withValues(alpha: (0.02 * globalIntensity).clamp(0.0, 1.0)),
+          const Color(0xFFFFFFFF).withValues(alpha: 0.0),
         ],
         stops: const [0.0, 1.0],
       ).createShader(Rect.fromCircle(center: mousePosition, radius: 250));
@@ -341,7 +341,7 @@ class _AtmosphereEnginePainter extends CustomPainter {
       // Context-aware adjustment: blueprints are much more visible in 'builds' section
       final double sectionMultiplier = activeSection == 'builds' ? 3.0 : 1.0;
 
-      paint.color = const Color(0xFF4F8CFF).withOpacity(
+      paint.color = const Color(0xFF4F8CFF).withValues(alpha: 
         ((0.025 + proximityBoost + scrollOpacity) * sectionMultiplier * globalIntensity).clamp(0.0, 0.15),
       );
 
@@ -439,7 +439,7 @@ class _AtmosphereEnginePainter extends CustomPainter {
       // Context-aware adjustment: curves are more visible in 'journey' section
       final double sectionMultiplier = activeSection == 'journey' ? 2.5 : 1.0;
 
-      paint.color = const Color(0xFF4F8CFF).withOpacity(
+      paint.color = const Color(0xFF4F8CFF).withValues(alpha: 
         ((0.03 + proximityBoost) * sectionMultiplier * globalIntensity).clamp(0.0, 0.12),
       );
 
@@ -447,7 +447,7 @@ class _AtmosphereEnginePainter extends CustomPainter {
 
       // Coordinate axis marker at curve origin
       final Paint axisPaint = Paint()
-        ..color = const Color(0xFF4F8CFF).withOpacity((0.015 * globalIntensity).clamp(0.0, 1.0))
+        ..color = const Color(0xFF4F8CFF).withValues(alpha: (0.015 * globalIntensity).clamp(0.0, 1.0))
         ..strokeWidth = 0.5;
       canvas.drawLine(Offset(baseDx - 15, baseDy), Offset(baseDx + 15, baseDy), axisPaint);
       canvas.drawLine(Offset(baseDx, baseDy - 15), Offset(baseDx, baseDy + 15), axisPaint);
@@ -481,7 +481,7 @@ class _AtmosphereEnginePainter extends CustomPainter {
         proximityBoost = (1.0 - (dist / 400.0).clamp(0.0, 1.0)) * 0.08;
       }
 
-      paint.color = Colors.white.withOpacity(((0.15 + proximityBoost) * globalIntensity).clamp(0.0, 1.0));
+      paint.color = Colors.white.withValues(alpha: ((0.15 + proximityBoost) * globalIntensity).clamp(0.0, 1.0));
       canvas.drawCircle(Offset(dx, dy), node.baseSize, paint);
     }
   }
@@ -531,14 +531,18 @@ class _AtmosphereEnginePainter extends CustomPainter {
         
         // Dynamic connect distance based on active section
         double connectDistance = 140.0;
-        if (activeSection == 'builds') connectDistance = 180.0;
-        else if (activeSection == 'hero') connectDistance = 100.0;
-        else if (activeSection == 'toolbox') connectDistance = 160.0;
+        if (activeSection == 'builds') {
+          connectDistance = 180.0;
+        } else if (activeSection == 'hero') {
+          connectDistance = 100.0;
+        } else if (activeSection == 'toolbox') {
+          connectDistance = 160.0;
+        }
         
         if (distance < connectDistance) {
           final double baseAlpha = (1.0 - (distance / connectDistance)) * 0.15;
           final double finalAlpha = (baseAlpha + (hoverIntensity * 0.3)) * globalIntensity;
-          linePaint.color = Colors.white.withOpacity(finalAlpha.clamp(0.0, 1.0));
+          linePaint.color = Colors.white.withValues(alpha: finalAlpha.clamp(0.0, 1.0));
           canvas.drawLine(p1, p2, linePaint);
         }
       }
@@ -550,11 +554,11 @@ class _AtmosphereEnginePainter extends CustomPainter {
       final double distanceToMouse = (p - mousePosition).distance;
       final double hoverScale = distanceToMouse < 200 ? 1.0 + ((200 - distanceToMouse) / 200) : 1.0;
       
-      nodePaint.color = Colors.white.withOpacity((0.25 * globalIntensity).clamp(0.0, 1.0));
+      nodePaint.color = Colors.white.withValues(alpha: (0.25 * globalIntensity).clamp(0.0, 1.0));
       
       if (hoverScale > 1.0) {
         final glowPaint = Paint()
-          ..color = const Color(0xFF4F8CFF).withOpacity((0.3 * (hoverScale - 1.0) * globalIntensity).clamp(0.0, 1.0))
+          ..color = const Color(0xFF4F8CFF).withValues(alpha: (0.3 * (hoverScale - 1.0) * globalIntensity).clamp(0.0, 1.0))
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12.0);
         canvas.drawCircle(p, node.baseSize * hoverScale * 4.0, glowPaint);
       }
@@ -564,7 +568,7 @@ class _AtmosphereEnginePainter extends CustomPainter {
 
   void _paintGeometry(Canvas canvas, Size size) {
     final Paint paint = Paint()
-      ..color = const Color(0xFF4F8CFF).withOpacity((0.05 * globalIntensity).clamp(0.0, 1.0))
+      ..color = const Color(0xFF4F8CFF).withValues(alpha: (0.05 * globalIntensity).clamp(0.0, 1.0))
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
@@ -632,7 +636,7 @@ class _AtmosphereEnginePainter extends CustomPainter {
       }
 
       final double pulse = (sin(time * 10 * pulseSpeedMultiplier + node.driftPhase) + 1.0) / 2.0;
-      paint.color = Colors.white.withOpacity((0.4 * pulse * globalIntensity).clamp(0.0, 1.0));
+      paint.color = Colors.white.withValues(alpha: (0.4 * pulse * globalIntensity).clamp(0.0, 1.0));
       
       canvas.drawCircle(Offset(dx, dy), node.baseSize * sizeMultiplier, paint);
     }
@@ -641,3 +645,4 @@ class _AtmosphereEnginePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _AtmosphereEnginePainter oldDelegate) => true;
 }
+
