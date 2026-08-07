@@ -86,22 +86,26 @@ class MobileGlassDrawer extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                IconButton(
-                                  onPressed: () {
-                                    ExperienceController.instance
-                                        .toggleMobileDrawer();
-                                    SoundEngine.instance.playClick();
-                                  },
-                                  icon: const Icon(
-                                    Icons.close,
-                                    color: Colors.white54,
-                                    size: 20,
+                                SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      ExperienceController.instance
+                                          .toggleMobileDrawer();
+                                      SoundEngine.instance.playClick();
+                                    },
+                                    icon: const Icon(
+                                      Icons.close,
+                                      color: Colors.white54,
+                                      size: 24,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: 48),
+                          const SizedBox(height: 32),
                           _DrawerItem(id: 'about', label: 'ABOUT'),
                           _DrawerItem(id: 'builds', label: 'BUILDS'),
                           _DrawerItem(id: 'journey', label: 'JOURNEY'),

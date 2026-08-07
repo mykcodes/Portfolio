@@ -6,6 +6,7 @@ import '../../../../core/controllers/experience_controller.dart';
 import '../../../../core/controllers/console_controller.dart';
 import '../../../../core/experience/sound_engine.dart';
 import '../../../../core/utils/motion_system.dart';
+import '../../../../core/constants/app_breakpoints.dart';
 
 class HomeNavigationBar extends StatefulWidget {
   const HomeNavigationBar({super.key});
@@ -181,51 +182,43 @@ class _HomeNavigationBarState extends State<HomeNavigationBar>
                             ),
                             child: LayoutBuilder(
                               builder: (context, constraints) {
-                                final screenWidth = MediaQuery.sizeOf(
-                                  context,
-                                ).width;
-                                final isMobile =
-                                    screenWidth <
-                                    800; 
-                                final isTablet =
-                                    screenWidth >= 800 && screenWidth < 1100;
+                                final screenWidth = MediaQuery.sizeOf(context).width;
+                                
+                                final isMobile = screenWidth < AppBreakpoints.tablet;
+                                final isTablet = screenWidth >= AppBreakpoints.tablet && screenWidth < AppBreakpoints.desktop;
 
-                                final double logoSpacing = isTablet
-                                    ? 24.0
-                                    : 48.0;
-                                final double itemSpacing = isTablet
-                                    ? 8.0
-                                    : 24.0;
+                                final double logoSpacing = isTablet ? 24.0 : 48.0;
+                                final double itemSpacing = isTablet ? 8.0 : 24.0;
                                 final double scale = isTablet ? 0.9 : 1.0;
 
                                 if (isMobile) {
-                                  
                                   return Row(
                                     mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       _NavBrandIdentity(
                                         entryAnimation: _entryController,
                                       ),
                                       const SizedBox(width: 32),
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.menu,
-                                          color: Colors.white,
-                                          size: 24,
+                                      SizedBox(
+                                        width: 48,
+                                        height: 48,
+                                        child: IconButton(
+                                          icon: const Icon(
+                                            Icons.menu,
+                                            color: Colors.white,
+                                            size: 28,
+                                          ),
+                                          onPressed: () {
+                                            ExperienceController.instance.toggleMobileDrawer();
+                                            SoundEngine.instance.playClick();
+                                          },
                                         ),
-                                        onPressed: () {
-                                          ExperienceController.instance
-                                              .toggleMobileDrawer();
-                                          SoundEngine.instance.playClick();
-                                        },
                                       ),
                                     ],
                                   );
                                 }
 
-                                
                                 return Transform.scale(
                                   scale: scale,
                                   child: Row(

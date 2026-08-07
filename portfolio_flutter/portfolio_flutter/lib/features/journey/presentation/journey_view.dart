@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../content/portfolio_data.dart';
+import '../../../../core/constants/app_breakpoints.dart';
 import 'widgets/journey_path_painter.dart';
 import 'widgets/milestone_card.dart';
 
@@ -12,7 +13,7 @@ class JourneyView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    final bool isDesktop = screenWidth >= 1024;
+    final bool isDesktop = screenWidth >= AppBreakpoints.desktop;
 
     return Center(
       child: ConstrainedBox(
@@ -132,32 +133,70 @@ class JourneyView extends StatelessWidget {
   }
 
   Widget _buildMobileTimeline(BuildContext context) {
-    return Column(
-      children: List.generate(JourneyData.milestones.length, (index) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 64.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _TimelineWaypointNode(
-                isActive:
-                    scrollProgress >=
-                    ((index + 1) / JourneyData.milestones.length),
-              ),
-              const SizedBox(width: 24),
-              Expanded(
-                child: _DiscoveryScrollWrapper(
-                  index: index,
-                  child: MilestoneCard(
-                    milestone: JourneyData.milestones[index],
-                    isLeft: false,
+    return Stack(
+      children: [
+        
+        Positioned(
+          left: 9.0, // center of 20px waypoint is at 10px, minus half width
+          top: 10.0,
+          bottom: 10.0,
+          width: 2.0,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
+                children: [
+                  Container(
+                    width: 2.0,
+                    color: const Color(0x33FFFFFF),
                   ),
-                ),
-              ),
-            ],
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: 2.0,
+                    height: constraints.maxHeight * scrollProgress,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4F8CFF),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF4F8CFF).withValues(alpha: 0.5),
+                          blurRadius: 8,
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
-        );
-      }),
+        ),
+        
+        Column(
+          children: List.generate(JourneyData.milestones.length, (index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 64.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _TimelineWaypointNode(
+                    isActive:
+                        scrollProgress >=
+                        ((index) / (JourneyData.milestones.length - 1 == 0 ? 1 : JourneyData.milestones.length - 1)),
+                  ),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: _DiscoveryScrollWrapper(
+                      index: index,
+                      child: MilestoneCard(
+                        milestone: JourneyData.milestones[index],
+                        isLeft: false,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 }

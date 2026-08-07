@@ -23,6 +23,7 @@ class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget>
   late final List<_TechModule> _modules;
 
   _TechModule? _activeModule;
+  double _dragRotation = 0.0;
 
   @override
   void initState() {
@@ -123,19 +124,27 @@ class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget>
 
               
               RepaintBoundary(
-                child: AnimatedBuilder(
-                  animation: _orbitController,
-                  builder: (context, child) {
-                    return CustomPaint(
-                      size: Size.infinite,
-                      painter: _EnergyConnectionsPainter(
-                        modules: _modules,
-                        center: center,
-                        rotationValue: _orbitController.value,
-                        activeModule: _activeModule,
-                      ),
-                    );
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    setState(() {
+                      _dragRotation += details.delta.dx * 0.001;
+                    });
                   },
+                  child: AnimatedBuilder(
+                    animation: _orbitController,
+                    builder: (context, child) {
+                      final currentRotation = _orbitController.value + _dragRotation;
+                      return CustomPaint(
+                        size: Size.infinite,
+                        painter: _EnergyConnectionsPainter(
+                          modules: _modules,
+                          center: center,
+                          rotationValue: currentRotation,
+                          activeModule: _activeModule,
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
 
@@ -144,12 +153,13 @@ class _EngineeringCoreWidgetState extends State<EngineeringCoreWidget>
                 child: AnimatedBuilder(
                   animation: _orbitController,
                   builder: (context, child) {
+                    final currentRotation = _orbitController.value + _dragRotation;
                     return Stack(
                       children: _modules.map((m) {
                         return _ModuleWidget(
                           module: m,
                           center: center,
-                          rotationValue: _orbitController.value,
+                          rotationValue: currentRotation,
                           isActive: _activeModule == m,
                           onTap: () => _onModuleTapped(m),
                         );

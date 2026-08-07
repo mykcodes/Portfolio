@@ -48,12 +48,14 @@ class _TechBlueprintBackgroundState extends State<TechBlueprintBackground>
               ExperienceController.instance.scrollController.hasClients
               ? ExperienceController.instance.scrollController.offset
               : 0.0;
+          final screenWidth = MediaQuery.sizeOf(context).width;
 
           return CustomPaint(
             painter: _BlueprintPainter(
               rotation: _rotationController.value * 2 * pi,
               scrollOffset: scrollOffset,
               mousePos: _mousePos,
+              screenWidth: screenWidth,
             ),
             size: Size.infinite,
           );
@@ -67,11 +69,13 @@ class _BlueprintPainter extends CustomPainter {
   final double rotation;
   final double scrollOffset;
   final Offset mousePos;
+  final double screenWidth;
 
   _BlueprintPainter({
     required this.rotation,
     required this.scrollOffset,
     required this.mousePos,
+    required this.screenWidth,
   });
 
   static final Paint _gridPaint = Paint()
@@ -92,7 +96,8 @@ class _BlueprintPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const double gridSize = 60.0;
+    final bool isMobile = screenWidth < 600;
+    final double gridSize = isMobile ? 120.0 : 60.0;
 
     
     final double offsetY = scrollOffset * 0.1 % gridSize;
@@ -178,7 +183,7 @@ class _BlueprintPainter extends CustomPainter {
     canvas.rotate(rot);
 
     
-    const int dashCount = 36;
+    final int dashCount = screenWidth < 600 ? 18 : 36;
     for (int i = 0; i < dashCount; i++) {
       if (i % 3 != 0) {
         canvas.drawArc(

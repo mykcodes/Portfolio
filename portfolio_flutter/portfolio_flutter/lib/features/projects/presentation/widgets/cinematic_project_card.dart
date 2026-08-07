@@ -126,14 +126,14 @@ class _CinematicProjectCardState extends State<CinematicProjectCard>
                 ),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: _isHovered
+                  color: (_isHovered || _isExpanded)
                       ? const Color(0x664F8CFF)
                       : const Color(
                           0xFF4F8CFF,
                         ).withValues(alpha: 0.05 + breathe * 0.1),
                   width: 1.0,
                 ),
-                boxShadow: _isHovered
+                boxShadow: (_isHovered || _isExpanded)
                     ? [
                         const BoxShadow(
                           color: Color(0x1A4F8CFF),
@@ -170,12 +170,11 @@ class _CinematicProjectCardState extends State<CinematicProjectCard>
               filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
               child: Stack(
                 children: [
-                  
                   Positioned.fill(
                     child: AnimatedOpacity(
                       duration: MotionSystem.standard,
                       curve: MotionSystem.deceleration,
-                      opacity: _isHovered ? 1.0 : 0.0,
+                      opacity: (_isHovered || _isExpanded) ? 1.0 : 0.0,
                       child: AnimatedBuilder(
                         animation: _borderGlowController,
                         builder: (context, _) {
@@ -198,7 +197,7 @@ class _CinematicProjectCardState extends State<CinematicProjectCard>
                   ),
 
                   
-                  if (_isHovered)
+                  if (_isHovered || _isExpanded)
                     Positioned.fill(
                       child: AnimatedBuilder(
                         animation: _borderGlowController,
@@ -220,44 +219,43 @@ class _CinematicProjectCardState extends State<CinematicProjectCard>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget.project.title,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      textStyle: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: -0.5,
-                                      ),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final bool isMobile = MediaQuery.sizeOf(context).width < 800;
+
+                            final textColumn = Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.project.title,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    textStyle: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: -0.5,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    widget.project.shortDescription,
-                                    style: GoogleFonts.geist(
-                                      textStyle: const TextStyle(
-                                        color: Color(0x99FFFFFF),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                        height: 1.6,
-                                      ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  widget.project.shortDescription,
+                                  style: GoogleFonts.geist(
+                                    textStyle: const TextStyle(
+                                      color: Color(0x99FFFFFF),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.6,
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                            AnimatedOpacity(
+                                ),
+                              ],
+                            );
+
+                            final roleBadge = AnimatedOpacity(
                               duration: MotionSystem.swift,
                               curve: MotionSystem.deceleration,
-                              opacity: _isHovered ? 1.0 : 0.5,
+                              opacity: (_isHovered || _isExpanded) ? 1.0 : 0.5,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12.0,
@@ -282,8 +280,29 @@ class _CinematicProjectCardState extends State<CinematicProjectCard>
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            );
+
+                            if (isMobile) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  textColumn,
+                                  const SizedBox(height: 16),
+                                  roleBadge,
+                                ],
+                              );
+                            }
+
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(child: textColumn),
+                                const SizedBox(width: 16),
+                                roleBadge,
+                              ],
+                            );
+                          },
                         ),
 
                         

@@ -97,16 +97,21 @@ class _EngineeringConsoleState extends State<EngineeringConsole> {
     final isOpen = ConsoleController.instance.isOpen;
     final screenSize = MediaQuery.sizeOf(context);
 
+    final bool isMobile = screenSize.width < 600;
+    final double bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+
     
-    final consoleWidth = screenSize.width > 600 ? 560.0 : screenSize.width - 40;
-    final consoleHeight = screenSize.height > 600
-        ? 480.0
-        : screenSize.height - 120;
+    final double consoleWidth = isMobile ? screenSize.width : 560.0;
+    final double consoleHeight = isMobile
+        ? (screenSize.height * 0.85 - bottomInset).clamp(300.0, screenSize.height)
+        : 480.0;
     const collapsedSize = 64.0;
 
-    return Positioned(
-      right: 20,
-      bottom: 20,
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOutCubic,
+      right: (isMobile && isOpen) ? 0 : 20,
+      bottom: (isMobile && isOpen) ? bottomInset : 20,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeOutCubic,

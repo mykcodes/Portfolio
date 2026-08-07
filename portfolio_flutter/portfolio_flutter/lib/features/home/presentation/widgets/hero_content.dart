@@ -13,7 +13,20 @@ class HeroContent extends StatelessWidget {
     if (width >= 1200) return 136.0;
     if (width >= 900) return 118.0;
     if (width >= 600) return 88.0;
-    return 58.0;
+    return 48.0; // Reduced for small mobile
+  }
+
+  double _getDynamicSubtitleSize(BuildContext context) {
+    final double width = MediaQuery.sizeOf(context).width;
+    if (width >= 900) return 46.0;
+    if (width >= 600) return 36.0;
+    return 24.0;
+  }
+
+  double _getDynamicDescSize(BuildContext context) {
+    final double width = MediaQuery.sizeOf(context).width;
+    if (width >= 600) return 16.0;
+    return 14.0;
   }
 
   @override
@@ -106,42 +119,50 @@ class HeroContent extends StatelessWidget {
                       delayMs: 2300,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 720),
-                        child: Text(
-                          HeroData.subtitle,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.chakraPetch(
-                            textStyle: const TextStyle(
-                              color: Color(0xB8FFFFFF),
-                              fontSize: 46,
-                              fontWeight: FontWeight.w400,
-                              height: 1.15,
-                            ),
-                          ),
+                        child: Builder(
+                          builder: (context) {
+                            return Text(
+                              HeroData.subtitle,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.chakraPetch(
+                                textStyle: TextStyle(
+                                  color: const Color(0xB8FFFFFF),
+                                  fontSize: _getDynamicSubtitleSize(context),
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.15,
+                                ),
+                              ),
+                            );
+                          }
                         ),
                       ),
                     ),
                     const SizedBox(height: 24),
 
                     
-                    _StaggeredItem(
-                      delayMs: 2700,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 620),
-                        child: Text(
-                          HeroData.description,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.chakraPetch(
-                            textStyle: const TextStyle(
-                              color: Color(0x8CFFFFFF),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              height: 1.6,
-                            ),
+                      _StaggeredItem(
+                        delayMs: 2700,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 620),
+                          child: Builder(
+                            builder: (context) {
+                              return Text(
+                                HeroData.description,
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.chakraPetch(
+                                  textStyle: TextStyle(
+                                    color: const Color(0x8CFFFFFF),
+                                    fontSize: _getDynamicDescSize(context),
+                                    fontWeight: FontWeight.w400,
+                                    height: 1.6,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 64),
+                      const SizedBox(height: 48),
 
                     
                     _StaggeredItem(

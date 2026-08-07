@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../../core/controllers/experience_controller.dart';
 import '../../../../core/experience/parallax_engine.dart';
+import '../../../../core/constants/app_breakpoints.dart';
 
 class ConstellationBackground extends StatefulWidget {
   const ConstellationBackground({super.key});
@@ -41,8 +42,16 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
   }
 
   void _generateLayers(Size size) {
-    
-    _deepSpaceNodes = List.generate(150, (index) {
+    double density = 1.0;
+    if (size.width < AppBreakpoints.tablet) {
+      density = 0.3; // Mobile
+    } else if (size.width < AppBreakpoints.desktop) {
+      density = 0.6; // Tablet
+    } else if (size.width < AppBreakpoints.largeDesktop) {
+      density = 0.85; // Desktop
+    }
+
+    _deepSpaceNodes = List.generate((150 * density).round(), (index) {
       return _StarNode(
         basePosition: Offset(
           _random.nextDouble() * size.width,
@@ -55,7 +64,7 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
     });
 
     
-    _constellationNodes = List.generate(60, (index) {
+    _constellationNodes = List.generate((60 * density).round(), (index) {
       return _StarNode(
         basePosition: Offset(
           _random.nextDouble() * size.width,
@@ -68,7 +77,7 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
     });
 
     
-    _particleNodes = List.generate(40, (index) {
+    _particleNodes = List.generate((40 * density).round(), (index) {
       return _StarNode(
         basePosition: Offset(
           _random.nextDouble() * size.width,
@@ -81,7 +90,7 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
     });
 
     
-    _geometryNodes = List.generate(15, (index) {
+    _geometryNodes = List.generate((15 * density).round().clamp(5, 15), (index) {
       return _GeometryNode(
         basePosition: Offset(
           _random.nextDouble() * size.width,
@@ -95,7 +104,7 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
     });
 
     
-    _blueprintPlanes = List.generate(8, (index) {
+    _blueprintPlanes = List.generate((8 * density).round().clamp(2, 8), (index) {
       return _BlueprintPlane(
         basePosition: Offset(
           _random.nextDouble() * size.width,
@@ -110,7 +119,7 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
     });
 
     
-    _parametricCurves = List.generate(5, (index) {
+    _parametricCurves = List.generate((5 * density).round().clamp(1, 5), (index) {
       return _ParametricCurve(
         basePosition: Offset(
           _random.nextDouble() * size.width,
