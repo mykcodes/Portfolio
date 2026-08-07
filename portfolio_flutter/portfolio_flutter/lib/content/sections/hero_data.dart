@@ -1,6 +1,6 @@
 class HeroData {
   static const String topLabel =
-      'SOFTWARE ENGINEER • CLOUD SECURITY • CONTENT CREATOR';
+      'SOFTWARE DEVELOPER • CYBER SECURITY • CLOUD COMPUTING';
   static const String title = 'MAYANK';
   static const String subtitle = 'Engineering the impossible, one iteration at a time.';
   static const String description =

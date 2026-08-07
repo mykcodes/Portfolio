@@ -144,8 +144,8 @@ class _TypingTerminalState extends State<TypingTerminal> {
                     ),
                     const SizedBox(height: 12),
                     _buildListItem("Engineering Opportunities"),
-                    _buildListItem("Research Projects"),
-                    _buildListItem("Startups"),
+                    _buildListItem("AI projects"),
+                    _buildListItem("Internships"),
                     _buildListItem(
                       "Collaboration",
                       isActive: true,

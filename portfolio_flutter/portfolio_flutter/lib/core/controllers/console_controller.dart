@@ -133,10 +133,10 @@ class ConsoleController extends ChangeNotifier {
         _launchUrl('https://mykcodes.com/resume.pdf');
         break;
       case ConsoleAction.openLinkedin:
-        _launchUrl('https://linkedin.com/in/mykcodes');
+        _launchUrl('https://www.linkedin.com/in/mynksharma/');
         break;
       case ConsoleAction.openEmail:
-        _launchUrl('mailto:contact@mykcodes.com');
+        _launchUrl('mailto:ffmayank55@gmail.com');
         break;
       case ConsoleAction.scrollToHero:
         ExperienceController.instance.scrollToSection('hero');
@@ -480,7 +480,7 @@ class ConsoleController extends ChangeNotifier {
       content: '''
 ┌─ LINKEDIN ───────────────────────────────┐
 │                                          │
-│  linkedin.com/in/mykcodes                │
+│  linkedin.com/in/mynksharma              │
 │                                          │
 │  [Opening in new tab...]                 │
 └──────────────────────────────────────────┘''',
@@ -494,7 +494,7 @@ class ConsoleController extends ChangeNotifier {
       content: '''
 ┌─ EMAIL ──────────────────────────────────┐
 │                                          │
-│  contact@mykcodes.com                    │
+│  ffmayank55@gmail.com                    │
 │                                          │
 │  [Launching mail client...]              │
 └──────────────────────────────────────────┘''',
@@ -523,8 +523,8 @@ class ConsoleController extends ChangeNotifier {
 ┌─ CONNECTION CHANNELS ────────────────────┐
 │                                          │
 │  ▸ GitHub    github.com/mykcodes         │
-│  ▸ LinkedIn  linkedin.com/in/mykcodes    │
-│  ▸ Email     contact@mykcodes.com        │
+│  ▸ LinkedIn  linkedin.com/in/mynksharma  │
+│  ▸ Email     ffmayank55@gmail.com        │
 │                                          │
 │  Status: ● Available for Opportunities   │
 │                                          │

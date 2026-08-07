@@ -34,7 +34,7 @@ class ToolboxData {
       ],
       yearsOfExperience: 'Learning & Building',
       currentFocus:
-          'Advanced animations, rendering optimization, architecture, and production-ready Flutter development.',
+          'Advanced animations and Architecture',
       tags: [
         'Flutter',
         'Dart',
@@ -54,7 +54,7 @@ class ToolboxData {
       ],
       yearsOfExperience: 'Learning',
       currentFocus:
-          'LLMs, AI system design, agent workflows, and practical AI integrations.',
+          'LLMs, AI integrations',
       tags: [
         'Gemini',
         'LLMs',
@@ -74,7 +74,7 @@ class ToolboxData {
       ],
       yearsOfExperience: 'Learning',
       currentFocus:
-          'AWS, Azure, Firebase, deployment pipelines, and distributed systems.',
+          'AWS, Azure, Firebase',
       tags: [
         'Cloud',
         'Deployment',
@@ -94,7 +94,7 @@ class ToolboxData {
       ],
       yearsOfExperience: 'Learning',
       currentFocus:
-          'Linux, networking, web security, and ethical hacking fundamentals.',
+          'Linux, networking',
       tags: [
         'Linux',
         'Networking',
@@ -114,7 +114,7 @@ class ToolboxData {
       ],
       yearsOfExperience: 'Active Practice',
       currentFocus:
-          'Arrays, Trees, Graphs, Dynamic Programming, and Interview Preparation.',
+          'Arrays, Trees, Graphs',
       tags: [
         'C++',
         'Algorithms',
@@ -134,7 +134,7 @@ class ToolboxData {
       ],
       yearsOfExperience: 'Learning',
       currentFocus:
-          'Automation, AI libraries, backend development, and scripting.',
+          'Automation, AI libraries',
       tags: [
         'Python',
         'Automation',
@@ -154,7 +154,7 @@ class ToolboxData {
       ],
       yearsOfExperience: 'Learning & Building',
       currentFocus:
-          'Component architecture, React ecosystem, and frontend performance.',
+          'React ecosystem, frontend',
       tags: [
         'JavaScript',
         'React',
@@ -174,7 +174,7 @@ class ToolboxData {
       ],
       yearsOfExperience: 'Daily Use',
       currentFocus:
-          'Clean workflows, branching strategies, releases, and open-source contributions.',
+          'Clean workflows, branching strategies',
       tags: [
         'Git',
         'GitHub',
