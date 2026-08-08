@@ -10,5 +10,5 @@ class FooterData {
       'Send encrypted transmission to inbox.';
 
   static const String signature =
-      '© Mayank Sharma 2026 / All Systems Operational.';
+      '© MAYANK SHARMA — BUILT WITH CURIOSITY. ENGINEERED WITH INTENT. / 2026';
 }

@@ -563,8 +563,9 @@ class _PrimaryActionState extends State<_PrimaryAction>
                 child: AnimatedBuilder(
                   animation: _sweepController,
                   builder: (context, _) {
-                    if (_sweepController.value <= 0)
+                    if (_sweepController.value <= 0) {
                       return const SizedBox.shrink();
+                    }
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(18),
                       child: CustomPaint(
@@ -703,8 +704,9 @@ class _SecondaryActionState extends State<_SecondaryAction>
                 child: AnimatedBuilder(
                   animation: _reflectionController,
                   builder: (context, _) {
-                    if (_reflectionController.value <= 0)
+                    if (_reflectionController.value <= 0) {
                       return const SizedBox.shrink();
+                    }
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(18),
                       child: CustomPaint(

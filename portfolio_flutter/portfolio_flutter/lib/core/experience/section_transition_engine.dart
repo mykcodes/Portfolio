@@ -28,9 +28,12 @@ class SectionTransitionEngine extends StatelessWidget {
       visibilityProgress.clamp(0.0, 1.0),
     );
 
-    if (curvedProgress == 1.0)
+    if (curvedProgress == 1.0) {
       return child; 
-    if (curvedProgress == 0.0) return const SizedBox.shrink(); 
+    }
+    if (curvedProgress == 0.0) {
+      return const SizedBox.shrink(); 
+    }
 
     switch (style) {
       case TransitionStyle.verticalEmergence:

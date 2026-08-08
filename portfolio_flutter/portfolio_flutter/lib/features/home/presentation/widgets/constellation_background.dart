@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/controllers/experience_controller.dart';
 import '../../../../core/experience/parallax_engine.dart';
 import '../../../../core/constants/app_breakpoints.dart';
+import '../../../../core/experience/mobile_render_engine.dart';
 
 class ConstellationBackground extends StatefulWidget {
   const ConstellationBackground({super.key});
@@ -42,13 +43,16 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
   }
 
   void _generateLayers(Size size) {
-    double density = 1.0;
-    if (size.width < AppBreakpoints.tablet) {
-      density = 0.3; // Mobile
-    } else if (size.width < AppBreakpoints.desktop) {
-      density = 0.6; // Tablet
-    } else if (size.width < AppBreakpoints.largeDesktop) {
-      density = 0.85; // Desktop
+    final config = MobileRenderEngine.getConfig(context);
+    double density = config.particleDensity;
+
+    // Optional subtle scaling for very large screens
+    if (size.width >= AppBreakpoints.largeDesktop) {
+      density *= 1.2;
+    } else if (size.width >= AppBreakpoints.desktop && size.width < AppBreakpoints.largeDesktop) {
+      density *= 1.0;
+    } else if (size.width >= AppBreakpoints.tablet && size.width < AppBreakpoints.desktop) {
+      density *= 0.8;
     }
 
     _deepSpaceNodes = List.generate((150 * density).round(), (index) {
@@ -147,6 +151,7 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
 
   @override
   void dispose() {
+    ExperienceController.instance.removeListener(_onExperienceChanged);
     _ambientController.dispose();
     super.dispose();
   }
@@ -160,6 +165,8 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
       vsync: this,
       duration: const Duration(seconds: 20),
     )..repeat();
+
+    ExperienceController.instance.addListener(_onExperienceChanged);
 
     _primaryFogPaint = Paint();
     _secondaryFogPaint = Paint();
@@ -178,6 +185,22 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
     _particlePaint = Paint()..style = PaintingStyle.fill;
+  }
+
+  void _onExperienceChanged() {
+    if (!mounted) return;
+    
+    final config = MobileRenderEngine.getConfig(context);
+    
+    if (config.enableContinuousAnimations) {
+      if (!_ambientController.isAnimating) _ambientController.repeat();
+    } else {
+      if (ExperienceController.instance.isScrolling) {
+        if (!_ambientController.isAnimating) _ambientController.repeat();
+      } else {
+        if (_ambientController.isAnimating) _ambientController.stop();
+      }
+    }
   }
 
   @override
@@ -217,33 +240,36 @@ class _ConstellationBackgroundState extends State<ConstellationBackground>
               .maxScrollExtent;
         }
 
-        return CustomPaint(
-          painter: _AtmosphereEnginePainter(
-            deepSpaceNodes: _deepSpaceNodes,
-            constellationNodes: _constellationNodes,
-            particleNodes: _particleNodes,
-            geometryNodes: _geometryNodes,
-            blueprintPlanes: _blueprintPlanes,
-            parametricCurves: _parametricCurves,
-            mousePosition: _smoothCursor, 
-            time: _ambientController.value * pi * 2,
-            globalIntensity: globalIntensity,
-            scrollProgress: scrollProgress,
-            activeSection: activeSection,
-            maxScroll: maxScroll,
-            screenSize: MediaQuery.sizeOf(context),
-            primaryFogPaint: _primaryFogPaint,
-            secondaryFogPaint: _secondaryFogPaint,
-            warmAccentPaint: _warmAccentPaint,
-            blueprintLinePaint: _blueprintLinePaint,
-            curvePaint: _curvePaint,
-            deepSpacePaint: _deepSpacePaint,
-            constellationNodePaint: _constellationNodePaint,
-            constellationLinePaint: _constellationLinePaint,
-            geometryPaint: _geometryPaint,
-            particlePaint: _particlePaint,
+        return RepaintBoundary(
+          child: CustomPaint(
+            painter: _AtmosphereEnginePainter(
+              deepSpaceNodes: _deepSpaceNodes,
+              constellationNodes: _constellationNodes,
+              particleNodes: _particleNodes,
+              geometryNodes: _geometryNodes,
+              blueprintPlanes: _blueprintPlanes,
+              parametricCurves: _parametricCurves,
+              mousePosition: _smoothCursor, 
+              time: _ambientController.value * pi * 2,
+              globalIntensity: globalIntensity,
+              scrollProgress: scrollProgress,
+              activeSection: activeSection,
+              maxScroll: maxScroll,
+              screenSize: MediaQuery.sizeOf(context),
+              primaryFogPaint: _primaryFogPaint,
+              secondaryFogPaint: _secondaryFogPaint,
+              warmAccentPaint: _warmAccentPaint,
+              blueprintLinePaint: _blueprintLinePaint,
+              curvePaint: _curvePaint,
+              deepSpacePaint: _deepSpacePaint,
+              constellationNodePaint: _constellationNodePaint,
+              constellationLinePaint: _constellationLinePaint,
+              geometryPaint: _geometryPaint,
+              particlePaint: _particlePaint,
+              config: MobileRenderEngine.getConfig(context),
+            ),
+            size: Size.infinite,
           ),
-          size: Size.infinite,
         );
       },
     );
@@ -338,6 +364,7 @@ class _AtmosphereEnginePainter extends CustomPainter {
   final Paint constellationLinePaint;
   final Paint geometryPaint;
   final Paint particlePaint;
+  final RenderConfig config;
 
   _AtmosphereEnginePainter({
     required this.deepSpaceNodes,
@@ -363,6 +390,7 @@ class _AtmosphereEnginePainter extends CustomPainter {
     required this.constellationLinePaint,
     required this.geometryPaint,
     required this.particlePaint,
+    required this.config,
   });
 
   @override
@@ -426,10 +454,10 @@ class _AtmosphereEnginePainter extends CustomPainter {
       colors: [
         const Color(
           0xFF4F8CFF,
-        ).withValues(alpha: (0.04 * globalIntensity).clamp(0.0, 1.0)),
+        ).withValues(alpha: (0.04 * globalIntensity * config.glowIntensity).clamp(0.0, 1.0)),
         const Color(
           0xFF4F8CFF,
-        ).withValues(alpha: (0.01 * globalIntensity).clamp(0.0, 1.0)),
+        ).withValues(alpha: (0.01 * globalIntensity * config.glowIntensity).clamp(0.0, 1.0)),
         const Color(0xFF4F8CFF).withValues(alpha: 0.0),
       ],
       stops: const [0.0, 0.3, 1.0],
@@ -448,7 +476,7 @@ class _AtmosphereEnginePainter extends CustomPainter {
       colors: [
         const Color(
           0xFFFFFFFF,
-        ).withValues(alpha: (0.02 * globalIntensity).clamp(0.0, 1.0)),
+        ).withValues(alpha: (0.02 * globalIntensity * config.glowIntensity).clamp(0.0, 1.0)),
         const Color(0xFFFFFFFF).withValues(alpha: 0.0),
       ],
       stops: const [0.0, 1.0],
@@ -735,8 +763,9 @@ class _AtmosphereEnginePainter extends CustomPainter {
         if (distSq < connectDistSq) {
           final double distance = sqrt(distSq);
           final double baseAlpha = (1.0 - (distance / connectDistance)) * 0.15;
+          final double hoverEffect = config.enableMouseEffects ? (hoverIntensity * 0.3) : 0.0;
           final double finalAlpha =
-              (baseAlpha + (hoverIntensity * 0.3)) * globalIntensity;
+              (baseAlpha + hoverEffect) * globalIntensity;
           constellationLinePaint.color = Colors.white.withValues(
             alpha: finalAlpha.clamp(0.0, 1.0),
           );
@@ -757,16 +786,16 @@ class _AtmosphereEnginePainter extends CustomPainter {
         alpha: (0.25 * globalIntensity).clamp(0.0, 1.0),
       );
 
-      if (hoverScale > 1.0) {
+      if (hoverScale > 1.0 && config.enableMouseEffects) {
         final glowPaint =
             Paint() 
               ..color = const Color(0xFF4F8CFF).withValues(
-                alpha: (0.3 * (hoverScale - 1.0) * globalIntensity).clamp(
+                alpha: (0.3 * (hoverScale - 1.0) * globalIntensity * config.glowIntensity).clamp(
                   0.0,
                   1.0,
                 ),
               )
-              ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12.0);
+              ..maskFilter = MaskFilter.blur(BlurStyle.normal, 12.0 * config.blurRadiusMultiplier);
         canvas.drawCircle(p, node.baseSize * hoverScale * 4.0, glowPaint);
       }
       canvas.drawCircle(p, node.baseSize * hoverScale, constellationNodePaint);

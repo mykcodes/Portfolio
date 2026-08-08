@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../../core/controllers/experience_controller.dart';
+import '../../../../core/experience/mobile_render_engine.dart';
 
 class TechBlueprintBackground extends StatefulWidget {
   const TechBlueprintBackground({super.key});
@@ -22,21 +23,44 @@ class _TechBlueprintBackgroundState extends State<TechBlueprintBackground>
       vsync: this,
       duration: const Duration(seconds: 120),
     )..repeat();
+
+    ExperienceController.instance.addListener(_onExperienceChanged);
+  }
+
+  void _onExperienceChanged() {
+    if (!mounted) return;
+    
+    final config = MobileRenderEngine.getConfig(context);
+    
+    if (config.enableContinuousAnimations) {
+      if (!_rotationController.isAnimating) _rotationController.repeat();
+    } else {
+      if (ExperienceController.instance.isScrolling) {
+        if (!_rotationController.isAnimating) _rotationController.repeat();
+      } else {
+        if (_rotationController.isAnimating) _rotationController.stop();
+      }
+    }
   }
 
   @override
   void dispose() {
+    ExperienceController.instance.removeListener(_onExperienceChanged);
     _rotationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final config = MobileRenderEngine.getConfig(context);
+
     return MouseRegion(
       onHover: (e) {
-        setState(() {
-          _mousePos = e.localPosition;
-        });
+        if (config.enableMouseEffects) {
+          setState(() {
+            _mousePos = e.localPosition;
+          });
+        }
       },
       child: AnimatedBuilder(
         animation: Listenable.merge([
@@ -50,14 +74,17 @@ class _TechBlueprintBackgroundState extends State<TechBlueprintBackground>
               : 0.0;
           final screenWidth = MediaQuery.sizeOf(context).width;
 
-          return CustomPaint(
-            painter: _BlueprintPainter(
-              rotation: _rotationController.value * 2 * pi,
-              scrollOffset: scrollOffset,
-              mousePos: _mousePos,
-              screenWidth: screenWidth,
+          return RepaintBoundary(
+            child: CustomPaint(
+              painter: _BlueprintPainter(
+                rotation: _rotationController.value * 2 * pi,
+                scrollOffset: scrollOffset,
+                mousePos: _mousePos,
+                screenWidth: screenWidth,
+                config: config,
+              ),
+              size: Size.infinite,
             ),
-            size: Size.infinite,
           );
         },
       ),
@@ -70,12 +97,14 @@ class _BlueprintPainter extends CustomPainter {
   final double scrollOffset;
   final Offset mousePos;
   final double screenWidth;
+  final RenderConfig config;
 
   _BlueprintPainter({
     required this.rotation,
     required this.scrollOffset,
     required this.mousePos,
     required this.screenWidth,
+    required this.config,
   });
 
   static final Paint _gridPaint = Paint()
@@ -96,8 +125,7 @@ class _BlueprintPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final bool isMobile = screenWidth < 600;
-    final double gridSize = isMobile ? 120.0 : 60.0;
+    final double gridSize = 60.0 / config.particleDensity.clamp(0.2, 1.0);
 
     
     final double offsetY = scrollOffset * 0.1 % gridSize;
@@ -174,8 +202,12 @@ class _BlueprintPainter extends CustomPainter {
     final paint = isPrimary ? _primaryCirclePaint : _secondaryCirclePaint;
 
     
-    final dx = (mousePos.dx - center.dx) * 0.05;
-    final dy = (mousePos.dy - center.dy) * 0.05;
+    double dx = 0;
+    double dy = 0;
+    if (config.enableMouseEffects) {
+      dx = (mousePos.dx - center.dx) * 0.05;
+      dy = (mousePos.dy - center.dy) * 0.05;
+    }
     final adjustedCenter = center + Offset(dx, dy);
 
     canvas.save();
@@ -183,7 +215,8 @@ class _BlueprintPainter extends CustomPainter {
     canvas.rotate(rot);
 
     
-    final int dashCount = screenWidth < 600 ? 18 : 36;
+    final int baseDashCount = 36;
+    final int dashCount = (baseDashCount * config.particleDensity).round().clamp(12, 36);
     for (int i = 0; i < dashCount; i++) {
       if (i % 3 != 0) {
         canvas.drawArc(

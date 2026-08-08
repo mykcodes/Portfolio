@@ -7,6 +7,8 @@ import '../../../../core/controllers/console_controller.dart';
 import '../../../../core/experience/sound_engine.dart';
 import '../../../../core/utils/motion_system.dart';
 import '../../../../core/constants/app_breakpoints.dart';
+import '../../../../core/widgets/responsive_layout.dart';
+import '../../../../core/experience/mobile_render_engine.dart';
 
 class HomeNavigationBar extends StatefulWidget {
   const HomeNavigationBar({super.key});
@@ -64,8 +66,8 @@ class _HomeNavigationBarState extends State<HomeNavigationBar>
           curve: MotionSystem.deceleration,
         ).value;
 
-        
-        final double blurAmount = 16.0 + (scrollProgress * 8.0);
+        final config = MobileRenderEngine.getConfig(context);
+        final double blurAmount = (16.0 + (scrollProgress * 8.0)) * config.blurRadiusMultiplier;
         final Color bgColor = Color.lerp(
           const Color(0x05FFFFFF),
           const Color(0x0A000000),
@@ -78,7 +80,7 @@ class _HomeNavigationBarState extends State<HomeNavigationBar>
         )!;
 
         return Padding(
-          padding: const EdgeInsets.only(top: 32.0),
+          padding: EdgeInsets.only(top: context.isMobile ? MediaQuery.viewPaddingOf(context).top + 16.0 : 32.0),
           child: Align(
             alignment: Alignment.topCenter,
             child: Opacity(
@@ -192,15 +194,18 @@ class _HomeNavigationBarState extends State<HomeNavigationBar>
                                 final double scale = isTablet ? 0.9 : 1.0;
 
                                 if (isMobile) {
-                                  return Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      _NavBrandIdentity(
-                                        entryAnimation: _entryController,
-                                      ),
-                                      const SizedBox(width: 32),
-                                      SizedBox(
+                                  return Container(
+                                    constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width - 64),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Flexible(
+                                          child: _NavBrandIdentity(
+                                            entryAnimation: _entryController,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        SizedBox(
                                         width: 48,
                                         height: 48,
                                         child: IconButton(
@@ -216,8 +221,9 @@ class _HomeNavigationBarState extends State<HomeNavigationBar>
                                         ),
                                       ),
                                     ],
-                                  );
-                                }
+                                  ),
+                                );
+                              }
 
                                 return Transform.scale(
                                   scale: scale,

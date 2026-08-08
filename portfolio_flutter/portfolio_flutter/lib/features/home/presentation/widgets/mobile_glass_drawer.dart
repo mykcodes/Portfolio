@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/controllers/experience_controller.dart';
 import '../../../../core/experience/sound_engine.dart';
 import '../../../../core/utils/motion_system.dart';
+import '../../../../core/experience/mobile_render_engine.dart';
 
 class MobileGlassDrawer extends StatelessWidget {
   const MobileGlassDrawer({super.key});
@@ -14,6 +15,7 @@ class MobileGlassDrawer extends StatelessWidget {
       animation: ExperienceController.instance,
       builder: (context, child) {
         final isOpen = ExperienceController.instance.isMobileDrawerOpen;
+        final config = MobileRenderEngine.getConfig(context);
 
         return Stack(
           children: [
@@ -37,7 +39,10 @@ class MobileGlassDrawer extends StatelessWidget {
                   height: double.infinity,
                   child: isOpen
                       ? BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                          filter: ImageFilter.blur(
+                            sigmaX: 8.0 * config.blurRadiusMultiplier,
+                            sigmaY: 8.0 * config.blurRadiusMultiplier,
+                          ),
                           child: const SizedBox.expand(),
                         )
                       : null,
@@ -62,7 +67,10 @@ class MobileGlassDrawer extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 24.0, sigmaY: 24.0),
+                    filter: ImageFilter.blur(
+                      sigmaX: 24.0 * config.blurRadiusMultiplier,
+                      sigmaY: 24.0 * config.blurRadiusMultiplier,
+                    ),
                     child: SafeArea(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

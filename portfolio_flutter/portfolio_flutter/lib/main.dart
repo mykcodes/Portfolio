@@ -14,7 +14,7 @@ class MykCodesPortfolio extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlobalMouseRegion(
       child: MaterialApp.router(
-        title: 'MYK-CODES | Engineering Experiences',
+        title: 'MYK-CODES',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           brightness: Brightness.dark,

@@ -31,8 +31,9 @@ class _LaboratoryEnvPainter extends CustomPainter {
     for (double y = 0; y < size.height; y += gridSize) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
       for (double x = 0; x < size.width; x += gridSize) {
-        if (y == 0)
+        if (y == 0) {
           canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+        }
         
         canvas.drawCircle(Offset(x, y), 1.5, dotPaint);
       }

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/utils/motion_system.dart';
+import '../../../../core/experience/mobile_render_engine.dart';
 import '../../../../core/widgets/cursor_light_painter.dart';
 import '../../../../content/portfolio_data.dart';
 import 'engineering_document_view.dart';
@@ -74,10 +75,12 @@ class _CinematicProjectCardState extends State<CinematicProjectCard>
 
   @override
   Widget build(BuildContext context) {
+    final config = MobileRenderEngine.getConfig(context);
+
     return MouseRegion(
-      onEnter: _onEnter,
-      onHover: _onHover,
-      onExit: _onExit,
+      onEnter: config.enableMouseEffects ? _onEnter : null,
+      onHover: config.enableMouseEffects ? _onHover : null,
+      onExit: config.enableMouseEffects ? _onExit : null,
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTapDown: (_) => setState(() => _isPressed = true),
@@ -135,10 +138,10 @@ class _CinematicProjectCardState extends State<CinematicProjectCard>
                 ),
                 boxShadow: (_isHovered || _isExpanded)
                     ? [
-                        const BoxShadow(
-                          color: Color(0x1A4F8CFF),
-                          blurRadius: 60,
-                          offset: Offset(0, 30),
+                        BoxShadow(
+                          color: const Color(0x1A4F8CFF),
+                          blurRadius: 60 * config.glowIntensity,
+                          offset: const Offset(0, 30),
                         ),
                         const BoxShadow(
                           color: Color(0x0A4F8CFF),
@@ -155,9 +158,9 @@ class _CinematicProjectCardState extends State<CinematicProjectCard>
                         BoxShadow(
                           color: const Color(
                             0xFF4F8CFF,
-                          ).withValues(alpha: breathe * 0.03),
-                          blurRadius: 20,
-                          spreadRadius: breathe * 5,
+                          ).withValues(alpha: breathe * 0.03 * config.glowIntensity),
+                          blurRadius: 20 * config.glowIntensity,
+                          spreadRadius: breathe * 5 * config.glowIntensity,
                         ),
                       ],
               ),
@@ -167,7 +170,10 @@ class _CinematicProjectCardState extends State<CinematicProjectCard>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
+              filter: ImageFilter.blur(
+                sigmaX: 16.0 * config.blurRadiusMultiplier, 
+                sigmaY: 16.0 * config.blurRadiusMultiplier
+              ),
               child: Stack(
                 children: [
                   Positioned.fill(

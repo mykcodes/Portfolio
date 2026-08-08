@@ -452,7 +452,7 @@ class _ModuleWidgetState extends State<_ModuleWidget> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
-            width: 80,
+            width: 100,
             height: 40,
             decoration: BoxDecoration(
               color: widget.isActive || _isHovered

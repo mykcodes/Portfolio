@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../utils/motion_system.dart';
 
@@ -36,6 +37,9 @@ class ExperienceController extends ChangeNotifier {
 
   
   bool _isAutoScrolling = false;
+  
+  bool isScrolling = false;
+  Timer? _scrollDebounceTimer;
 
   
   final Map<String, GlobalKey> sectionKeys = {
@@ -134,6 +138,16 @@ class ExperienceController extends ChangeNotifier {
       _determineActiveSection();
     }
 
+    if (!isScrolling) {
+      isScrolling = true;
+    }
+    
+    _scrollDebounceTimer?.cancel();
+    _scrollDebounceTimer = Timer(const Duration(milliseconds: 150), () {
+      isScrolling = false;
+      notifyListeners();
+    });
+
     notifyListeners();
   }
 
@@ -200,6 +214,7 @@ class ExperienceController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _scrollDebounceTimer?.cancel();
     scrollController.removeListener(_onScrollStateChanged);
     scrollController.dispose();
     super.dispose();
