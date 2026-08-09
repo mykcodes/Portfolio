@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "mykcodes-portfolio-516da"
-  }
+    "default": "mykcodes-portfolio-516da",
+    "production": "myk-codes"
+  },
+  "targets": {},
+  "etags": {}
 }
